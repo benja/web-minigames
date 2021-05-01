@@ -1,0 +1,10 @@
+version: '3'
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: .docker/dev/backend.Dockerfile
+    volumes:
+      - ./packages/backend/src:/app/packages/backend/src
+    ports: ["8080:8080"]
+    env_file: .envs/backend.env

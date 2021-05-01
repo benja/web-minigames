@@ -1,6 +1,6 @@
 **/node_modules
 .env
-yarn.lock
 package-lock.json
 dist
 .idea/
+yarn-error.lock
