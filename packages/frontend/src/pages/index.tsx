@@ -9,8 +9,6 @@ export default function Index() {
   const { login } = useGameActions();
   const store = useContext(StoreContext);
 
-  console.log(store.lobby);
-
   const onLogin = () => {
     login({ username });
   };

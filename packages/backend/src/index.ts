@@ -1,6 +1,6 @@
 import express from 'express';
 import { Server, Socket } from 'socket.io';
-import { generateLobbyId } from './utils/generateLobbyId';
+import { Lobby } from './utils/lobby';
 
 const app = express();
 
@@ -22,12 +22,14 @@ io.on('connection', socket => {
     clients.set(socket.id, data.username);
 
     // Create lobby
-    const lobbyId = generateLobbyId();
-    lobbies.set(lobbyId, [socket.id]);
-    console.log(`Created lobby for ${data.username} with id ${lobbyId}`);
+    const lobby = new Lobby();
+    lobby.addPlayer(socket.id);
+
+    lobbies.set(lobby.getId(), [socket.id]);
+    console.log(`Created lobby for ${data.username} (${socket.id}) with id ${lobby.getId()}`);
 
     setTimeout(() => {
-      console.log(`Lobby (${lobbyId}) members: ${[...lobbies.values()]}`);
+      console.log(`Lobby (${lobby.getId()}) members: ${lobby.getPlayers()}`);
     }, 1000);
   });
 });
