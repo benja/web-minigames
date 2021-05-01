@@ -1,0 +1,13 @@
+{
+  "name": "shared-types",
+  "version": "0.1.0",
+  "description": "Shared types",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "build:watch": "tsc --watch --preserveWatchOutput",
+    "build": "tsc"
+  }
+}

@@ -9,6 +9,9 @@
     "prettier": "^2.2.1"
   },
   "scripts": {
-    "start:be": "yarn workspace backend start"
+    "start:be": "yarn workspace backend start",
+    "start:fe": "yarn workspace app-core dev",
+    "watch": "yarn run build && lerna run --parallel build:watch",
+    "build": "lerna run --parallel build:primaries && lerna run --parallel build:secondaries && lerna run --parallel build:tertiaries"
   }
 }
