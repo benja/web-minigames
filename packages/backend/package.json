@@ -10,7 +10,8 @@
     "start": "node ./dist/index.js"
   },
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "socket.io": "^4.0.1"
   },
   "peerDependencies": {
     "@wmg/shared": "0.1.0"
