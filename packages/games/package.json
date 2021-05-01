@@ -1,0 +1,8 @@
+{
+  "name": "@wmg/games",
+  "version": "0.0.0",
+  "description": "Minigames",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts"
+}

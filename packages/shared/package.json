@@ -1,0 +1,13 @@
+{
+  "name": "@wmg/shared",
+  "version": "0.1.0",
+  "description": "Abstracted code to be shared between packages, such as types",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "build:watch": "tsc --watch --preserveWatchOutput",
+    "build": "tsc"
+  }
+}

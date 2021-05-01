@@ -1,0 +1,28 @@
+{
+  "name": "@wmg/frontend",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "10.2.0",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "styled-components": "^5.2.3"
+  },
+  "peerDependencies": {
+    "@wmg/common": "0.1.0",
+    "@wmg/shared": "0.1.0"
+  },
+  "devDependencies": {
+    "@types/next": "^9.0.0",
+    "@types/node": "^15.0.1",
+    "@types/react": "^17.0.4",
+    "typescript": "^4.2.4"
+  }
+}

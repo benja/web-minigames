@@ -1,17 +1,18 @@
 {
-  "name": "root",
+  "name": "@wmg/web-minigames",
   "private": true,
   "workspaces": [
     "packages/*"
   ],
   "devDependencies": {
     "lerna": "^3.22.0",
-    "prettier": "^2.2.1"
+    "prettier": "^2.2.1",
+    "rimraf": "^3.0.2"
   },
   "scripts": {
-    "start:be": "yarn workspace backend start",
-    "start:fe": "yarn workspace app-core dev",
-    "watch": "yarn run build && lerna run --parallel build:watch",
+    "start:be": "yarn workspace @wmg/backend dev",
+    "start:fe": "yarn workspace @wmg/frontend dev",
+    "watch": "yarn build && lerna run --parallel build:watch",
     "build": "lerna run --parallel build:primaries && lerna run --parallel build:secondaries && lerna run --parallel build:tertiaries"
   }
 }
