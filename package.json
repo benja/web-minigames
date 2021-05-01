@@ -1,9 +1,12 @@
 {
   "name": "root",
   "private": true,
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "devDependencies": {
-    "lerna": "^3.22.0"
+    "lerna": "^3.22.0",
+    "prettier": "^2.2.1"
   },
   "scripts": {
     "start:be": "yarn workspace backend start"
