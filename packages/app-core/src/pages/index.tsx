@@ -1,5 +1,5 @@
 import { Test } from "shared-types";
-import { Text } from "fe-common";
+import { Text } from "fe-common/dist";
 
 const test: Test = {
   type: 1
