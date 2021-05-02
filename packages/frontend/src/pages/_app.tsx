@@ -6,6 +6,8 @@ import { StoreContext, DefaultStore } from '../utils/store';
 import { useRouter } from 'next/router';
 import { Sockets } from '../socket';
 import { Toaster } from 'react-hot-toast';
+import { SWRConfig } from 'swr';
+import { swrFetcher } from "../hooks";
 import { uniqueNamesGenerator, adjectives, colors } from 'unique-names-generator';
 
 interface MyAppProps extends AppProps {
@@ -21,6 +23,7 @@ export default function App({ Component, pageProps }: MyAppProps) {
   const [storeContext, setStoreContext] = useState<DefaultStore>({});
 
   return (
+        <SWRConfig value={{fetcher: swrFetcher}}>
     <StoreContext.Provider value={{ state: storeContext, dispatch: setStoreContext }}>
       <Layout>
         <Toaster />
@@ -29,6 +32,7 @@ export default function App({ Component, pageProps }: MyAppProps) {
         <Component {...pageProps} />
       </Layout>
     </StoreContext.Provider>
+      </SWRConfig>
   );
 }
 

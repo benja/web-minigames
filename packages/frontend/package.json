@@ -10,13 +10,15 @@
     "start": "next start"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "next": "10.2.0",
     "react": "^17.0.2",
     "react-avatar": "^3.10.0",
     "react-dom": "^17.0.2",
     "react-hot-toast": "^1.0.2",
     "styled-components": "^5.2.3",
-    "unique-names-generator": "^4.4.0"
+    "unique-names-generator": "^4.4.0",
+    "swr": "^0.5.5"
   },
   "peerDependencies": {
     "@wmg/common": "0.1.0",
