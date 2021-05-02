@@ -5,7 +5,6 @@ import { GameListing } from '../ui/components/organisms';
 import { useRouter } from 'next/router';
 import { useContext, useEffect } from 'react';
 import { StoreContext } from '../utils/store';
-import { useSocketActions } from '../utils/socket-actions';
 
 const users: User[] = [
   {
@@ -29,18 +28,23 @@ const games: Game[] = [
 export default function Lobby() {
   const router = useRouter();
   const { state } = useContext(StoreContext);
-  const { joinLobby } = useSocketActions();
 
   const { id } = router.query;
 
   useEffect(() => {
     if (!id) return;
 
+    if (!state.account) {
+      return void router.push(`/`);
+    }
+
     if (typeof id !== 'string') {
       return void router.push(`/lobby`);
     }
 
-    joinLobby(id);
+    if (state.lobby?.id !== id) {
+      state.socket.joinLobby(id);
+    }
   }, [id]);
 
   return (

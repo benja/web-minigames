@@ -29,7 +29,7 @@ export function useSocketActions() {
         ...o,
         lobby: {
           ...o.lobby,
-          players: o.lobby.players.filter(p => p.username !== username),
+          players: (o.lobby.players ?? []).filter(p => p.username !== username),
         },
       }));
     });

@@ -9,6 +9,7 @@ export abstract class Listener {
   }
 
   public async _handle(socket: Socket, data?: any) {
+    console.log(this.eventName, socket.id, data)
     try {
       await this.handle(socket, data);
     } catch (err) {

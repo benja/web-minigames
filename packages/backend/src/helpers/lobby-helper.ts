@@ -55,11 +55,9 @@ export default class LobbyHelper {
 
     socket.emit(SocketEvents.LOBBY_JOIN, {
       lobbyId: lobby.getId(),
-      players: lobby.getPlayers().map(p => ({
-        ...getClientById(p),
-        socket: undefined,
-        currentLobby: undefined,
-      })),
+      players: [{
+        username: client.username
+      }]
     });
   }
 }

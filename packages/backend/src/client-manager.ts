@@ -17,12 +17,13 @@ export function addClient(socket: Socket): void {
 }
 
 export function setClientUsername(socket: Socket, username: string): void {
-  if (!hasClient(socket)) {
+  const client = clients.get(socket.id);
+  if (!client) {
     throw new Error('User does not exists in the cluster.');
   }
   clients.set(socket.id, {
-    username,
-    socket,
+    ...client,
+    username
   });
 }
 
