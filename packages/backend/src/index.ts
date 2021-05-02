@@ -1,7 +1,8 @@
 import express from 'express';
 import { Server, Socket } from 'socket.io';
-import { addClient, deleteClient, getClient, getClientById, setCurrentLobby } from "./client-manager";
-import { createLobby, leaveLobby } from "./lobby-manager";
+import { addClient, deleteClient, getClient, getClientById, setCurrentLobby } from './client-manager';
+import { createLobby, leaveLobby } from './lobby-manager';
+import { events } from './utils/listeners/index';
 
 const app = express();
 
@@ -16,44 +17,7 @@ const io = new Server(server, {
 });
 
 io.on('connection', (socket: Socket) => {
-  try {
-    socket.on('login', ({ username }: { username: string }) => {
-      addClient(socket, username);
-
-      const lobby = createLobby(socket);
-
-      setCurrentLobby(socket, lobby.getId())
-
-      console.log(`Created lobby for ${username} (${socket.id}) with id ${lobby.getId()}`);
-
-      setTimeout(() => {
-        console.log(`Lobby (${lobby.getId()}) members: ${lobby.getPlayers()}`);
-      }, 1000);
-
-      socket.emit("setLobby", {
-        lobbyId: lobby.getId(),
-        players: lobby.getPlayers().map(p => ({
-          ...getClientById(p),
-          socket: undefined
-        }))
-      })
-    });
-
-    socket.on("disconnect", () => {
-      const client = getClient(socket);
-
-      if (client.currentLobby) {
-        leaveLobby(socket, client.currentLobby);
-
-        console.log(`Deleted lobby ${client.currentLobby} for user ${socket.id}`)
-      }
-
-      deleteClient(socket);
-      console.log(`Disconnected user ${socket.id}`)
-    })
-
-    socket.on('error', err => {
-      console.log(err);
-    })
-  } catch (e) {}
+  events.forEach(e => {
+    socket.emit(e.eventName, async (data: any) => e._handle(socket, data));
+  });
 });

@@ -1,0 +1,10 @@
+export enum SocketEvents {
+  LOBBY_JOIN = 'lobby_join',
+  LOBBY_LEAVE = 'lobby_leave',
+  LOBBY_SEND_MESSAGE = 'lobby_send_message',
+  LOBBY_ON_TYPE = 'lobby_on_type',
+  QUEUE_JOIN = 'queue_join',
+  GAME_START = 'game_start',
+  GAME_END = 'game_end',
+  ERROR = 'error',
+}

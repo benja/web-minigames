@@ -1,24 +1,29 @@
-import React, { useState } from 'react';
-import { useGameActions } from '@wmg/common';
+import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
-import { useContext } from 'react';
+import { Container } from '../ui/components/layouts';
+import { useSocketActions } from '../utils/socket-actions';
 import { StoreContext } from '../utils/store';
-import { Container } from "../ui/components/layouts";
 
 export default function Index() {
   const [username, setUsername] = useState('');
-  const { login } = useGameActions();
-  const store = useContext(StoreContext);
+  const { dispatch } = useContext(StoreContext);
+  const { claimUsername, createLobby } = useSocketActions();
 
-  const onLogin = () => {
-    login(username);
+  const onConnect = () => {
+    claimUsername(username);
+    createLobby();
+    dispatch(o => ({
+      ...o,
+      account: { username },
+    }));
+    localStorage?.setItem('username', username);
   };
 
   return (
     <Container>
       <label htmlFor="username">Enter your username</label>
       <Input id="username" name="username" type="text" onChange={e => setUsername(e.target.value)} />
-      <Button onClick={onLogin}>Join</Button>
+      <Button onClick={onConnect}>Join</Button>
     </Container>
   );
 }

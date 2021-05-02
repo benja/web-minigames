@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useContext } from 'react';
 import { AppProps } from 'next/app';
 import { NextComponentType, NextPageContext } from 'next';
 import { createGlobalStyle } from 'styled-components';
-import { StoreContext, IDefaultStore } from '../utils/store';
+import { StoreContext, DefaultStore } from '../utils/store';
+import { useRouter } from 'next/router';
+import { useSocketActions } from '../utils/socket-actions';
 
 interface MyAppProps extends AppProps {
   Component: {
@@ -14,16 +16,44 @@ interface MyAppProps extends AppProps {
 
 export default function App({ Component, pageProps }: MyAppProps) {
   const Layout = Component.Layout || React.Fragment;
-  const [storeContext, setStoreContext] = useState<IDefaultStore>({})
+  const [storeContext, setStoreContext] = useState<DefaultStore>({});
 
   return (
     <StoreContext.Provider value={{ state: storeContext, dispatch: setStoreContext }}>
+      <AppWrapper />
       <Layout>
         <GlobalStyles />
         <Component {...pageProps} />
       </Layout>
     </StoreContext.Provider>
   );
+}
+
+function AppWrapper() {
+  const { state, dispatch } = useContext(StoreContext);
+  const { claimUsername, createLobby } = useSocketActions();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (state.lobby?.id) {
+      router.push(`/lobby?id=${state.lobby.id}`);
+    }
+  }, [state.lobby]);
+
+  useEffect(() => {
+    const usernameFromLocalStorage = localStorage.getItem('username');
+    if (usernameFromLocalStorage) {
+      dispatch(o => ({
+        ...o,
+        account: { username: usernameFromLocalStorage },
+      }));
+      claimUsername(usernameFromLocalStorage);
+    } else {
+      router.push('/');
+    }
+  }, []);
+
+  return null;
 }
 
 // Reset default browser styling

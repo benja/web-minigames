@@ -1,13 +1,14 @@
-import { createContext, Dispatch, SetStateAction } from "react";
-import { Lobby, User } from "@wmg/shared";
+import { createContext, Dispatch, SetStateAction } from 'react';
+import { Lobby, User } from '@wmg/shared';
 
-export interface IDefaultStore {
+export interface DefaultStore {
   socket?: SocketIOClient.Socket;
   account?: User;
   lobby?: Lobby;
 }
-interface IStoreContext {
-  state: IDefaultStore;
-  dispatch: Dispatch<SetStateAction<IDefaultStore>>;
+
+interface StoreContext {
+  state: DefaultStore;
+  dispatch: Dispatch<SetStateAction<DefaultStore>>;
 }
-export const StoreContext = createContext<IStoreContext>({} as IStoreContext);
+export const StoreContext = createContext<StoreContext>({} as StoreContext);
