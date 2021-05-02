@@ -3,6 +3,13 @@ import { Lobby } from './utils/lobby';
 
 const lobbies: Map<string, Lobby> = new Map();
 
+export function getLobbyById(id: string): Lobby {
+  if (!lobbies.has(id)) {
+    throw new Error('No lobby exists with this id.');
+  }
+  return lobbies.get(id)!;
+}
+
 export function createLobby(socket: Socket): Lobby {
   const lobby = new Lobby();
   if (lobbies.has(lobby.getId())) {

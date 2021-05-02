@@ -1,4 +1,6 @@
 export enum SocketEvents {
+  SET_USERNAME = 'set_username',
+  LOBBY_CREATE = 'lobby_create',
   LOBBY_JOIN = 'lobby_join',
   LOBBY_LEAVE = 'lobby_leave',
   LOBBY_SEND_MESSAGE = 'lobby_send_message',

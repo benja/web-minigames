@@ -1,15 +1,24 @@
 import { Socket } from 'socket.io';
 
 interface SocketUser {
-  username: string;
+  username?: string;
   socket: Socket;
   currentLobby?: string;
 }
 const clients: Map<string, SocketUser> = new Map();
 
-export function addClient(socket: Socket, username: string): void {
+export function addClient(socket: Socket): void {
   if (hasClient(socket)) {
     throw new Error('User already exists in the cluster.');
+  }
+  clients.set(socket.id, {
+    socket,
+  });
+}
+
+export function setClientUsername(socket: Socket, username: string): void {
+  if (!hasClient(socket)) {
+    throw new Error('User does not exists in the cluster.');
   }
   clients.set(socket.id, {
     username,

@@ -1,5 +1,7 @@
+export * from './utils/socket-events';
+
 export interface User {
-  image: string;
+  image?: string;
   username: string;
 }
 
@@ -10,6 +12,6 @@ export interface Game {
 }
 
 export interface Lobby {
-  lobbyId: string;
+  id: string;
   players: User[];
 }

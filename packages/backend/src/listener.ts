@@ -1,6 +1,5 @@
 import { Socket } from 'socket.io';
-import { SocketEvents } from './socket-events';
-import { WmgError } from './error';
+import { SocketEvents } from '@wmg/shared';
 
 export abstract class Listener {
   public readonly eventName: SocketEvents;
@@ -9,14 +8,12 @@ export abstract class Listener {
     this.eventName = eventName;
   }
 
-  public _handle(socket: Socket, data?: any) {
+  public async _handle(socket: Socket, data?: any) {
     try {
-      this.handle(socket, data);
+      await this.handle(socket, data);
     } catch (err) {
-      console.log(err);
-      if (err instanceof WmgError) {
-        socket.emit(SocketEvents.ERROR, err.message);
-      }
+      console.log(`Emitted error: ${err.message}`);
+      socket.emit(SocketEvents.ERROR, err.message);
     }
   }
 
