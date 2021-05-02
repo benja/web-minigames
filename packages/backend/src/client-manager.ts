@@ -7,7 +7,7 @@ interface SocketUser {
 }
 const clients: Map<string, SocketUser> = new Map();
 
-export function addClient(socket: Socket, username: string) {
+export function addClient(socket: Socket, username: string): void {
   if (hasClient(socket)) {
     throw new Error('User already exists in the cluster.');
   }
@@ -31,22 +31,26 @@ export function getClient(socket: Socket): SocketUser {
   return clients.get(socket.id)!;
 }
 
-export function deleteClient(socket: Socket) {
+export function deleteClient(socket: Socket): void {
   if (!hasClient(socket)) {
     throw new Error('No client exists with that socket identifier.');
   }
   clients.delete(socket.id);
 }
 
-export function hasClient(socket: Socket) {
+export function hasClient(socket: Socket): boolean {
   return clients.has(socket.id);
 }
 
-export function setCurrentLobby(socket: Socket, lobbyId: string | undefined) {
+export function setCurrentLobby(socket: Socket, lobbyId: string | undefined): void {
   if (hasClient(socket)) {
     clients.set(socket.id, {
       ...clients.get(socket.id)!,
       currentLobby: lobbyId,
     });
   }
+  clients.set(socket.id, {
+    ...clients.get(socket.id)!,
+    currentLobby: lobbyId,
+  });
 }
