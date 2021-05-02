@@ -1,45 +1,45 @@
-import React, { useContext, useState } from 'react';
+import { useRouter } from 'next/router';
+import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Container } from '../ui/components/layouts';
+import { Column, Container, Row } from '../ui/components/layouts';
 import { StoreContext } from '../utils/store';
+import { Game, Lobby } from '@wmg/shared';
+import { GameListing, UserListing } from '../ui/components/organisms';
+
+const games: Game[] = [
+  {
+    name: 'This is a game name',
+    description: 'This is a description of a game pepehands',
+    image: 'https://avatars.githubusercontent.com/u/16708653?s=400&u=b96a5b2534bdd50476bddf50d0290985b5888687&v=4',
+  },
+];
 
 export default function Index() {
-  const [username, setUsername] = useState('');
-  const { state, dispatch } = useContext(StoreContext);
+  const router = useRouter();
 
-  const onConnect = () => {
-    state.socket.updateUsername(username);
-    state.socket.createLobby();
-    dispatch(o => ({
-      ...o,
-      account: { username },
-    }));
-    localStorage?.setItem('username', username);
-  };
+  const { state } = useContext(StoreContext);
+  const { lobbyId } = router.query;
+
+  useEffect(() => {
+    if (!state.socket || state.lobby) return;
+
+    if (lobbyId && typeof lobbyId === 'string') {
+      console.log('Join lobby', lobbyId);
+      state.socket.joinLobby(lobbyId);
+    }
+  }, [lobbyId, state.lobby, state.socket]);
 
   return (
     <Container>
-      <label htmlFor="username">Enter your username</label>
-      <Input id="username" name="username" type="text" onChange={e => setUsername(e.target.value)} />
-      <Button onClick={onConnect} disabled={username.length === 0}>
-        Join
-      </Button>
+      <Row>
+        <Column widthFlex={1}>
+          <UserListing users={state.lobby?.players || []} />
+          {!state.lobby?.id && <button onClick={() => state.socket?.createLobby()}>Create party</button>}
+        </Column>
+        <Column widthFlex={2}>
+          <GameListing games={games} />
+        </Column>
+      </Row>
     </Container>
   );
 }
-
-const Input = styled.input`
-  padding: 10px;
-  margin-top: 5px;
-`;
-
-const Button = styled.button`
-  border: none;
-  background: #52b788;
-  color: white;
-  font-size: 15px;
-  font-weight: bold;
-  padding: 10px;
-  margin-top: 15px;
-  cursor: pointer;
-`;

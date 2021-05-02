@@ -8,19 +8,16 @@ import { NextRouter, useRouter } from 'next/router';
 export class Sockets {
   private readonly socket: SocketIOClient.Socket = null;
   private readonly dispatch: Dispatch<SetStateAction<DefaultStore>>;
-  private readonly router: NextRouter;
 
-  constructor(dispatch: Dispatch<SetStateAction<DefaultStore>>) {
+  constructor(dispatch: Dispatch<SetStateAction<DefaultStore>>, router?: NextRouter) {
     this.dispatch = dispatch;
     this.socket = io('http://localhost:8080');
-    this.router = useRouter();
     this.initialiseMethods();
   }
 
   private initialiseMethods() {
     this.socket.on(SocketEvents.ERROR, (message: string) => {
       toast.error(message);
-      this.router.push('/');
     });
 
     this.socket.on(SocketEvents.LOBBY_JOIN, (data: { lobbyId: string; players: { username: string }[] }) => {
@@ -42,13 +39,29 @@ export class Sockets {
         },
       }));
     });
+
+    this.socket.on(SocketEvents.UPDATE_USERNAME, (data: { lobbyId: string; players: { username: string }[] }) => {
+      this.dispatch(o => ({
+        ...o,
+        lobby: {
+          id: data.lobbyId,
+          players: data.players,
+        },
+      }));
+    });
   }
 
   public updateUsername(username: string) {
     this.socket.emit(SocketEvents.UPDATE_USERNAME, username);
+    this.dispatch(o => ({
+      ...o,
+      account: { username },
+    }));
+    localStorage?.setItem('username', username);
   }
 
   public createLobby() {
+    toast.success('Successfully created lobby');
     this.socket.emit(SocketEvents.LOBBY_CREATE);
   }
 
@@ -58,6 +71,10 @@ export class Sockets {
 
   public leaveLobby() {
     this.socket.emit(SocketEvents.LOBBY_LEAVE);
+    this.dispatch(o => ({
+      ...o,
+      lobby: undefined,
+    }));
   }
 
   public isConnected(): boolean {

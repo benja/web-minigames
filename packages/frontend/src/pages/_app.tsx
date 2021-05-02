@@ -6,6 +6,7 @@ import { StoreContext, DefaultStore } from '../utils/store';
 import { useRouter } from 'next/router';
 import { Sockets } from '../socket';
 import { Toaster } from 'react-hot-toast';
+import { uniqueNamesGenerator, adjectives, colors } from 'unique-names-generator';
 
 interface MyAppProps extends AppProps {
   Component: {
@@ -23,7 +24,7 @@ export default function App({ Component, pageProps }: MyAppProps) {
     <StoreContext.Provider value={{ state: storeContext, dispatch: setStoreContext }}>
       <Layout>
         <Toaster />
-        <AppWrapper />
+        <SocketWrapper />
         <GlobalStyles />
         <Component {...pageProps} />
       </Layout>
@@ -31,19 +32,19 @@ export default function App({ Component, pageProps }: MyAppProps) {
   );
 }
 
-function AppWrapper() {
+function SocketWrapper() {
   const { state, dispatch } = useContext(StoreContext);
   const router = useRouter();
 
   useEffect(() => {
     if (state.lobby?.id) {
-      return void router.push(`/lobby?id=${state.lobby.id}`);
+      return void router.push(`/?lobbyId=${state.lobby.id}`);
     }
   }, [state.lobby]);
 
   useEffect(() => {
     try {
-      const sockets = new Sockets(dispatch);
+      const sockets = new Sockets(dispatch, router);
 
       dispatch(o => ({
         ...o,
@@ -57,20 +58,28 @@ function AppWrapper() {
   }, []);
 
   useEffect(() => {
-    if (state.socket) {
-      const usernameFromLocalStorage = localStorage.getItem('username');
-      if (usernameFromLocalStorage) {
-        state.socket.updateUsername(usernameFromLocalStorage);
-        dispatch(o => ({
-          ...o,
-          account: { username: usernameFromLocalStorage },
-        }));
-        if (router.route === '/') {
-          state.socket.createLobby();
-        }
-      } else {
-        return void router.push('/');
-      }
+    if (!state.socket) return;
+
+    const usernameFromLocalStorage = localStorage.getItem('username');
+
+    if (usernameFromLocalStorage) {
+      state.socket.updateUsername(usernameFromLocalStorage);
+      dispatch(o => ({
+        ...o,
+        account: { username: usernameFromLocalStorage },
+      }));
+    } else {
+      const username = uniqueNamesGenerator({
+        dictionaries: [adjectives, colors],
+        length: 2,
+        style: 'capital',
+        separator: '',
+      });
+      state.socket.updateUsername(username);
+      dispatch(o => ({
+        ...o,
+        account: { username },
+      }));
     }
   }, [state.socket]);
 

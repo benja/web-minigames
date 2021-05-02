@@ -1,6 +1,6 @@
 export enum SocketEvents {
-  DISCONNECTING = "disconnecting",
-  SET_USERNAME = 'set_username',
+  DISCONNECTING = 'disconnecting',
+  UPDATE_USERNAME = 'update_username',
   LOBBY_CREATE = 'lobby_create',
   LOBBY_JOIN = 'lobby_join',
   LOBBY_LEAVE = 'lobby_leave',

@@ -2,24 +2,52 @@ import styled from 'styled-components';
 import { Text } from '../../atoms';
 import { User } from '@wmg/shared';
 import Avatar from 'react-avatar';
+import { useState, useContext } from 'react';
+import { StoreContext } from '../../../../utils/store';
 
 interface userEntryProps extends User {}
 export function UserEntry(props: userEntryProps) {
+  const { state } = useContext(StoreContext);
+
+  const [username, setUsername] = useState(state.account.username);
+  const [showInput, setShowInput] = useState(false);
+
   return (
-    <StyledUser>
-      <Avatar name={props.username.split(/(?=[A-Z])/).join(' ')} size="35" round="5px" />
-      <Text>{props.username}</Text>
-    </StyledUser>
+    <Container>
+      <Avatar
+        name={
+          props.username === state.account.username
+            ? username.split(/(?=[A-Z])/).join(' ')
+            : props.username.split(/(?=[A-Z])/).join(' ')
+        }
+        size="35"
+        round="5px"
+      />
+
+      {showInput ? (
+        <input value={username} onChange={e => setUsername(e.target.value)} />
+      ) : (
+        <Text>{props.username === state.account.username ? username : props.username}</Text>
+      )}
+      {props.username === state.account.username && (
+        <EditButton
+          onClick={() => {
+            if (!showInput) return setShowInput(true);
+            state.socket.updateUsername(username);
+            setShowInput(false);
+          }}
+        >
+          {showInput ? 'Save' : 'Edit'}
+        </EditButton>
+      )}
+    </Container>
   );
 }
 
-const StyledUser = styled.div`
+const Container = styled.div`
   display: flex;
+  align-items: center;
   flex-direction: row;
-
-  width: 100%;
-  height: fit-content;
-
   margin-bottom: 10px;
 
   > div:first-child {
@@ -31,4 +59,10 @@ const StyledUser = styled.div`
   }
 
   overflow-x: hidden;
+`;
+
+const EditButton = styled.button`
+  background: #dedede;
+  padding: 2px 7px;
+  margin-left: 5px;
 `;
