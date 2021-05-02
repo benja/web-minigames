@@ -28,6 +28,6 @@ export function leaveLobby(socket: Socket, lobbyId: string) {
       lobbies.delete(socket.id);
     }
   } else {
-
+    throw new Error("No lobby exists with this id.")
   }
 }

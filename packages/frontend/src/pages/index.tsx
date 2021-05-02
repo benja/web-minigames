@@ -3,6 +3,7 @@ import { useGameActions } from '@wmg/common';
 import styled from 'styled-components';
 import { useContext } from 'react';
 import { StoreContext } from '../utils/store';
+import { Container } from "../ui/components/layouts";
 
 export default function Index() {
   const [username, setUsername] = useState('');
@@ -21,16 +22,6 @@ export default function Index() {
     </Container>
   );
 }
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin: 0 auto;
-  width: 500px;
-  background: #dedede;
-  padding: 2rem;
-`;
 
 const Input = styled.input`
   padding: 10px;
