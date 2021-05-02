@@ -5,19 +5,13 @@ import { StoreContext } from '../utils/store';
 import { Game } from '@wmg/shared';
 import { GameListing, UserListing } from '../ui/components/organisms';
 import { toast } from 'react-hot-toast';
-
-const games: Game[] = [
-  {
-    name: 'This is a game name',
-    description: 'This is a description of a game pepehands',
-    image: 'https://avatars.githubusercontent.com/u/16708653?s=400&u=b96a5b2534bdd50476bddf50d0290985b5888687&v=4',
-  },
-];
+import { useGames } from '../hooks/useGames';
 
 export default function Index() {
   const router = useRouter();
-
   const [copied, setCopied] = useState(false);
+
+  const { data: games } = useGames();
   const { state } = useContext(StoreContext);
   const { lobbyId } = router.query;
 
