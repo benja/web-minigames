@@ -4,7 +4,8 @@ import { NextComponentType, NextPageContext } from 'next';
 import { createGlobalStyle } from 'styled-components';
 import { StoreContext, DefaultStore } from '../utils/store';
 import { useRouter } from 'next/router';
-import { Sockets } from "../socket";
+import { Sockets } from '../socket';
+import { Toaster } from 'react-hot-toast';
 
 interface MyAppProps extends AppProps {
   Component: {
@@ -20,8 +21,9 @@ export default function App({ Component, pageProps }: MyAppProps) {
 
   return (
     <StoreContext.Provider value={{ state: storeContext, dispatch: setStoreContext }}>
-      <AppWrapper />
       <Layout>
+        <Toaster />
+        <AppWrapper />
         <GlobalStyles />
         <Component {...pageProps} />
       </Layout>
@@ -45,11 +47,11 @@ function AppWrapper() {
 
       dispatch(o => ({
         ...o,
-        socket: sockets
-      }))
+        socket: sockets,
+      }));
 
       return () => {
-        sockets.isConnected() && sockets.disconnect()
+        sockets.isConnected() && sockets.disconnect();
       };
     } catch (e) {}
   }, []);
@@ -58,19 +60,19 @@ function AppWrapper() {
     if (state.socket) {
       const usernameFromLocalStorage = localStorage.getItem('username');
       if (usernameFromLocalStorage) {
-        state.socket.claimUsername(usernameFromLocalStorage);
+        state.socket.updateUsername(usernameFromLocalStorage);
         dispatch(o => ({
           ...o,
           account: { username: usernameFromLocalStorage },
         }));
-        if (router.route === "/") {
-          state.socket.createLobby()
+        if (router.route === '/') {
+          state.socket.createLobby();
         }
       } else {
         return void router.push('/');
       }
     }
-  }, [state.socket])
+  }, [state.socket]);
 
   return null;
 }

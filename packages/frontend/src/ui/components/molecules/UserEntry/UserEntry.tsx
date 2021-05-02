@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-// import { Avatar } from "../../atoms/Avatar";
 import { Text } from '../../atoms';
 import { User } from '@wmg/shared';
 import Avatar from 'react-avatar';
@@ -8,7 +7,6 @@ interface userEntryProps extends User {}
 export function UserEntry(props: userEntryProps) {
   return (
     <StyledUser>
-      {/* <Avatar image={props.image} /> */}
       <Avatar name={props.username.split(/(?=[A-Z])/).join(' ')} size="35" round="5px" />
       <Text>{props.username}</Text>
     </StyledUser>

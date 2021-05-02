@@ -1,21 +1,26 @@
-import io from "socket.io-client";
-import { Dispatch, SetStateAction, useContext } from "react";
-import { DefaultStore, StoreContext } from "./utils/store";
-import { SocketEvents } from "@wmg/shared";
+import io from 'socket.io-client';
+import { Dispatch, SetStateAction } from 'react';
+import { DefaultStore } from './utils/store';
+import { SocketEvents } from '@wmg/shared';
+import toast from 'react-hot-toast';
+import { NextRouter, useRouter } from 'next/router';
 
 export class Sockets {
   private readonly socket: SocketIOClient.Socket = null;
   private readonly dispatch: Dispatch<SetStateAction<DefaultStore>>;
+  private readonly router: NextRouter;
 
   constructor(dispatch: Dispatch<SetStateAction<DefaultStore>>) {
     this.dispatch = dispatch;
-    this.socket = io("http://localhost:8080");
+    this.socket = io('http://localhost:8080');
+    this.router = useRouter();
     this.initialiseMethods();
   }
 
   private initialiseMethods() {
     this.socket.on(SocketEvents.ERROR, (message: string) => {
-      alert(message);
+      toast.error(message);
+      this.router.push('/');
     });
 
     this.socket.on(SocketEvents.LOBBY_JOIN, (data: { lobbyId: string; players: { username: string }[] }) => {
@@ -23,8 +28,8 @@ export class Sockets {
         ...o,
         lobby: {
           id: data.lobbyId,
-          players: data.players
-        }
+          players: data.players,
+        },
       }));
     });
 
@@ -33,14 +38,14 @@ export class Sockets {
         ...o,
         lobby: {
           ...o.lobby,
-          players: (o.lobby.players ?? []).filter(p => p.username !== username)
-        }
+          players: (o.lobby.players ?? []).filter(p => p.username !== username),
+        },
       }));
     });
   }
 
-  public claimUsername(username: string) {
-    this.socket.emit(SocketEvents.SET_USERNAME, username);
+  public updateUsername(username: string) {
+    this.socket.emit(SocketEvents.UPDATE_USERNAME, username);
   }
 
   public createLobby() {

@@ -1,6 +1,6 @@
 import { createContext, Dispatch, SetStateAction } from 'react';
 import { Lobby, User } from '@wmg/shared';
-import { Sockets } from "../socket";
+import { Sockets } from '../socket';
 
 export interface DefaultStore {
   socket?: Sockets;

@@ -8,7 +8,7 @@ export default function Index() {
   const { state, dispatch } = useContext(StoreContext);
 
   const onConnect = () => {
-    state.socket.claimUsername(username);
+    state.socket.updateUsername(username);
     state.socket.createLobby();
     dispatch(o => ({
       ...o,
@@ -21,7 +21,9 @@ export default function Index() {
     <Container>
       <label htmlFor="username">Enter your username</label>
       <Input id="username" name="username" type="text" onChange={e => setUsername(e.target.value)} />
-      <Button onClick={onConnect} disabled={username.length === 0}>Join</Button>
+      <Button onClick={onConnect} disabled={username.length === 0}>
+        Join
+      </Button>
     </Container>
   );
 }
