@@ -1,6 +1,6 @@
 import { SocketEvents } from '@wmg/shared';
 import { Socket } from 'socket.io';
-import { getClientById, setCurrentLobby } from '../client-manager';
+import { getClient, getClientById, setClientUsername, setCurrentLobby } from '../client-manager';
 import { getLobbyById, deleteLobby, createLobby } from '../lobby-manager';
 
 export default class LobbyHelper {
@@ -55,9 +55,32 @@ export default class LobbyHelper {
 
     socket.emit(SocketEvents.LOBBY_JOIN, {
       lobbyId: lobby.getId(),
-      players: [{
-        username: client.username
-      }]
+      players: [
+        {
+          username: client.username,
+        },
+      ],
+    });
+  }
+
+  public static updateUsername(socket: Socket, username: string) {
+    setClientUsername(socket, username);
+
+    const client = getClientById(socket.id);
+
+    if (!client.currentLobby) return;
+
+    const lobby = getLobbyById(client.currentLobby);
+
+    lobby.getPlayers().forEach(p => {
+      getClientById(p).socket.emit(SocketEvents.UPDATE_USERNAME, {
+        lobbyId: lobby.getId(),
+        players: lobby.getPlayers().map(p => ({
+          ...getClientById(p),
+          socket: undefined,
+          currentLobby: undefined,
+        })),
+      });
     });
   }
 }
