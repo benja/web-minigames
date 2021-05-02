@@ -1,13 +1,13 @@
 export class Lobby {
   private readonly id: string;
-  private readonly players: string[];
+  private players: string[];
 
   constructor() {
-    this.id = this.generateId();
+    this.id = Lobby.generateId();
     this.players = [];
   }
 
-  private generateId(): string {
+  private static generateId(): string {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const result = [];
 
@@ -16,6 +16,14 @@ export class Lobby {
     }
 
     return result.join('');
+  }
+
+  public kickPlayer(id: string): boolean {
+    if (!this.players.includes(id)) {
+      throw new Error("Player does not exist in this lobby.")
+    }
+    this.players = this.players.filter(p => p !== id);
+    return this.players.length === 0;
   }
 
   public getId(): string {
