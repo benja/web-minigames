@@ -17,6 +17,13 @@ export function addClient(socket: Socket, username: string) {
   })
 }
 
+export function getClientById(id: string): SocketUser {
+  if (!clients.has(id)) {
+    throw new Error("Client does not exist.")
+  }
+  return clients.get(id)!;
+}
+
 export function getClient(socket: Socket): SocketUser {
   if (!hasClient(socket)) {
     throw new Error("Client does not exist.")
