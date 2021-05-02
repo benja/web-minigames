@@ -1,17 +1,15 @@
 import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import { Container } from '../ui/components/layouts';
-import { useSocketActions } from '../utils/socket-actions';
 import { StoreContext } from '../utils/store';
 
 export default function Index() {
   const [username, setUsername] = useState('');
-  const { dispatch } = useContext(StoreContext);
-  const { claimUsername, createLobby } = useSocketActions();
+  const { state, dispatch } = useContext(StoreContext);
 
   const onConnect = () => {
-    claimUsername(username);
-    createLobby();
+    state.socket.claimUsername(username);
+    state.socket.createLobby();
     dispatch(o => ({
       ...o,
       account: { username },
@@ -23,7 +21,7 @@ export default function Index() {
     <Container>
       <label htmlFor="username">Enter your username</label>
       <Input id="username" name="username" type="text" onChange={e => setUsername(e.target.value)} />
-      <Button onClick={onConnect}>Join</Button>
+      <Button onClick={onConnect} disabled={username.length === 0}>Join</Button>
     </Container>
   );
 }

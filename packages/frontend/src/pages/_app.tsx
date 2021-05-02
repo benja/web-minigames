@@ -4,7 +4,7 @@ import { NextComponentType, NextPageContext } from 'next';
 import { createGlobalStyle } from 'styled-components';
 import { StoreContext, DefaultStore } from '../utils/store';
 import { useRouter } from 'next/router';
-import { useSocketActions } from '../utils/socket-actions';
+import { Sockets } from "../socket";
 
 interface MyAppProps extends AppProps {
   Component: {
@@ -31,27 +31,46 @@ export default function App({ Component, pageProps }: MyAppProps) {
 
 function AppWrapper() {
   const { state, dispatch } = useContext(StoreContext);
-  const { claimUsername, createLobby } = useSocketActions();
   const router = useRouter();
 
   useEffect(() => {
     if (state.lobby?.id) {
-      router.push(`/lobby?id=${state.lobby.id}`);
+      return void router.push(`/lobby?id=${state.lobby.id}`);
     }
   }, [state.lobby]);
 
   useEffect(() => {
-    const usernameFromLocalStorage = localStorage.getItem('username');
-    if (usernameFromLocalStorage) {
+    try {
+      const sockets = new Sockets(dispatch);
+
       dispatch(o => ({
         ...o,
-        account: { username: usernameFromLocalStorage },
-      }));
-      claimUsername(usernameFromLocalStorage);
-    } else {
-      router.push('/');
-    }
+        socket: sockets
+      }))
+
+      return () => {
+        sockets.isConnected() && sockets.disconnect()
+      };
+    } catch (e) {}
   }, []);
+
+  useEffect(() => {
+    if (state.socket) {
+      const usernameFromLocalStorage = localStorage.getItem('username');
+      if (usernameFromLocalStorage) {
+        state.socket.claimUsername(usernameFromLocalStorage);
+        dispatch(o => ({
+          ...o,
+          account: { username: usernameFromLocalStorage },
+        }));
+        if (router.route === "/") {
+          state.socket.createLobby()
+        }
+      } else {
+        return void router.push('/');
+      }
+    }
+  }, [state.socket])
 
   return null;
 }
