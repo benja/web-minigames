@@ -15,8 +15,6 @@ const io = new Server(server, {
   },
 });
 
-const lobbies: Map<string, string[]> = new Map();
-
 io.on('connection', (socket: Socket) => {
   socket.on('login', ({ username }: { username: string }) => {
     addClient(socket, username);
@@ -30,6 +28,11 @@ io.on('connection', (socket: Socket) => {
     setTimeout(() => {
       console.log(`Lobby (${lobby.getId()}) members: ${lobby.getPlayers()}`);
     }, 1000);
+
+    socket.emit("setLobby", {
+      lobbyId: lobby.getId(),
+      players: lobby.getPlayers()
+    })
   });
 
   socket.on("disconnect", () => {

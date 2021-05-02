@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useGameActions } from '@wmg/common';
 import styled from 'styled-components';
 import { useContext } from 'react';
