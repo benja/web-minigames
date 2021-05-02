@@ -7,11 +7,12 @@ interface SocketUser {
 }
 const clients: Map<string, SocketUser> = new Map();
 
-export function addClient(socket: Socket): void {
+export function addClient(socket: Socket, username?: string): void {
   if (hasClient(socket)) {
     throw new Error('User already exists in the cluster.');
   }
   clients.set(socket.id, {
+    username,
     socket,
   });
 }
