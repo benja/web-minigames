@@ -1,6 +1,6 @@
 import { SocketEvents } from '@wmg/shared';
 import { Socket } from 'socket.io';
-import { getClient, getClientById, setClientUsername, setCurrentLobby } from '../client-manager';
+import { getClientById, setClientUsername, setCurrentLobby } from '../client-manager';
 import { getLobbyById, deleteLobby, createLobby } from '../lobby-manager';
 
 export default class LobbyHelper {

@@ -1,10 +1,10 @@
 import { useRouter } from 'next/router';
 import React, { useContext, useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { Column, Container, Row } from '../ui/components/layouts';
 import { StoreContext } from '../utils/store';
-import { Game, Lobby } from '@wmg/shared';
+import { Game } from '@wmg/shared';
 import { GameListing, UserListing } from '../ui/components/organisms';
+import { toast } from 'react-hot-toast';
 
 const games: Game[] = [
   {
@@ -17,6 +17,7 @@ const games: Game[] = [
 export default function Index() {
   const router = useRouter();
 
+  const [copied, setCopied] = useState(false);
   const { state } = useContext(StoreContext);
   const { lobbyId } = router.query;
 
@@ -34,7 +35,23 @@ export default function Index() {
       <Row>
         <Column widthFlex={1}>
           <UserListing users={state.lobby?.players || []} />
-          {!state.lobby?.id && <button onClick={() => state.socket?.createLobby()}>Create party</button>}
+          {!state.lobby?.id && <button onClick={() => state.socket?.createLobby()}>Create lobby</button>}
+          {state.lobby?.id && (
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(`http://localhost:3000/?lobbyId=${state.lobby.id}`);
+                toast('Copied lobby link', {
+                  icon: '🎉',
+                });
+                setCopied(true);
+                setTimeout(() => {
+                  setCopied(false);
+                }, 1000);
+              }}
+            >
+              {copied ? 'Copied' : 'Copy lobby link'}
+            </button>
+          )}
         </Column>
         <Column widthFlex={2}>
           <GameListing games={games} />
