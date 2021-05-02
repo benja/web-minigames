@@ -11,7 +11,7 @@ export default function Index() {
   const store = useContext(StoreContext);
 
   const onLogin = () => {
-    login({ username });
+    login(username);
   };
 
   return (

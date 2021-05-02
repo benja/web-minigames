@@ -15,9 +15,12 @@ export function Container(props: ContainerProps) {
 const StyledContainer = styled.div`
   display: flex;
   flex-direction: column;
+  
   justify-content: center;
+  
   margin: 0 auto;
-  width: 500px;
-  background: #dedede;
-  padding: 2rem;
+  
+  width: 70%;
+  
+  padding: 2rem 0;
 `;

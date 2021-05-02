@@ -1,14 +1,13 @@
-import React from 'react';
+import { createContext, Dispatch, SetStateAction } from "react";
+import { Lobby, User } from "@wmg/shared";
 
-export const defaultStore = {
-  account: {
-    socket: {} as SocketIOClient.Socket,
-    username: null,
-  },
-  lobby: {
-    id: null,
-    players: [],
-  },
-};
-
-export const StoreContext = React.createContext(defaultStore);
+export interface IDefaultStore {
+  socket?: SocketIOClient.Socket;
+  account?: User;
+  lobby?: Lobby;
+}
+interface IStoreContext {
+  state: IDefaultStore;
+  dispatch: Dispatch<SetStateAction<IDefaultStore>>;
+}
+export const StoreContext = createContext<IStoreContext>({} as IStoreContext);

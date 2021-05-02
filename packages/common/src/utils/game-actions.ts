@@ -13,6 +13,7 @@ export function useGameActions() {
   }, [socketRef]);
 
   return {
-    login: (data: { username: string }) => socketRef.current?.emit('login', data),
+    login: (username: string) => socketRef.current?.emit('login', { username }),
+    joinLobby: (lobbyId: string) => socketRef.current?.emit('joinLobby', { lobbyId })
   };
 }

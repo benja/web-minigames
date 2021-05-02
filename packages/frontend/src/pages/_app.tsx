@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from "react";
 import { AppProps } from 'next/app';
 import { NextComponentType, NextPageContext } from 'next';
 import { createGlobalStyle } from 'styled-components';
-import { defaultStore, StoreContext } from '../utils/store';
+import { StoreContext, IDefaultStore } from '../utils/store';
 
 interface MyAppProps extends AppProps {
   Component: {
@@ -14,9 +14,10 @@ interface MyAppProps extends AppProps {
 
 export default function App({ Component, pageProps }: MyAppProps) {
   const Layout = Component.Layout || React.Fragment;
+  const [storeContext, setStoreContext] = useState<IDefaultStore>({})
 
   return (
-    <StoreContext.Provider value={defaultStore}>
+    <StoreContext.Provider value={{ state: storeContext, dispatch: setStoreContext }}>
       <Layout>
         <GlobalStyles />
         <Component {...pageProps} />
