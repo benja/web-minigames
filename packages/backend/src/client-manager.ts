@@ -1,4 +1,4 @@
-import { Socket } from "socket.io";
+import { Socket } from 'socket.io';
 
 interface SocketUser {
   username: string;
@@ -8,32 +8,32 @@ interface SocketUser {
 const clients: Map<string, SocketUser> = new Map();
 
 export function addClient(socket: Socket, username: string): void {
-  if (clients.has(socket.id)) {
-    throw new Error("User already exists in the cluster.")
+  if (hasClient(socket)) {
+    throw new Error('User already exists in the cluster.');
   }
   clients.set(socket.id, {
     username,
-    socket
-  })
+    socket,
+  });
 }
 
 export function getClientById(id: string): SocketUser {
   if (!clients.has(id)) {
-    throw new Error("Client does not exist.")
+    throw new Error('Client does not exist.');
   }
   return clients.get(id)!;
 }
 
 export function getClient(socket: Socket): SocketUser {
   if (!hasClient(socket)) {
-    throw new Error("Client does not exist.")
+    throw new Error('Client does not exist.');
   }
   return clients.get(socket.id)!;
 }
 
 export function deleteClient(socket: Socket): void {
-  if (!clients.has(socket.id)) {
-    throw new Error("No client exists with that socket identifier.")
+  if (!hasClient(socket)) {
+    throw new Error('No client exists with that socket identifier.');
   }
   clients.delete(socket.id);
 }
@@ -43,11 +43,14 @@ export function hasClient(socket: Socket): boolean {
 }
 
 export function setCurrentLobby(socket: Socket, lobbyId: string | undefined): void {
-  if (!hasClient(socket)) {
-    throw new Error("Client does not exist.")
+  if (hasClient(socket)) {
+    clients.set(socket.id, {
+      ...clients.get(socket.id)!,
+      currentLobby: lobbyId,
+    });
   }
   clients.set(socket.id, {
     ...clients.get(socket.id)!,
-    currentLobby: lobbyId
-  })
+    currentLobby: lobbyId,
+  });
 }
