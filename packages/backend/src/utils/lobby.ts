@@ -20,7 +20,7 @@ export class Lobby {
 
   public kickPlayer(id: string): boolean {
     if (!this.players.includes(id)) {
-      throw new Error("Player does not exist in this lobby.")
+      throw new Error('Player does not exist in this lobby.');
     }
     this.players = this.players.filter(p => p !== id);
     return this.players.length === 0;
