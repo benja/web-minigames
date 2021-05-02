@@ -5,6 +5,7 @@ import { GameListing } from '../ui/components/organisms';
 import { useRouter } from 'next/router';
 import { useContext, useEffect } from 'react';
 import { StoreContext } from '../utils/store';
+import { useGames } from "../hooks/useGames";
 
 const users: User[] = [
   {
@@ -17,17 +18,10 @@ const users: User[] = [
   },
 ];
 
-const games: Game[] = [
-  {
-    name: 'This is a game name',
-    description: 'This is a description of a game pepehands',
-    image: 'https://avatars.githubusercontent.com/u/16708653?s=400&u=b96a5b2534bdd50476bddf50d0290985b5888687&v=4',
-  },
-];
-
 export default function Lobby() {
   const router = useRouter();
   const { state } = useContext(StoreContext);
+  const { data: games } = useGames();
 
   const { id } = router.query;
 

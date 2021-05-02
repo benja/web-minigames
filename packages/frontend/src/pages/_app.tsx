@@ -5,6 +5,8 @@ import { createGlobalStyle } from 'styled-components';
 import { StoreContext, DefaultStore } from '../utils/store';
 import { useRouter } from 'next/router';
 import { Sockets } from "../socket";
+import {SWRConfig} from 'swr';
+import { swrFetcher } from "../hooks";
 
 interface MyAppProps extends AppProps {
   Component: {
@@ -20,11 +22,13 @@ export default function App({ Component, pageProps }: MyAppProps) {
 
   return (
     <StoreContext.Provider value={{ state: storeContext, dispatch: setStoreContext }}>
-      <AppWrapper />
-      <Layout>
-        <GlobalStyles />
-        <Component {...pageProps} />
-      </Layout>
+      <SWRConfig value={{fetcher: swrFetcher}}>
+        <AppWrapper />
+        <Layout>
+          <GlobalStyles />
+          <Component {...pageProps} />
+        </Layout>
+      </SWRConfig>
     </StoreContext.Provider>
   );
 }
