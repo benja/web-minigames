@@ -72,7 +72,14 @@ export default function Index() {
               </Messages>
               <div style={{ display: 'flex', flexDirection: 'row' }}>
                 <input value={message} onChange={e => setMessage(e.target.value)} />
-                <button onClick={() => state.socket.sendMessage(message)}>send</button>
+                <button
+                  onClick={() => {
+                    state.socket.sendMessage(message);
+                    setMessage('');
+                  }}
+                >
+                  send
+                </button>
               </div>
             </>
           )}
@@ -92,6 +99,7 @@ const Messages = styled.div`
   flex-grow: 1;
   margin-top: 10px;
   padding: 0.5rem;
+  overflow-y: scroll;
 `;
 
 const Message = styled.div`
