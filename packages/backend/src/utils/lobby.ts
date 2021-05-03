@@ -1,9 +1,15 @@
+import { Game } from "@wmg/shared";
+
 export class Lobby {
   private readonly id: string;
   private players: string[];
 
+  private currentGame: Game | null;
+  private inQueue: boolean = false;
+
   constructor() {
     this.id = Lobby.generateId();
+    this.currentGame = null;
     this.players = [];
   }
 
@@ -28,6 +34,26 @@ export class Lobby {
 
   public getId(): string {
     return this.id;
+  }
+
+  public isInGame(): boolean {
+    return !!this.currentGame;
+  }
+
+  public getGame(): Game | null {
+    return this.currentGame;
+  }
+
+  public setInQueue(status: boolean): void {
+    this.inQueue = status;
+  }
+
+  public isInQueue(): boolean {
+    return this.inQueue;
+  }
+
+  public setGame(game: Game): void {
+    this.currentGame = game;
   }
 
   public getPlayers(): string[] {
