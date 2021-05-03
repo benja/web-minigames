@@ -3,15 +3,17 @@ import { Dispatch, SetStateAction } from 'react';
 import { DefaultStore } from './utils/store';
 import { SocketEvents } from '@wmg/shared';
 import toast from 'react-hot-toast';
-import { NextRouter, useRouter } from 'next/router';
+import { NextRouter } from 'next/router';
 
 export class Sockets {
   private readonly socket: SocketIOClient.Socket = null;
   private readonly dispatch: Dispatch<SetStateAction<DefaultStore>>;
+  private router: NextRouter;
 
   constructor(dispatch: Dispatch<SetStateAction<DefaultStore>>, router?: NextRouter) {
     this.dispatch = dispatch;
     this.socket = io('http://localhost:8080');
+    this.router = router;
     this.initialiseMethods();
   }
 
@@ -49,6 +51,37 @@ export class Sockets {
           players: (o.lobby.players ?? []).filter(p => p.id !== id),
         },
       }));
+    });
+
+    this.socket.on(SocketEvents.LOBBY_KICK, (id: string) => {
+      this.dispatch(o => {
+        const players = (o.lobby.players ?? []).filter(p => p.id !== id);
+
+        if (o.account.id === id) {
+          toast.error('The party leader kicked you');
+          this.router.push('/');
+
+          return {
+            ...o,
+            account: {
+              ...o.account,
+              admin: false,
+            },
+            lobby: {
+              id: null,
+              players: null,
+            },
+          };
+        }
+
+        return {
+          ...o,
+          lobby: {
+            ...o.lobby,
+            players,
+          },
+        };
+      });
     });
 
     this.socket.on(SocketEvents.UPDATE_USERNAME, (data: { lobbyId: string; players: { username: string }[] }) => {

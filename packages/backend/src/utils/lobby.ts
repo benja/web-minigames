@@ -1,4 +1,4 @@
-import { getClient, getClientById, setClientAdmin } from '../client-manager';
+import { getClient, getClientById, setClientAdmin, setCurrentLobby } from '../client-manager';
 import { getLobbyById } from '../lobby-manager';
 import { SocketEvents } from '@wmg/shared';
 export class Lobby {
@@ -30,10 +30,12 @@ export class Lobby {
       setClientAdmin(id, false);
 
       const filteredPlayers = this.players.filter(p => p !== id);
-      const client = filteredPlayers[Math.floor(Math.random() * filteredPlayers.length)];
+      const randomLobbyPlayer = filteredPlayers[Math.floor(Math.random() * filteredPlayers.length)];
 
-      setClientAdmin(client, true);
+      setClientAdmin(randomLobbyPlayer, true);
     }
+
+    setCurrentLobby(getClientById(id).socket, undefined);
 
     this.players = this.players.filter(p => p !== id);
 

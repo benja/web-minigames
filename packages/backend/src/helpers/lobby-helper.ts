@@ -77,7 +77,7 @@ export default class LobbyHelper {
 
     if (admin.currentLobby === client.currentLobby && lobby.getAdmin() === admin.socket.id) {
       lobby.getPlayers().forEach(p => {
-        getClientById(p).socket.emit(SocketEvents.LOBBY_LEAVE, id);
+        getClientById(p).socket.emit(SocketEvents.LOBBY_KICK, id);
       });
       lobby.kickPlayer(id);
     }

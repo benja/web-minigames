@@ -2,7 +2,6 @@ export * from './utils/socket-events';
 
 export interface User {
   id?: string;
-  image?: string;
   username: string;
   admin?: boolean;
 }

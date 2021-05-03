@@ -26,7 +26,7 @@ export default function Index() {
   return (
     <Container>
       <Row>
-        <Column widthFlex={1}>
+        <Column widthFlex={2}>
           <UserListing users={state.lobby?.players || []} />
           {!state.lobby?.id && <button onClick={() => state.socket?.createLobby()}>Create lobby</button>}
           {state.lobby?.id && (
