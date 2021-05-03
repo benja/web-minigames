@@ -31,8 +31,17 @@ export function UserEntry(props: userEntryProps) {
         <Text>{props.username === state.account.username ? username : props.username}</Text>
       )}
       {props.admin && <strong>👑</strong>}
+      {state.account.admin && props.username !== state.account.username && (
+        <Button
+          onClick={() => {
+            state.socket.kickLobbyPlayer(props.id);
+          }}
+        >
+          Kick
+        </Button>
+      )}
       {props.username === state.account.username && (
-        <EditButton
+        <Button
           onClick={() => {
             if (!showInput) return setShowInput(true);
             state.socket.updateUsername(username);
@@ -40,7 +49,7 @@ export function UserEntry(props: userEntryProps) {
           }}
         >
           {showInput ? 'Save' : 'Edit'}
-        </EditButton>
+        </Button>
       )}
     </Container>
   );
@@ -63,7 +72,7 @@ const Container = styled.div`
   overflow-x: hidden;
 `;
 
-const EditButton = styled.button`
+const Button = styled.button`
   background: #dedede;
   padding: 2px 7px;
   margin-left: 5px;

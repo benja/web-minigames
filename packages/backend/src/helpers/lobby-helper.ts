@@ -69,6 +69,20 @@ export default class LobbyHelper {
     });
   }
 
+  public static kick(socket: Socket, id: string) {
+    const admin = getClientById(socket.id);
+    const client = getClientById(id);
+
+    const lobby = getLobbyById(admin.currentLobby!);
+
+    if (admin.currentLobby === client.currentLobby && lobby.getAdmin() === admin.socket.id) {
+      lobby.getPlayers().forEach(p => {
+        getClientById(p).socket.emit(SocketEvents.LOBBY_LEAVE, id);
+      });
+      lobby.kickPlayer(id);
+    }
+  }
+
   public static updateUsername(socket: Socket, username: string) {
     setClientUsername(socket, username);
 

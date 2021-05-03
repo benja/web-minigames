@@ -27,15 +27,19 @@ export class Sockets {
       toast.error(message);
     });
 
-    this.socket.on(SocketEvents.LOBBY_JOIN, (data: { lobbyId: string; players: { username: string }[] }) => {
-      this.dispatch(o => ({
-        ...o,
-        lobby: {
-          id: data.lobbyId,
-          players: data.players,
-        },
-      }));
-    });
+    this.socket.on(
+      SocketEvents.LOBBY_JOIN,
+      (data: { lobbyId: string; players: { admin?: boolean; username: string }[] }) => {
+        this.dispatch(o => ({
+          ...o,
+          account: { ...o.account, admin: data.players.filter(p => p.username === o.account.username)[0].admin },
+          lobby: {
+            id: data.lobbyId,
+            players: data.players,
+          },
+        }));
+      },
+    );
 
     this.socket.on(SocketEvents.LOBBY_LEAVE, (id: string) => {
       this.dispatch(o => ({
@@ -70,6 +74,10 @@ export class Sockets {
   public createLobby() {
     toast.success('Successfully created lobby');
     this.socket.emit(SocketEvents.LOBBY_CREATE);
+  }
+
+  public kickLobbyPlayer(id: string) {
+    this.socket.emit(SocketEvents.LOBBY_KICK, id);
   }
 
   public joinLobby(id: string) {
