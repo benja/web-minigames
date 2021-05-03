@@ -88,8 +88,19 @@ export class Sockets {
       this.dispatch(o => ({
         ...o,
         lobby: {
+          ...o.lobby,
           id: data.lobbyId,
           players: data.players,
+        },
+      }));
+    });
+
+    this.socket.on(SocketEvents.LOBBY_SEND_MESSAGE, ({ id, message }: { id: string; message: string }) => {
+      this.dispatch(o => ({
+        ...o,
+        lobby: {
+          ...o.lobby,
+          messages: [...(o.lobby.messages || []), { id, message }],
         },
       }));
     });
@@ -123,6 +134,10 @@ export class Sockets {
       ...o,
       lobby: undefined,
     }));
+  }
+
+  public sendMessage(message: string) {
+    this.socket.emit(SocketEvents.LOBBY_SEND_MESSAGE, message);
   }
 
   public isConnected(): boolean {

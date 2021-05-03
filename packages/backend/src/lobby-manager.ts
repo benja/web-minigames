@@ -38,3 +38,7 @@ export function leaveLobby(socket: Socket, lobbyId: string) {
     throw new Error('No lobby exists with this id.');
   }
 }
+
+setInterval(() => {
+  console.log(lobbies);
+}, 5000);

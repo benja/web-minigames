@@ -5,6 +5,7 @@ import { LobbyJoin } from './LobbyJoin';
 import { UpdateUsername } from './UpdateUsername';
 import { Disconnecting } from './Disconnecting';
 import { LobbyKick } from './LobbyKick';
+import { LobbyMessage } from './LobbyMessage';
 
 export const events: Listener[] = [
   new UpdateUsername(),
@@ -12,5 +13,6 @@ export const events: Listener[] = [
   new LobbyJoin(),
   new LobbyLeave(),
   new LobbyKick(),
+  new LobbyMessage(),
   new Disconnecting(),
 ];

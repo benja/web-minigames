@@ -15,4 +15,5 @@ export interface Game {
 export interface Lobby {
   id: string;
   players: User[];
+  messages?: { id: string; message: string }[];
 }

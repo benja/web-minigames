@@ -1,6 +1,6 @@
 import { SocketEvents } from '@wmg/shared';
 import { Socket } from 'socket.io';
-import { getClientById, setClientUsername, setCurrentLobby, setClientAdmin } from '../client-manager';
+import { getClientById, setClientUsername, setCurrentLobby, setClientAdmin, getClient } from '../client-manager';
 import { getLobbyById, deleteLobby, createLobby } from '../lobby-manager';
 
 export default class LobbyHelper {
@@ -81,6 +81,19 @@ export default class LobbyHelper {
       });
       lobby.kickPlayer(id);
     }
+  }
+
+  public static sendMessage(socket: Socket, message: string) {
+    const client = getClientById(socket.id);
+    const lobby = getLobbyById(client.currentLobby!);
+
+    lobby.getPlayers().forEach(p => {
+      const player = getClientById(p);
+      player.socket.emit(SocketEvents.LOBBY_SEND_MESSAGE, {
+        id: socket.id,
+        message,
+      });
+    });
   }
 
   public static updateUsername(socket: Socket, username: string) {
