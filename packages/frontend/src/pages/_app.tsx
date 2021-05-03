@@ -68,10 +68,6 @@ function SocketWrapper() {
 
     if (usernameFromLocalStorage) {
       state.socket.updateUsername(usernameFromLocalStorage);
-      dispatch(o => ({
-        ...o,
-        account: { username: usernameFromLocalStorage },
-      }));
     } else {
       const username = uniqueNamesGenerator({
         dictionaries: [adjectives, colors],
@@ -80,10 +76,6 @@ function SocketWrapper() {
         separator: '',
       });
       state.socket.updateUsername(username);
-      dispatch(o => ({
-        ...o,
-        account: { username },
-      }));
     }
   }, [state.socket]);
 

@@ -6,6 +6,7 @@ import { useState, useContext } from 'react';
 import { StoreContext } from '../../../../utils/store';
 
 interface userEntryProps extends User {}
+
 export function UserEntry(props: userEntryProps) {
   const { state } = useContext(StoreContext);
 
@@ -29,6 +30,7 @@ export function UserEntry(props: userEntryProps) {
       ) : (
         <Text>{props.username === state.account.username ? username : props.username}</Text>
       )}
+      {props.admin && <strong>👑</strong>}
       {props.username === state.account.username && (
         <EditButton
           onClick={() => {

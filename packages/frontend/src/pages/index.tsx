@@ -19,7 +19,6 @@ export default function Index() {
     if (!state.socket || state.lobby) return;
 
     if (lobbyId && typeof lobbyId === 'string') {
-      console.log('Join lobby', lobbyId);
       state.socket.joinLobby(lobbyId);
     }
   }, [lobbyId, state.lobby, state.socket]);

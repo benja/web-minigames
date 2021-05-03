@@ -1,11 +1,12 @@
 import { SocketEvents } from '@wmg/shared';
 import { Socket } from 'socket.io';
-import { getClientById, setClientUsername, setCurrentLobby } from '../client-manager';
+import { getClientById, setClientUsername, setCurrentLobby, setClientAdmin } from '../client-manager';
 import { getLobbyById, deleteLobby, createLobby } from '../lobby-manager';
 
 export default class LobbyHelper {
   public static leave(socket: Socket) {
     const client = getClientById(socket.id);
+
     if (client.currentLobby) {
       const oldLobby = getLobbyById(client.currentLobby);
 
@@ -14,7 +15,7 @@ export default class LobbyHelper {
         console.log(`Deleted lobby ${client.currentLobby} for user ${socket.id}`);
       } else {
         oldLobby.getPlayers().forEach(p => {
-          getClientById(p).socket.emit(SocketEvents.LOBBY_LEAVE, client.username);
+          getClientById(p).socket.emit(SocketEvents.LOBBY_LEAVE, socket.id);
         });
       }
     }
@@ -35,11 +36,14 @@ export default class LobbyHelper {
     lobby.getPlayers().forEach(p => {
       getClientById(p).socket.emit(SocketEvents.LOBBY_JOIN, {
         lobbyId: lobby.getId(),
-        players: lobby.getPlayers().map(p => ({
-          ...getClientById(p),
-          socket: undefined,
-          currentLobby: undefined,
-        })),
+        players: lobby.getPlayers().map(p => {
+          const client = getClientById(p);
+          return {
+            username: client.username,
+            id: client.socket.id,
+            admin: client.admin,
+          };
+        }),
       });
     });
   }
@@ -58,6 +62,8 @@ export default class LobbyHelper {
       players: [
         {
           username: client.username,
+          id: socket.id,
+          admin: client.admin,
         },
       ],
     });
@@ -75,11 +81,14 @@ export default class LobbyHelper {
     lobby.getPlayers().forEach(p => {
       getClientById(p).socket.emit(SocketEvents.UPDATE_USERNAME, {
         lobbyId: lobby.getId(),
-        players: lobby.getPlayers().map(p => ({
-          ...getClientById(p),
-          socket: undefined,
-          currentLobby: undefined,
-        })),
+        players: lobby.getPlayers().map(p => {
+          const client = getClientById(p);
+          return {
+            username: client.username,
+            id: client.socket.id,
+            admin: client.admin,
+          };
+        }),
       });
     });
   }

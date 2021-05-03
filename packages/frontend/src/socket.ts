@@ -16,6 +16,13 @@ export class Sockets {
   }
 
   private initialiseMethods() {
+    this.socket.on('connect', () => {
+      this.dispatch(o => ({
+        ...o,
+        account: { id: this.socket.id, username: o.account?.username },
+      }));
+    });
+
     this.socket.on(SocketEvents.ERROR, (message: string) => {
       toast.error(message);
     });
@@ -30,12 +37,12 @@ export class Sockets {
       }));
     });
 
-    this.socket.on(SocketEvents.LOBBY_LEAVE, (username: string) => {
+    this.socket.on(SocketEvents.LOBBY_LEAVE, (id: string) => {
       this.dispatch(o => ({
         ...o,
         lobby: {
           ...o.lobby,
-          players: (o.lobby.players ?? []).filter(p => p.username !== username),
+          players: (o.lobby.players ?? []).filter(p => p.id !== id),
         },
       }));
     });
@@ -55,7 +62,7 @@ export class Sockets {
     this.socket.emit(SocketEvents.UPDATE_USERNAME, username);
     this.dispatch(o => ({
       ...o,
-      account: { username },
+      account: { id: o.account?.id, username },
     }));
     localStorage?.setItem('username', username);
   }
