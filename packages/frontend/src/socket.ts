@@ -64,6 +64,14 @@ export class Sockets {
     }))
   }
 
+  public leaveGameSearch(gameType: GameTypes) {
+    this.socket.emit(SocketEvents.QUEUE_LEAVE, gameType);
+    this.dispatch(o => ({
+      ...o,
+      queue: undefined
+    }))
+  }
+
   public joinLobby(id: string) {
     this.socket.emit(SocketEvents.LOBBY_JOIN, id);
   }

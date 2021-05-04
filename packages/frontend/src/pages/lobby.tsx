@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { useContext, useEffect } from 'react';
 import { StoreContext } from '../utils/store';
 import { useGames } from "../hooks/useGames";
-import { AvatarRow, GameEntry, List } from "../ui/components/molecules";
+import { AvatarRow, Button, GameEntry, List } from "../ui/components/molecules";
 import { ListItem, Text } from "../ui";
 import { Centered } from "../ui/components/layouts/Centered";
 
@@ -52,6 +52,7 @@ export default function Lobby() {
           state.lobby.players.forEach((p, i) => emptyUsers[i] = p);
           return emptyUsers;
         }()} showName />
+        <Button text={"Leave queue"} onClick={() => state.socket.leaveGameSearch(state.queue.type)} />
       </Centered>
     )
   }
