@@ -1,16 +1,23 @@
-import { GameTypes, User } from "@wmg/shared";
+import { GameTypes } from "@wmg/shared";
+import generateId from "./generate-id";
 
 
 export class GameLobby {
+  private readonly gameId: string;
   private readonly gameType: GameTypes;
-  private readonly players: User[];
+  private readonly players: string[];
 
-  constructor(gameType: GameTypes, players: User[]) {
+  constructor(gameType: GameTypes, players: string[]) {
     this.players = players;
     this.gameType = gameType;
+    this.gameId = generateId();
   }
 
-  public getPlayers(): User[] {
+  public getPlayers(): string[] {
     return this.players;
+  }
+
+  public getId(): string {
+    return this.gameId;
   }
 }

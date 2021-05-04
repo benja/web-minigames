@@ -1,4 +1,5 @@
 import { Game } from "@wmg/shared";
+import generateId from "./generate-id";
 
 export class Lobby {
   private readonly id: string;
@@ -8,20 +9,9 @@ export class Lobby {
   private inQueue: boolean = false;
 
   constructor() {
-    this.id = Lobby.generateId();
+    this.id = generateId();
     this.currentGame = null;
     this.players = [];
-  }
-
-  private static generateId(): string {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const result = [];
-
-    for (let i = 0; i < 6; i++) {
-      result.push(chars.charAt(Math.floor(Math.random() * chars.length)));
-    }
-
-    return result.join('');
   }
 
   public kickPlayer(id: string): boolean {
