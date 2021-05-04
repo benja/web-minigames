@@ -19,6 +19,7 @@ export interface Game {
 export interface Lobby {
   id: string;
   players: User[];
+  private: boolean;
 }
 
 export interface Queue {

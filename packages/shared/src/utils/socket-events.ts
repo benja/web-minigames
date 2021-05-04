@@ -5,6 +5,7 @@ export enum SocketEvents {
   LOBBY_JOIN = 'lobby_join',
   LOBBY_LEAVE = 'lobby_leave',
   LOBBY_SEND_MESSAGE = 'lobby_send_message',
+  LOBBY_SET_PRIVATE = 'lobby_set_private',
   LOBBY_ON_TYPE = 'lobby_on_type',
   QUEUE_JOIN = 'queue_join',
   QUEUE_LEAVE = 'queue_leave',

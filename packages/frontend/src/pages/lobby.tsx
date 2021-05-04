@@ -9,17 +9,6 @@ import { AvatarRow, Button, GameEntry, List } from "../ui/components/molecules";
 import { ListItem, Text } from "../ui";
 import { Centered } from "../ui/components/layouts/Centered";
 
-const users: User[] = [
-  {
-    username: 'Matthew',
-    image: 'https://avatars.githubusercontent.com/u/16708653?s=400&u=b96a5b2534bdd50476bddf50d0290985b5888687&v=4',
-  },
-  {
-    username: 'Benjamin',
-    image: 'https://avatars.githubusercontent.com/u/16708653?s=400&u=b96a5b2534bdd50476bddf50d0290985b5888687&v=4',
-  },
-];
-
 export default function Lobby() {
   const router = useRouter();
   const { state } = useContext(StoreContext);

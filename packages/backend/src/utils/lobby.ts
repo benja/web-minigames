@@ -7,6 +7,7 @@ export class Lobby {
 
   private currentGame: Game | null;
   private inQueue: boolean = false;
+  private private: boolean = false;
 
   constructor() {
     this.id = generateId();
@@ -36,6 +37,14 @@ export class Lobby {
 
   public setInQueue(status: boolean): void {
     this.inQueue = status;
+  }
+
+  public isPrivate(): boolean {
+    return this.private;
+  }
+
+  public setPrivate(state: boolean) {
+    this.private = state;
   }
 
   public isInQueue(): boolean {

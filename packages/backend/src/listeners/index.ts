@@ -6,6 +6,7 @@ import { SetUsername } from './SetUsername';
 import { Disconnecting } from "./Disconnecting";
 import { JoinQueue } from "./JoinQueue";
 import { LeaveQueue } from "./LeaveQueue";
+import { LobbySetPrivate } from "./LobbySetPrivate";
 
 export const events: Listener[] = [
   new SetUsername(),
@@ -14,5 +15,6 @@ export const events: Listener[] = [
   new LobbyLeave(),
   new Disconnecting(),
   new JoinQueue(),
-  new LeaveQueue()
+  new LeaveQueue(),
+  new LobbySetPrivate()
 ];

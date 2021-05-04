@@ -49,6 +49,16 @@ export function setLobbyQueueStatus(lobbyId: string, inQueue: boolean) {
   return lobby;
 }
 
+export function setLobbyPrivate(lobbyId: string, status: boolean) {
+  const lobby = lobbies.get(lobbyId);
+  if (!lobby) {
+    throw new Error('No lobby exists with this id.');
+  }
+  lobby.setPrivate(status);
+  lobbies.set(lobby.getId(), lobby);
+  return lobby;
+}
+
 export function setLobbyInGame(lobbyId: string, game: Game) {
   const lobby = lobbies.get(lobbyId);
   if (!lobby) {

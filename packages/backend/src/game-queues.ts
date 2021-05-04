@@ -73,7 +73,8 @@ function findCombinactories(gameType: GameTypes) {
 
   for (let i = 0; i < Number(queue.length / 2); i++) {
     const first = queue[i];
-    const last = queue[queue.length - i];
+    const last = queue[queue.length - (i + 1)];
+
     let combination = first.numPlayers + last.numPlayers;
     if (combination > lobbyMax) {
       break;

@@ -1,7 +1,7 @@
 import io from "socket.io-client";
 import { Dispatch, SetStateAction, useContext } from "react";
 import { DefaultStore, StoreContext } from "./utils/store";
-import { GameTypes, SocketEvents } from "@wmg/shared";
+import { GameTypes, Lobby, SocketEvents } from "@wmg/shared";
 
 export class Sockets {
   private readonly socket: SocketIOClient.Socket = null;
@@ -18,13 +18,10 @@ export class Sockets {
       alert(message);
     });
 
-    this.socket.on(SocketEvents.LOBBY_JOIN, (data: { lobbyId: string; players: { username: string }[] }) => {
+    this.socket.on(SocketEvents.LOBBY_JOIN, (data: Lobby) => {
       this.dispatch(o => ({
         ...o,
-        lobby: {
-          id: data.lobbyId,
-          players: data.players
-        }
+        lobby: data
       }));
     });
 
@@ -42,6 +39,16 @@ export class Sockets {
       this.dispatch(o => ({
         ...o,
         inQueue: false
+      }))
+    })
+
+    this.socket.on(SocketEvents.LOBBY_SET_PRIVATE, (status: boolean) => {
+      this.dispatch(o => ({
+        ...o,
+        lobby: {
+          ...o.lobby,
+          private: status
+        }
       }))
     })
   }
@@ -74,6 +81,10 @@ export class Sockets {
 
   public joinLobby(id: string) {
     this.socket.emit(SocketEvents.LOBBY_JOIN, id);
+  }
+
+  public setPrivate(status: boolean) {
+    this.socket.emit(SocketEvents.LOBBY_SET_PRIVATE, status);
   }
 
   public leaveLobby() {
