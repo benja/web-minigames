@@ -4,5 +4,15 @@ import { LobbyLeave } from './LobbyLeave';
 import { LobbyJoin } from './LobbyJoin';
 import { SetUsername } from './SetUsername';
 import { Disconnecting } from "./Disconnecting";
+import { JoinQueue } from "./JoinQueue";
+import { LeaveQueue } from "./LeaveQueue";
 
-export const events: Listener[] = [new SetUsername(), new LobbyCreate(), new LobbyJoin(), new LobbyLeave(), new Disconnecting()];
+export const events: Listener[] = [
+  new SetUsername(),
+  new LobbyCreate(),
+  new LobbyJoin(),
+  new LobbyLeave(),
+  new Disconnecting(),
+  new JoinQueue(),
+  new LeaveQueue()
+];

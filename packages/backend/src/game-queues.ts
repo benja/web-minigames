@@ -1,5 +1,8 @@
-import { GameLobbySizes, GameTypes } from "@wmg/shared";
+import { GameLobbySizes, GameTypes, SocketEvents } from "@wmg/shared";
 import { Lobby } from "./utils/lobby";
+import { getLobbyById } from "./lobby-manager";
+import { getClientById } from "./client-manager";
+import { startGame, startGameWithLobbies, startGameWithLobbyIds } from "./game-manager";
 
 type LobbyMeta = {
   id: string;
@@ -46,6 +49,15 @@ export function removeCollectionFromQueueByLobbyId(lobbyIds: string[], gameType:
     return;
   } else {
     queues[gameType] = queues[gameType]!.filter(l => !lobbyIds.includes(l.id));
+
+    // Emit to each of the sockets in that room that the game has started
+    startGameWithLobbyIds(gameType, lobbyIds);
+
+    lobbyIds.forEach(lobby => {
+      getLobbyById(lobby).getPlayers().forEach(player => {
+        getClientById(player).socket.emit(SocketEvents.GAME_START, [])
+      })
+    });
   }
 }
 
@@ -60,9 +72,7 @@ function findCombinactories(gameType: GameTypes) {
   if (queue.length === 1) {
     if (queue[0].numPlayers === lobbyMax) {
       // Pair them and remove this one from the array
-      // Send found match emit
       removeFromQueueByLobbyId(queue[0].id, gameType);
-
     }
     return;
   }
@@ -77,9 +87,7 @@ function findCombinactories(gameType: GameTypes) {
       break;
     } else if (combination === lobbyMax) {
       // Pair them and remove this one from the array
-      // Send found match emit
       removeCollectionFromQueueByLobbyId([first.id, last.id], gameType);
-
     } else {
       let group = [first.id, last.id];
       for (let j = i + 1; j < queue.length - i; j++) {
@@ -88,8 +96,8 @@ function findCombinactories(gameType: GameTypes) {
         if (temporaryCombination > lobbyMax) {
           break;
         } else if (temporaryCombination === lobbyMax) {
+          // Pair them and remove this one from the array
           removeCollectionFromQueueByLobbyId([...group, current.id], gameType)
-
           break;
         } else {
           group = [...group, current.id];
