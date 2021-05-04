@@ -3,5 +3,5 @@ export enum GameTypes {
 }
 
 export const GameLobbySizes: Record<GameTypes, number> = {
-  [GameTypes.DRAWING]: 8
+  [GameTypes.DRAWING]: 1
 }

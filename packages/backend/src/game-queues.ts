@@ -29,15 +29,7 @@ export function removeFromQueue(lobby: Lobby, gameType: GameTypes) {
 }
 
 export function removeFromQueueByLobbyId(lobbyId: string, gameType: GameTypes) {
-  if (!queues[gameType]) {
-    return;
-  } else {
-    const index = queues[gameType]!.findIndex(l => l.id === lobbyId);
-    if (index === -1) {
-      return
-    }
-    queues[gameType]!.splice(index, 1)
-  }
+  return removeCollectionFromQueueByLobbyId([lobbyId], gameType);
 }
 
 export function removeCollectionFromQueue(lobbies: Lobby[], gameType: GameTypes) {
@@ -107,8 +99,13 @@ function findCombinactories(gameType: GameTypes) {
   }
 }
 
+function printQueues() {
+}
+
 setInterval(() => {
+  console.log(`Checking ${Object.keys(queues).length} current queues:`)
   Object.keys(queues).map((gameType: string) => {
+    console.log(`[${gameType}] - ${queues[gameType as GameTypes]!.length} players in the queue`)
     findCombinactories(gameType as GameTypes);
   })
-}, 1000)
+}, 2000)

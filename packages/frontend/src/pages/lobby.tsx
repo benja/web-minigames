@@ -6,6 +6,8 @@ import { useRouter } from 'next/router';
 import { useContext, useEffect } from 'react';
 import { StoreContext } from '../utils/store';
 import { useGames } from "../hooks/useGames";
+import { GameEntry, List } from "../ui/components/molecules";
+import { ListItem } from "../ui";
 
 const users: User[] = [
   {
@@ -48,7 +50,9 @@ export default function Lobby() {
           <UserListing users={state.lobby?.players || []} />
         </Column>
         <Column widthFlex={2}>
-          <GameListing games={games} />
+          <List>
+            {games && games.map(game => <ListItem><GameEntry onClick={() => state.socket.startGameSearch(game.type)} {...game} /></ListItem>)}
+          </List>
         </Column>
       </Row>
     </Container>

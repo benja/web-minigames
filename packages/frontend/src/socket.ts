@@ -1,7 +1,7 @@
 import io from "socket.io-client";
 import { Dispatch, SetStateAction, useContext } from "react";
 import { DefaultStore, StoreContext } from "./utils/store";
-import { SocketEvents } from "@wmg/shared";
+import { GameTypes, SocketEvents } from "@wmg/shared";
 
 export class Sockets {
   private readonly socket: SocketIOClient.Socket = null;
@@ -45,6 +45,10 @@ export class Sockets {
 
   public createLobby() {
     this.socket.emit(SocketEvents.LOBBY_CREATE);
+  }
+
+  public startGameSearch(gameType: GameTypes) {
+    this.socket.emit(SocketEvents.QUEUE_JOIN, gameType);
   }
 
   public joinLobby(id: string) {

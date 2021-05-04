@@ -1,3 +1,5 @@
+import { GameTypes } from "./utils/game-types";
+
 export * from './utils/socket-events';
 export * from './utils/game-types';
 
@@ -11,6 +13,7 @@ export interface Game {
   description: string;
   image: string;
   players: User[];
+  type: GameTypes;
 }
 
 export interface Lobby {
