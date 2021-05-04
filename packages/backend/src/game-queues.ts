@@ -108,4 +108,4 @@ setInterval(() => {
     console.log(`[${gameType}] - ${queues[gameType as GameTypes]!.length} players in the queue`)
     findCombinactories(gameType as GameTypes);
   })
-}, 2000)
+}, 5000)

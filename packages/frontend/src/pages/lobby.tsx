@@ -1,13 +1,13 @@
 import { Column, Container, Row } from '../ui/components/layouts';
 import { UserListing } from '../ui/components/organisms';
-import { Game, User } from '@wmg/shared';
-import { GameListing } from '../ui/components/organisms';
+import { GameLobbySizes, User } from "@wmg/shared";
 import { useRouter } from 'next/router';
 import { useContext, useEffect } from 'react';
 import { StoreContext } from '../utils/store';
 import { useGames } from "../hooks/useGames";
-import { GameEntry, List } from "../ui/components/molecules";
-import { ListItem } from "../ui";
+import { AvatarRow, GameEntry, List } from "../ui/components/molecules";
+import { ListItem, Text } from "../ui";
+import { Centered } from "../ui/components/layouts/Centered";
 
 const users: User[] = [
   {
@@ -42,6 +42,19 @@ export default function Lobby() {
       state.socket.joinLobby(id);
     }
   }, [id]);
+
+  if (state.queue) {
+    return (
+      <Centered>
+        <Text header>You are currently in queue for {state.queue.type}...</Text>
+        <AvatarRow users={function() {
+          const emptyUsers = new Array(GameLobbySizes[state.queue.type]).fill({});
+          state.lobby.players.forEach((p, i) => emptyUsers[i] = p);
+          return emptyUsers;
+        }()} showName />
+      </Centered>
+    )
+  }
 
   return (
     <Container>

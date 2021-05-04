@@ -20,3 +20,7 @@ export interface Lobby {
   id: string;
   players: User[];
 }
+
+export interface Queue {
+  type: GameTypes;
+}

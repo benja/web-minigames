@@ -37,6 +37,13 @@ export class Sockets {
         }
       }));
     });
+
+    this.socket.on(SocketEvents.GAME_START, (elem: []) => {
+      this.dispatch(o => ({
+        ...o,
+        inQueue: false
+      }))
+    })
   }
 
   public claimUsername(username: string) {
@@ -49,6 +56,12 @@ export class Sockets {
 
   public startGameSearch(gameType: GameTypes) {
     this.socket.emit(SocketEvents.QUEUE_JOIN, gameType);
+    this.dispatch(o => ({
+      ...o,
+      queue: {
+        type: gameType
+      }
+    }))
   }
 
   public joinLobby(id: string) {
