@@ -11,6 +11,9 @@ export default class QueueHelper {
       throw new Error('You are not currently in a lobby.');
     }
     const lobby = getLobbyById(client.currentLobby);
+    if (lobby.getAdmin() !== socket.id) {
+      throw new Error('You must be the lobby admin to join a game queue.')
+    }
     addToQueue(lobby, gameType);
   }
 
@@ -20,6 +23,9 @@ export default class QueueHelper {
       throw new Error('You are not currently in a lobby.');
     }
     const lobby = getLobbyById(client.currentLobby);
+    if (lobby.getAdmin() !== socket.id) {
+      throw new Error('You must be the lobby admin to leave a game queue.')
+    }
     removeFromQueue(lobby, gameType);
   }
 }

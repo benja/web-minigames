@@ -108,7 +108,7 @@ export class Sockets {
     this.socket.on(SocketEvents.GAME_START, (elem: []) => {
       this.dispatch(o => ({
         ...o,
-        inQueue: false,
+        queue: undefined,
       }));
     });
 
