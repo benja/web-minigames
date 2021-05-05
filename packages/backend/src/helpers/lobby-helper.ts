@@ -1,11 +1,12 @@
 import { SocketEvents } from '@wmg/shared';
 import { Socket } from 'socket.io';
-import { getClientById, setCurrentLobby } from '../client-manager';
-import { getLobbyById, deleteLobby, createLobby, setLobbyPrivate } from "../lobby-manager";
+import { getClientById, setClientUsername, setCurrentLobby } from '../client-manager';
+import { getLobbyById, deleteLobby, createLobby, setLobbyPrivate } from '../lobby-manager';
 
 export default class LobbyHelper {
   public static leave(socket: Socket) {
     const client = getClientById(socket.id);
+
     if (client.currentLobby) {
       const oldLobby = getLobbyById(client.currentLobby);
 
@@ -14,7 +15,7 @@ export default class LobbyHelper {
         console.log(`Deleted lobby ${client.currentLobby} for user ${socket.id}`);
       } else {
         oldLobby.getPlayers().forEach(p => {
-          getClientById(p).socket.emit(SocketEvents.LOBBY_LEAVE, client.username);
+          getClientById(p).socket.emit(SocketEvents.LOBBY_LEAVE, socket.id);
         });
       }
     }
@@ -36,11 +37,14 @@ export default class LobbyHelper {
       getClientById(p).socket.emit(SocketEvents.LOBBY_JOIN, {
         id: lobby.getId(),
         private: lobby.isPrivate(),
-        players: lobby.getPlayers().map(p => ({
-          ...getClientById(p),
-          socket: undefined,
-          currentLobby: undefined,
-        })),
+        players: lobby.getPlayers().map(p => {
+          const client = getClientById(p);
+          return {
+            username: client.username,
+            id: client.socket.id,
+            admin: client.admin,
+          };
+        }),
       });
     });
   }
@@ -56,16 +60,71 @@ export default class LobbyHelper {
 
     socket.emit(SocketEvents.LOBBY_JOIN, {
       lobbyId: lobby.getId(),
-      players: [{
-        username: client.username
-      }]
+      players: [
+        {
+          username: client.username,
+          id: socket.id,
+          admin: client.admin,
+        },
+      ],
+    });
+  }
+
+  public static kick(socket: Socket, id: string) {
+    const admin = getClientById(socket.id);
+    const client = getClientById(id);
+
+    const lobby = getLobbyById(admin.currentLobby!);
+
+    if (admin.currentLobby === client.currentLobby && lobby.getAdmin() === admin.socket.id) {
+      lobby.getPlayers().forEach(p => {
+        getClientById(p).socket.emit(SocketEvents.LOBBY_KICK, id);
+      });
+      lobby.kickPlayer(id);
+    }
+  }
+
+  public static sendMessage(socket: Socket, message: string) {
+    const client = getClientById(socket.id);
+    const lobby = getLobbyById(client.currentLobby!);
+
+    lobby.getPlayers().forEach(p => {
+      const player = getClientById(p);
+      player.socket.emit(SocketEvents.LOBBY_SEND_MESSAGE, {
+        id: socket.id,
+        message,
+      });
+    });
+  }
+
+  public static updateUsername(socket: Socket, username: string) {
+    setClientUsername(socket, username);
+
+    const client = getClientById(socket.id);
+
+    if (!client.currentLobby) return;
+
+    const lobby = getLobbyById(client.currentLobby);
+
+    lobby.getPlayers().forEach(p => {
+      getClientById(p).socket.emit(SocketEvents.UPDATE_USERNAME, {
+        lobbyId: lobby.getId(),
+        players: lobby.getPlayers().map(p => {
+          const client = getClientById(p);
+          return {
+            username: client.username,
+            id: client.socket.id,
+            admin: client.admin,
+          };
+        }),
+      });
     });
   }
 
   public static setPrivate(socket: Socket, status: boolean) {
     const client = getClientById(socket.id);
     if (!client.currentLobby) {
-      throw new Error("Could not find your lobby.")
+      throw new Error('Could not find your lobby.');
     }
 
     const lobby = getLobbyById(client.currentLobby);
@@ -73,6 +132,6 @@ export default class LobbyHelper {
 
     lobby.getPlayers().forEach(p => {
       getClientById(p).socket.emit(SocketEvents.LOBBY_SET_PRIVATE, status);
-    })
+    });
   }
 }

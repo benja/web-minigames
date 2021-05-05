@@ -4,9 +4,11 @@ import { NextComponentType, NextPageContext } from 'next';
 import { createGlobalStyle } from 'styled-components';
 import { StoreContext, DefaultStore } from '../utils/store';
 import { useRouter } from 'next/router';
-import { Sockets } from "../socket";
-import {SWRConfig} from 'swr';
-import { swrFetcher } from "../hooks";
+import { Sockets } from '../socket';
+import { Toaster } from 'react-hot-toast';
+import { SWRConfig } from 'swr';
+import { swrFetcher } from '../hooks';
+import { uniqueNamesGenerator, adjectives, colors } from 'unique-names-generator';
 
 interface MyAppProps extends AppProps {
   Component: {
@@ -21,60 +23,61 @@ export default function App({ Component, pageProps }: MyAppProps) {
   const [storeContext, setStoreContext] = useState<DefaultStore>({});
 
   return (
-    <StoreContext.Provider value={{ state: storeContext, dispatch: setStoreContext }}>
-      <SWRConfig value={{fetcher: swrFetcher}}>
-        <AppWrapper />
+    <SWRConfig value={{ fetcher: swrFetcher }}>
+      <StoreContext.Provider value={{ state: storeContext, dispatch: setStoreContext }}>
         <Layout>
+          <Toaster />
+          <SocketWrapper />
           <GlobalStyles />
           <Component {...pageProps} />
         </Layout>
-      </SWRConfig>
-    </StoreContext.Provider>
+      </StoreContext.Provider>
+    </SWRConfig>
   );
 }
 
-function AppWrapper() {
+function SocketWrapper() {
   const { state, dispatch } = useContext(StoreContext);
   const router = useRouter();
 
   useEffect(() => {
     if (state.lobby?.id) {
-      return void router.push(`/lobby?id=${state.lobby.id}`);
+      return void router.push(`/?lobbyId=${state.lobby.id}`);
     }
   }, [state.lobby]);
 
   useEffect(() => {
     try {
-      const sockets = new Sockets(dispatch);
+      const sockets = new Sockets(dispatch, router);
 
       dispatch(o => ({
         ...o,
-        socket: sockets
-      }))
+        socket: sockets,
+      }));
 
       return () => {
-        sockets.isConnected() && sockets.disconnect()
+        sockets.isConnected() && sockets.disconnect();
       };
     } catch (e) {}
   }, []);
 
   useEffect(() => {
-    if (state.socket) {
-      const usernameFromLocalStorage = localStorage.getItem('username');
-      if (usernameFromLocalStorage) {
-        state.socket.claimUsername(usernameFromLocalStorage);
-        dispatch(o => ({
-          ...o,
-          account: { username: usernameFromLocalStorage },
-        }));
-        if (router.route === "/") {
-          state.socket.createLobby()
-        }
-      } else {
-        return void router.push('/');
-      }
+    if (!state.socket) return;
+
+    const usernameFromLocalStorage = localStorage.getItem('username');
+
+    if (usernameFromLocalStorage) {
+      state.socket.updateUsername(usernameFromLocalStorage);
+    } else {
+      const username = uniqueNamesGenerator({
+        dictionaries: [adjectives, colors],
+        length: 2,
+        style: 'capital',
+        separator: '',
+      });
+      state.socket.updateUsername(username);
     }
-  }, [state.socket])
+  }, [state.socket]);
 
   return null;
 }

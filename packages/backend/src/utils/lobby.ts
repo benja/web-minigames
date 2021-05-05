@@ -1,6 +1,8 @@
-import { Game } from "@wmg/shared";
-import generateId from "./generate-id";
-
+import { Game } from '@wmg/shared';
+import generateId from './generate-id';
+import { SocketEvents } from '@wmg/shared';
+import { getClientById, setClientAdmin, setCurrentLobby } from '../client-manager';
+import { getLobbyById } from '../lobby-manager';
 export class Lobby {
   private readonly id: string;
   private players: string[];
@@ -19,7 +21,35 @@ export class Lobby {
     if (!this.players.includes(id)) {
       throw new Error('Player does not exist in this lobby.');
     }
+
+    if (id === this.getAdmin() && this.players.length) {
+      setClientAdmin(id, false);
+
+      const filteredPlayers = this.players.filter(p => p !== id);
+      const randomLobbyPlayer = filteredPlayers[Math.floor(Math.random() * filteredPlayers.length)];
+
+      setClientAdmin(randomLobbyPlayer, true);
+    }
+
+    setCurrentLobby(getClientById(id).socket, undefined);
+
     this.players = this.players.filter(p => p !== id);
+
+    const lobby = getLobbyById(this.getId());
+    lobby.getPlayers().forEach(p => {
+      getClientById(p).socket.emit(SocketEvents.LOBBY_JOIN, {
+        lobbyId: lobby.getId(),
+        players: lobby.getPlayers().map(p => {
+          const client = getClientById(p);
+          return {
+            username: client.username,
+            id: client.socket.id,
+            admin: client.admin,
+          };
+        }),
+      });
+    });
+
     return this.players.length === 0;
   }
 
@@ -60,6 +90,13 @@ export class Lobby {
   }
 
   public addPlayer(id: string) {
+    if (!this.getAdmin()) {
+      setClientAdmin(id, true);
+    }
     return this.players.push(id);
+  }
+
+  public getAdmin() {
+    return this.players.filter(p => getClientById(p).admin)[0];
   }
 }

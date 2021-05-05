@@ -1,14 +1,14 @@
 import { Socket } from 'socket.io';
 import { Listener } from '../listener';
 import { SocketEvents } from '@wmg/shared';
-import { setClientUsername } from '../client-manager';
+import LobbyHelper from '../helpers/lobby-helper';
 
-export class SetUsername extends Listener {
+export class UpdateUsername extends Listener {
   constructor() {
-    super(SocketEvents.SET_USERNAME);
+    super(SocketEvents.UPDATE_USERNAME);
   }
 
   async handle(socket: Socket, username: string) {
-    setClientUsername(socket, username);
+    LobbyHelper.updateUsername(socket, username);
   }
 }
