@@ -30,10 +30,16 @@ export class Sockets {
     });
 
     this.socket.on(SocketEvents.LOBBY_JOIN, (data: Lobby) => {
+      console.log(data);
       this.dispatch(o => ({
         ...o,
         account: { ...o.account, admin: data.players.filter(p => p.username === o.account.username)[0].admin },
-        lobby: data,
+        lobby: {
+          ...o.lobby,
+          id: data.id,
+          players: data.players,
+          private: data.private,
+        },
       }));
     });
 
@@ -78,12 +84,12 @@ export class Sockets {
       });
     });
 
-    this.socket.on(SocketEvents.UPDATE_USERNAME, (data: { lobbyId: string; players: { username: string }[] }) => {
+    this.socket.on(SocketEvents.UPDATE_USERNAME, (data: { id: string; players: { username: string }[] }) => {
       this.dispatch(o => ({
         ...o,
         lobby: {
           ...o.lobby,
-          id: data.lobbyId,
+          id: data.id,
           players: data.players,
         },
       }));

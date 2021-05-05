@@ -38,7 +38,7 @@ export class Lobby {
     const lobby = getLobbyById(this.getId());
     lobby.getPlayers().forEach(p => {
       getClientById(p).socket.emit(SocketEvents.LOBBY_JOIN, {
-        lobbyId: lobby.getId(),
+        id: lobby.getId(),
         players: lobby.getPlayers().map(p => {
           const client = getClientById(p);
           return {

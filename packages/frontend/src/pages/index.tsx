@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Column, Container, Row } from '../ui/components/layouts';
 import { StoreContext } from '../utils/store';
 import { GameLobbySizes } from '@wmg/shared';
-import { GameListing, UserListing } from '../ui/components/organisms';
+import { UserListing } from '../ui/components/organisms';
 import { toast } from 'react-hot-toast';
 import { useGames } from '../hooks/useGames';
 import styled from 'styled-components';
@@ -75,39 +75,40 @@ export default function Index() {
                   state.lobby.messages.map(m => (
                     <Message>
                       <Avatar
-                        name={state.lobby.players
-                          .filter(p => p.id === m.id)[0]
-                          .username.split(/(?=[A-Z])/)
-                          .join(' ')}
+                        name={
+                          state.lobby.players
+                            .filter(p => p.id === m.id)[0]
+                            .username.split(/(?=[A-Z])/)
+                            .join(' ') ?? ''
+                        }
                         size="25"
                         round="5px"
                       />
                       <p style={{ marginLeft: 5 }}>
                         <strong>
-                          {state.lobby.players.filter(p => p.id === m.id)[0].username}{' '}
-                          {state.lobby.players.filter(p => p.id === m.id)[0].admin && <strong>👑</strong>} :
+                          {state.lobby.players.filter(p => p.id === m.id)[0].username ?? ''}{' '}
+                          {(state.lobby.players.filter(p => p.id === m.id)[0].admin && <strong>👑</strong>) ?? ''} :
                         </strong>
                       </p>
                       <p style={{ marginLeft: 5 }}>{m.message}</p>
                     </Message>
                   ))}
               </Messages>
-              <div style={{ display: 'flex', flexDirection: 'row' }}>
+              <form
+                style={{ display: 'flex', flexDirection: 'row' }}
+                onSubmit={e => {
+                  e.preventDefault();
+                  state.socket.sendMessage(message);
+                  setMessage('');
+                }}
+              >
                 <input value={message} onChange={e => setMessage(e.target.value)} />
-                <button
-                  onClick={() => {
-                    state.socket.sendMessage(message);
-                    setMessage('');
-                  }}
-                >
-                  send
-                </button>
-              </div>
+                <button>send</button>
+              </form>
             </>
           )}
         </Column>
         <Column widthFlex={2}>
-          {/* <GameListing games={games} /> */}
           {games &&
             games.map(game => (
               <ListItem>

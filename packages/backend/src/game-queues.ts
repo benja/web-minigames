@@ -1,26 +1,29 @@
-import { GameLobbySizes, GameTypes, SocketEvents } from "@wmg/shared";
-import { Lobby } from "./utils/lobby";
-import { getLobbyById } from "./lobby-manager";
-import { getClientById } from "./client-manager";
-import { startGame, startGameWithLobbies, startGameWithLobbyIds } from "./game-manager";
+import { GameLobbySizes, GameTypes, SocketEvents } from '@wmg/shared';
+import { Lobby } from './utils/lobby';
+import { getLobbyById } from './lobby-manager';
+import { getClientById } from './client-manager';
+import { startGameWithLobbyIds } from './game-manager';
 
 type LobbyMeta = {
   id: string;
   numPlayers: number;
 };
+
 const queues: Partial<Record<GameTypes, LobbyMeta[]>> = {};
 
 export function addToQueue(lobby: Lobby, gameType: GameTypes) {
   if (!queues[gameType]) {
-    queues[gameType] = [{
-      id: lobby.getId(),
-      numPlayers: lobby.getPlayers().length,
-    }]
+    queues[gameType] = [
+      {
+        id: lobby.getId(),
+        numPlayers: lobby.getPlayers().length,
+      },
+    ];
   } else {
     queues[gameType]!.push({
       id: lobby.getId(),
       numPlayers: lobby.getPlayers().length,
-    })
+    });
   }
 }
 
@@ -33,7 +36,10 @@ export function removeFromQueueByLobbyId(lobbyId: string, gameType: GameTypes) {
 }
 
 export function removeCollectionFromQueue(lobbies: Lobby[], gameType: GameTypes) {
-  return removeCollectionFromQueueByLobbyId(lobbies.map(l => l.getId()), gameType)
+  return removeCollectionFromQueueByLobbyId(
+    lobbies.map(l => l.getId()),
+    gameType,
+  );
 }
 
 export function removeCollectionFromQueueByLobbyId(lobbyIds: string[], gameType: GameTypes) {
@@ -46,9 +52,11 @@ export function removeCollectionFromQueueByLobbyId(lobbyIds: string[], gameType:
     startGameWithLobbyIds(gameType, lobbyIds);
 
     lobbyIds.forEach(lobby => {
-      getLobbyById(lobby).getPlayers().forEach(player => {
-        getClientById(player).socket.emit(SocketEvents.GAME_START, [])
-      })
+      getLobbyById(lobby)
+        .getPlayers()
+        .forEach(player => {
+          getClientById(player).socket.emit(SocketEvents.GAME_START, []);
+        });
     });
   }
 }
@@ -90,7 +98,7 @@ function findCombinactories(gameType: GameTypes) {
           break;
         } else if (temporaryCombination === lobbyMax) {
           // Pair them and remove this one from the array
-          removeCollectionFromQueueByLobbyId([...group, current.id], gameType)
+          removeCollectionFromQueueByLobbyId([...group, current.id], gameType);
           break;
         } else {
           group = [...group, current.id];
@@ -100,13 +108,10 @@ function findCombinactories(gameType: GameTypes) {
   }
 }
 
-function printQueues() {
-}
-
 setInterval(() => {
-  console.log(`Checking ${Object.keys(queues).length} current queues:`)
+  console.log(`Checking ${Object.keys(queues).length} current queues:`);
   Object.keys(queues).map((gameType: string) => {
-    console.log(`[${gameType}] - ${queues[gameType as GameTypes]!.length} players in the queue`)
+    console.log(`[${gameType}] - ${queues[gameType as GameTypes]!.length} players in the queue`);
     findCombinactories(gameType as GameTypes);
-  })
-}, 5000)
+  });
+}, 5000);

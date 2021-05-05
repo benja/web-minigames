@@ -59,7 +59,7 @@ export default class LobbyHelper {
     console.log(`Created lobby for ${client.username} (${socket.id}) with id ${lobby.getId()}`);
 
     socket.emit(SocketEvents.LOBBY_JOIN, {
-      lobbyId: lobby.getId(),
+      id: lobby.getId(),
       players: [
         {
           username: client.username,
@@ -108,7 +108,7 @@ export default class LobbyHelper {
 
     lobby.getPlayers().forEach(p => {
       getClientById(p).socket.emit(SocketEvents.UPDATE_USERNAME, {
-        lobbyId: lobby.getId(),
+        id: lobby.getId(),
         players: lobby.getPlayers().map(p => {
           const client = getClientById(p);
           return {

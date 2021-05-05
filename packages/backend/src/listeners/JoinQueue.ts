@@ -1,8 +1,7 @@
 import { Socket } from 'socket.io';
 import { Listener } from '../listener';
-import { GameTypes, SocketEvents } from "@wmg/shared";
-import LobbyHelper from '../helpers/lobby-helper';
-import QueueHelper from "../helpers/queue.helpers";
+import { GameTypes, SocketEvents } from '@wmg/shared';
+import QueueHelper from '../helpers/queue.helpers';
 
 export class JoinQueue extends Listener {
   constructor() {
