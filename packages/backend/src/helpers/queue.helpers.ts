@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { GameTypes } from '@wmg/shared';
+import { GameTypes, SocketEvents } from "@wmg/shared";
 import { getClientById } from '../client-manager';
 import { getLobbyById } from '../lobby-manager';
 import { addToQueue, removeFromQueue } from '../game-queues';
@@ -15,6 +15,9 @@ export default class QueueHelper {
       throw new Error('You must be the lobby admin to join a game queue.')
     }
     addToQueue(lobby, gameType);
+    lobby.getPlayers().forEach(player => {
+      getClientById(player).socket.emit(SocketEvents.QUEUE_JOIN, gameType)
+    });
   }
 
   public static leave(socket: Socket, gameType: GameTypes) {
@@ -27,5 +30,8 @@ export default class QueueHelper {
       throw new Error('You must be the lobby admin to leave a game queue.')
     }
     removeFromQueue(lobby, gameType);
+    lobby.getPlayers().forEach(player => {
+      getClientById(player).socket.emit(SocketEvents.QUEUE_LEAVE, gameType)
+    });
   }
 }

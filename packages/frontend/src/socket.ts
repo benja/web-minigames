@@ -121,6 +121,22 @@ export class Sockets {
         },
       }));
     });
+
+    this.socket.on(SocketEvents.QUEUE_JOIN, (gameType: GameTypes) => {
+      this.dispatch(o => ({
+        ...o,
+        queue: {
+          type: gameType,
+        },
+      }));
+    });
+
+    this.socket.on(SocketEvents.QUEUE_LEAVE, (_gameType: GameTypes) => {
+      this.dispatch(o => ({
+        ...o,
+        queue: undefined,
+      }));
+    });
   }
 
   public updateUsername(username: string) {
@@ -139,20 +155,10 @@ export class Sockets {
 
   public startGameSearch(gameType: GameTypes) {
     this.socket.emit(SocketEvents.QUEUE_JOIN, gameType);
-    this.dispatch(o => ({
-      ...o,
-      queue: {
-        type: gameType,
-      },
-    }));
   }
 
   public leaveGameSearch(gameType: GameTypes) {
     this.socket.emit(SocketEvents.QUEUE_LEAVE, gameType);
-    this.dispatch(o => ({
-      ...o,
-      queue: undefined,
-    }));
   }
 
   public kickLobbyPlayer(id: string) {

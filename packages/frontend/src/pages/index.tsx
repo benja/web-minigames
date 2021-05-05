@@ -43,7 +43,7 @@ export default function Index() {
           })()}
           showName
         />
-        <Button text={'Leave queue'} onClick={() => state.socket.leaveGameSearch(state.queue.type)} />
+        {state.lobby.players.filter(p => p.id === state.account.id)[0].admin && <Button text={'Leave queue'} onClick={() => state.socket.leaveGameSearch(state.queue.type)} />}
       </Centered>
     );
   }
