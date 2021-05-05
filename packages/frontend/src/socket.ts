@@ -1,9 +1,9 @@
 import io from 'socket.io-client';
 import { Dispatch, SetStateAction } from 'react';
 import { DefaultStore } from './utils/store';
-import { SocketEvents } from '@wmg/shared';
-import toast from 'react-hot-toast';
+import { GameTypes, Lobby, SocketEvents } from '@wmg/shared';
 import { NextRouter } from 'next/router';
+import toast from 'react-hot-toast';
 
 export class Sockets {
   private readonly socket: SocketIOClient.Socket = null;
@@ -29,19 +29,19 @@ export class Sockets {
       toast.error(message);
     });
 
-    this.socket.on(
-      SocketEvents.LOBBY_JOIN,
-      (data: { lobbyId: string; players: { admin?: boolean; username: string }[] }) => {
-        this.dispatch(o => ({
-          ...o,
-          account: { ...o.account, admin: data.players.filter(p => p.username === o.account.username)[0].admin },
-          lobby: {
-            id: data.lobbyId,
-            players: data.players,
-          },
-        }));
-      },
-    );
+    this.socket.on(SocketEvents.LOBBY_JOIN, (data: Lobby) => {
+      console.log(data);
+      this.dispatch(o => ({
+        ...o,
+        account: { ...o.account, admin: data.players.filter(p => p.username === o.account.username)[0].admin },
+        lobby: {
+          ...o.lobby,
+          id: data.id,
+          players: data.players,
+          private: data.private,
+        },
+      }));
+    });
 
     this.socket.on(SocketEvents.LOBBY_LEAVE, (id: string) => {
       this.dispatch(o => ({
@@ -84,12 +84,12 @@ export class Sockets {
       });
     });
 
-    this.socket.on(SocketEvents.UPDATE_USERNAME, (data: { lobbyId: string; players: { username: string }[] }) => {
+    this.socket.on(SocketEvents.UPDATE_USERNAME, (data: { id: string; players: { username: string }[] }) => {
       this.dispatch(o => ({
         ...o,
         lobby: {
           ...o.lobby,
-          id: data.lobbyId,
+          id: data.id,
           players: data.players,
         },
       }));
@@ -101,6 +101,23 @@ export class Sockets {
         lobby: {
           ...o.lobby,
           messages: [...(o.lobby.messages || []), { id, message }],
+        },
+      }));
+    });
+
+    this.socket.on(SocketEvents.GAME_START, (elem: []) => {
+      this.dispatch(o => ({
+        ...o,
+        inQueue: false,
+      }));
+    });
+
+    this.socket.on(SocketEvents.LOBBY_SET_PRIVATE, (status: boolean) => {
+      this.dispatch(o => ({
+        ...o,
+        lobby: {
+          ...o.lobby,
+          private: status,
         },
       }));
     });
@@ -120,12 +137,34 @@ export class Sockets {
     this.socket.emit(SocketEvents.LOBBY_CREATE);
   }
 
+  public startGameSearch(gameType: GameTypes) {
+    this.socket.emit(SocketEvents.QUEUE_JOIN, gameType);
+    this.dispatch(o => ({
+      ...o,
+      queue: {
+        type: gameType,
+      },
+    }));
+  }
+
+  public leaveGameSearch(gameType: GameTypes) {
+    this.socket.emit(SocketEvents.QUEUE_LEAVE, gameType);
+    this.dispatch(o => ({
+      ...o,
+      queue: undefined,
+    }));
+  }
+
   public kickLobbyPlayer(id: string) {
     this.socket.emit(SocketEvents.LOBBY_KICK, id);
   }
 
   public joinLobby(id: string) {
     this.socket.emit(SocketEvents.LOBBY_JOIN, id);
+  }
+
+  public setPrivate(status: boolean) {
+    this.socket.emit(SocketEvents.LOBBY_SET_PRIVATE, status);
   }
 
   public leaveLobby() {

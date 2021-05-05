@@ -1,7 +1,7 @@
 import { SocketEvents } from '@wmg/shared';
 import { Socket } from 'socket.io';
-import { getClientById, setClientUsername, setCurrentLobby, setClientAdmin, getClient } from '../client-manager';
-import { getLobbyById, deleteLobby, createLobby } from '../lobby-manager';
+import { getClientById, setClientUsername, setCurrentLobby } from '../client-manager';
+import { getLobbyById, deleteLobby, createLobby, setLobbyPrivate } from '../lobby-manager';
 
 export default class LobbyHelper {
   public static leave(socket: Socket) {
@@ -35,7 +35,8 @@ export default class LobbyHelper {
 
     lobby.getPlayers().forEach(p => {
       getClientById(p).socket.emit(SocketEvents.LOBBY_JOIN, {
-        lobbyId: lobby.getId(),
+        id: lobby.getId(),
+        private: lobby.isPrivate(),
         players: lobby.getPlayers().map(p => {
           const client = getClientById(p);
           return {
@@ -58,7 +59,7 @@ export default class LobbyHelper {
     console.log(`Created lobby for ${client.username} (${socket.id}) with id ${lobby.getId()}`);
 
     socket.emit(SocketEvents.LOBBY_JOIN, {
-      lobbyId: lobby.getId(),
+      id: lobby.getId(),
       players: [
         {
           username: client.username,
@@ -107,7 +108,7 @@ export default class LobbyHelper {
 
     lobby.getPlayers().forEach(p => {
       getClientById(p).socket.emit(SocketEvents.UPDATE_USERNAME, {
-        lobbyId: lobby.getId(),
+        id: lobby.getId(),
         players: lobby.getPlayers().map(p => {
           const client = getClientById(p);
           return {
@@ -117,6 +118,20 @@ export default class LobbyHelper {
           };
         }),
       });
+    });
+  }
+
+  public static setPrivate(socket: Socket, status: boolean) {
+    const client = getClientById(socket.id);
+    if (!client.currentLobby) {
+      throw new Error('Could not find your lobby.');
+    }
+
+    const lobby = getLobbyById(client.currentLobby);
+    setLobbyPrivate(client.currentLobby, status);
+
+    lobby.getPlayers().forEach(p => {
+      getClientById(p).socket.emit(SocketEvents.LOBBY_SET_PRIVATE, status);
     });
   }
 }

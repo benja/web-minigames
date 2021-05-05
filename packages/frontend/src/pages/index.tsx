@@ -2,12 +2,17 @@ import { useRouter } from 'next/router';
 import React, { useContext, useEffect, useState } from 'react';
 import { Column, Container, Row } from '../ui/components/layouts';
 import { StoreContext } from '../utils/store';
-import { Game } from '@wmg/shared';
-import { GameListing, UserListing } from '../ui/components/organisms';
+import { GameLobbySizes } from '@wmg/shared';
+import { UserListing } from '../ui/components/organisms';
 import { toast } from 'react-hot-toast';
 import { useGames } from '../hooks/useGames';
 import styled from 'styled-components';
 import Avatar from 'react-avatar';
+import { Centered } from '../ui/components/layouts/Centered';
+import { Text } from '../ui/components/atoms/Text/Text';
+import { AvatarRow, Button } from '../ui/components/molecules';
+import { ListItem } from '../ui/components/atoms/ListItem/ListItem';
+import { GameEntry } from '../ui/components/molecules/GameEntry/GameEntry';
 
 export default function Index() {
   const router = useRouter();
@@ -25,6 +30,23 @@ export default function Index() {
       state.socket.joinLobby(lobbyId);
     }
   }, [lobbyId, state.lobby, state.socket]);
+
+  if (state.queue) {
+    return (
+      <Centered>
+        <Text header>You are currently in queue for {state.queue.type}...</Text>
+        <AvatarRow
+          users={(function () {
+            const emptyUsers = new Array(GameLobbySizes[state.queue.type]).fill({});
+            state.lobby.players.forEach((p, i) => (emptyUsers[i] = p));
+            return emptyUsers;
+          })()}
+          showName
+        />
+        <Button text={'Leave queue'} onClick={() => state.socket.leaveGameSearch(state.queue.type)} />
+      </Centered>
+    );
+  }
 
   return (
     <Container>
@@ -53,39 +75,46 @@ export default function Index() {
                   state.lobby.messages.map(m => (
                     <Message>
                       <Avatar
-                        name={state.lobby.players
-                          .filter(p => p.id === m.id)[0]
-                          .username.split(/(?=[A-Z])/)
-                          .join(' ')}
+                        name={
+                          state.lobby.players
+                            .filter(p => p.id === m.id)[0]
+                            .username.split(/(?=[A-Z])/)
+                            .join(' ') ?? ''
+                        }
                         size="25"
                         round="5px"
                       />
                       <p style={{ marginLeft: 5 }}>
                         <strong>
-                          {state.lobby.players.filter(p => p.id === m.id)[0].username}{' '}
-                          {state.lobby.players.filter(p => p.id === m.id)[0].admin && <strong>👑</strong>} :
+                          {state.lobby.players.filter(p => p.id === m.id)[0].username ?? ''}{' '}
+                          {(state.lobby.players.filter(p => p.id === m.id)[0].admin && <strong>👑</strong>) ?? ''} :
                         </strong>
                       </p>
                       <p style={{ marginLeft: 5 }}>{m.message}</p>
                     </Message>
                   ))}
               </Messages>
-              <div style={{ display: 'flex', flexDirection: 'row' }}>
+              <form
+                style={{ display: 'flex', flexDirection: 'row' }}
+                onSubmit={e => {
+                  e.preventDefault();
+                  state.socket.sendMessage(message);
+                  setMessage('');
+                }}
+              >
                 <input value={message} onChange={e => setMessage(e.target.value)} />
-                <button
-                  onClick={() => {
-                    state.socket.sendMessage(message);
-                    setMessage('');
-                  }}
-                >
-                  send
-                </button>
-              </div>
+                <button>send</button>
+              </form>
             </>
           )}
         </Column>
         <Column widthFlex={2}>
-          <GameListing games={games} />
+          {games &&
+            games.map(game => (
+              <ListItem>
+                <GameEntry onClick={() => state.socket.startGameSearch(game.type)} {...game} />
+              </ListItem>
+            ))}
         </Column>
       </Row>
     </Container>

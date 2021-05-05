@@ -2,6 +2,9 @@ import { Listener } from '../listener';
 import { LobbyCreate } from './LobbyCreate';
 import { LobbyLeave } from './LobbyLeave';
 import { LobbyJoin } from './LobbyJoin';
+import { LobbySetPrivate } from './LobbySetPrivate';
+import { JoinQueue } from './JoinQueue';
+import { LeaveQueue } from './LeaveQueue';
 import { UpdateUsername } from './UpdateUsername';
 import { Disconnecting } from './Disconnecting';
 import { LobbyKick } from './LobbyKick';
@@ -15,4 +18,7 @@ export const events: Listener[] = [
   new LobbyKick(),
   new LobbyMessage(),
   new Disconnecting(),
+  new JoinQueue(),
+  new LeaveQueue(),
+  new LobbySetPrivate(),
 ];

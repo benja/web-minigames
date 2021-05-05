@@ -1,24 +1,20 @@
-import { getClient, getClientById, setClientAdmin, setCurrentLobby } from '../client-manager';
-import { getLobbyById } from '../lobby-manager';
+import { Game } from '@wmg/shared';
+import generateId from './generate-id';
 import { SocketEvents } from '@wmg/shared';
+import { getClientById, setClientAdmin, setCurrentLobby } from '../client-manager';
+import { getLobbyById } from '../lobby-manager';
 export class Lobby {
   private readonly id: string;
   private players: string[];
 
+  private currentGame: Game | null;
+  private inQueue: boolean = false;
+  private private: boolean = false;
+
   constructor() {
-    this.id = Lobby.generateId();
+    this.id = generateId();
+    this.currentGame = null;
     this.players = [];
-  }
-
-  private static generateId(): string {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const result = [];
-
-    for (let i = 0; i < 6; i++) {
-      result.push(chars.charAt(Math.floor(Math.random() * chars.length)));
-    }
-
-    return result.join('');
   }
 
   public kickPlayer(id: string): boolean {
@@ -42,7 +38,7 @@ export class Lobby {
     const lobby = getLobbyById(this.getId());
     lobby.getPlayers().forEach(p => {
       getClientById(p).socket.emit(SocketEvents.LOBBY_JOIN, {
-        lobbyId: lobby.getId(),
+        id: lobby.getId(),
         players: lobby.getPlayers().map(p => {
           const client = getClientById(p);
           return {
@@ -59,6 +55,34 @@ export class Lobby {
 
   public getId(): string {
     return this.id;
+  }
+
+  public isInGame(): boolean {
+    return !!this.currentGame;
+  }
+
+  public getGame(): Game | null {
+    return this.currentGame;
+  }
+
+  public setInQueue(status: boolean): void {
+    this.inQueue = status;
+  }
+
+  public isPrivate(): boolean {
+    return this.private;
+  }
+
+  public setPrivate(state: boolean) {
+    this.private = state;
+  }
+
+  public isInQueue(): boolean {
+    return this.inQueue;
+  }
+
+  public setGame(game: Game): void {
+    this.currentGame = game;
   }
 
   public getPlayers(): string[] {
