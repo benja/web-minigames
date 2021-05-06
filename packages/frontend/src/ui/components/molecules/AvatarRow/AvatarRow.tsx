@@ -7,7 +7,6 @@ interface AvatarRowProps {
   showName?: boolean;
 }
 export function AvatarRow(props: AvatarRowProps) {
-  console.log(props.users)
   return (
     <Container>
       {props.users.map(user =>

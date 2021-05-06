@@ -73,6 +73,7 @@ export class Sockets {
             },
             lobby: {
               id: null,
+              private: false,
               players: null,
             },
           };

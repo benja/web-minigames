@@ -7,6 +7,7 @@ export interface User {
   id?: string;
   username: string;
   admin?: boolean;
+  image?: string;
 }
 
 export interface Game {

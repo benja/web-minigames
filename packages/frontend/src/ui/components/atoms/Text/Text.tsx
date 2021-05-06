@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 interface TextProps {
-  children: string;
+  children: React.ReactNode;
   header?: boolean;
   fontSize?: number;
 }
@@ -21,7 +21,7 @@ const StyledText = styled.p<TextProps>`
   font-size: ${props => props.fontSize ?? 16}px;
 `;
 
-const StyledBold = styled.b`
+const StyledBold = styled.b<TextProps>`
   margin: 0;
   padding: 0;
   
