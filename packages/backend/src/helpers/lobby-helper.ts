@@ -56,13 +56,12 @@ export default class LobbyHelper {
 
     user.socket.emit(SocketEvents.LOBBY_JOIN, {
       id: lobby.getId(),
-      players: [
-        {
-          username: user.username,
-          id: user.socket.id,
-          admin: user.admin,
-        },
-      ],
+      players: [{
+        id: user.socket.id,
+        username: user.username,
+        admin: true,
+      }],
+      private: lobby.isPrivate(),
     });
   }
 
@@ -86,6 +85,7 @@ export default class LobbyHelper {
       const player = getClientById(p);
       player.socket.emit(SocketEvents.LOBBY_SEND_MESSAGE, {
         id: user.socket.id,
+        username: user.username,
         message,
       });
     });

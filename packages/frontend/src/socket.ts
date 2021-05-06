@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 import { Dispatch, SetStateAction } from 'react';
 import { DefaultStore } from './utils/store';
-import { GameTypes, Lobby, SocketEvents } from '@wmg/shared';
+import { GameTypes, Lobby, Message, SocketEvents } from '@wmg/shared';
 import { NextRouter } from 'next/router';
 import toast from 'react-hot-toast';
 
@@ -30,6 +30,7 @@ export class Sockets {
     });
 
     this.socket.on(SocketEvents.LOBBY_JOIN, (data: Lobby) => {
+      console.log(data);
       this.dispatch(o => ({
         ...o,
         account: {
@@ -97,12 +98,12 @@ export class Sockets {
       }));
     });
 
-    this.socket.on(SocketEvents.LOBBY_SEND_MESSAGE, ({ id, message }: { id: string; message: string }) => {
+    this.socket.on(SocketEvents.LOBBY_SEND_MESSAGE, (data: Message) => {
       this.dispatch(o => ({
         ...o,
         lobby: {
           ...o.lobby,
-          messages: [...(o.lobby.messages || []), { id, message }],
+          messages: [...(o.lobby.messages || []), data],
         },
       }));
     });

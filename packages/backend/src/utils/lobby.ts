@@ -3,6 +3,7 @@ import generateId from './generate-id';
 import { SocketEvents } from '@wmg/shared';
 import { getClientById, setClientAdmin, setCurrentLobby } from '../client-manager';
 import { getLobbyById } from '../lobby-manager';
+
 export class Lobby {
   private readonly id: string;
   private players: string[];

@@ -18,11 +18,17 @@ export interface Game {
   type: GameTypes;
 }
 
+export interface Message {
+  id: string;
+  username: string;
+  message: string;
+}
+
 export interface Lobby {
   id: string;
   players: User[];
   private: boolean;
-  messages?: { id: string; message: string }[];
+  messages?: Message[];
 }
 
 export interface Queue {

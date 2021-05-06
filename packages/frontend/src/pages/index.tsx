@@ -80,19 +80,14 @@ export default function Index() {
               state.lobby.messages.map((m, index) => (
                 <Message key={`message-${m}-${index}`}>
                   <Avatar
-                    name={
-                      state.lobby.players
-                        .filter(p => p.id === m.id)[0]
-                        .username.split(/(?=[A-Z])/)
-                        .join(' ') ?? ''
-                    }
+                    name={m.username}
                     size="25"
                     round="5px"
                   />
                   <p style={{ marginLeft: 5 }}>
                     <strong>
-                      {state.lobby.players.filter(p => p.id === m.id)[0].username ?? ''}{' '}
-                      {(state.lobby.players.filter(p => p.id === m.id)[0].admin && <strong>👑</strong>) ?? ''} :
+                      {m.username}
+                      {(state.account.admin && <strong>👑</strong>) ?? ''} :
                     </strong>
                   </p>
                   <p style={{ marginLeft: 5 }}>{m.message}</p>
@@ -120,10 +115,14 @@ export default function Index() {
             games.map((game, index) => (
               <ListItem key={`game-${game.type}-${index}`}>
                 <GameEntry onClick={() => {
-                  if (state.lobby.players.filter(p => p.id === state.account.id)[0].admin) {
-                    state.socket.startGameSearch(game.type)
+                  if (state.lobby) {
+                    if (state.lobby.players.filter(p => p.id === state.account.id)[0].admin) {
+                      state.socket.startGameSearch(game.type)
+                    } else {
+                      toast.error("You must be the lobby leader to start a game.")
+                    }
                   } else {
-                    toast.error("You must be the lobby leader to start a game.")
+                    toast.error("You must be in a lobby to start a game.")
                   }
                 }} {...game} />
               </ListItem>
