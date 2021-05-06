@@ -116,7 +116,8 @@ export default function Index() {
               <ListItem key={`game-${game.type}-${index}`}>
                 <GameEntry onClick={() => {
                   if (state.lobby) {
-                    if (state.lobby.players.filter(p => p.id === state.account.id)[0].admin) {
+                    const isAdmin = state.lobby.players.filter(p => p.id === state.account.id)[0];
+                    if (isAdmin && isAdmin.admin) {
                       state.socket.startGameSearch(game.type)
                     } else {
                       toast.error("You must be the lobby leader to start a game.")
