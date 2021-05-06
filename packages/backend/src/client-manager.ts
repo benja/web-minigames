@@ -1,12 +1,12 @@
 import { Socket } from 'socket.io';
 
-interface SocketUser {
+export interface SocketUser {
   username?: string;
   socket: Socket;
   admin?: boolean;
   currentLobby?: string;
 }
-export const clients: Map<string, SocketUser> = new Map();
+const clients: Map<string, SocketUser> = new Map();
 
 export function addClient(socket: Socket): void {
   if (hasClient(socket)) throw new Error('User already exists in the cluster.');
@@ -46,9 +46,9 @@ export function getClient(socket: Socket): SocketUser {
   return clients.get(socket.id)!;
 }
 
-export function deleteClient(socket: Socket): void {
-  if (!hasClient(socket)) throw new Error('No client exists with that socket identifier.');
-  clients.delete(socket.id);
+export function deleteClient(user: SocketUser): void {
+  if (!hasClient(user.socket)) throw new Error('No client exists with that socket identifier.');
+  clients.delete(user.socket.id);
 }
 
 export function hasClient(socket: Socket): boolean {
@@ -66,7 +66,6 @@ export function setCurrentLobby(socket: Socket, lobbyId: string | undefined): vo
 setInterval(() => {
   clients.forEach(c => {
     console.log({
-      id: c.socket.id,
       username: c.username,
       admin: c.admin,
       currentLobby: c.currentLobby,

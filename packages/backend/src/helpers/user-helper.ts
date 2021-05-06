@@ -1,15 +1,13 @@
 import { Socket } from 'socket.io';
-import { deleteClient, getClientById } from '../client-manager';
+import { deleteClient, getClientById, SocketUser } from '../client-manager';
 import LobbyHelper from './lobby-helper';
 
 export default class UserHelper {
-  public static disconnect(socket: Socket) {
-    const client = getClientById(socket.id);
-
-    if (client.currentLobby) {
-      LobbyHelper.leave(socket);
+  public static disconnect(user: SocketUser) {
+    if (user.currentLobby) {
+      LobbyHelper.leave(user);
     }
 
-    deleteClient(socket);
+    deleteClient(user);
   }
 }
