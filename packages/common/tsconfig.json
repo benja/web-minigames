@@ -1,12 +1,24 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src",
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": false,
+    "esModuleInterop": true,
     "composite": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
     "jsx": "react-jsx"
   },
-  "composite": true,
-  "include": ["./src/**/*"],
-  "references": []
+  "references": [{ "path": "../shared" }],
+  "include": ["./src/**/*", "next-env.d.ts"],
+  "exclude": ["node_modules"]
 }

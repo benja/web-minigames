@@ -12,6 +12,8 @@
   "scripts": {
     "start:be": "yarn workspace @wmg/backend dev",
     "start:fe": "yarn workspace @wmg/frontend dev",
+    "start:games": "yarn workspace @wmg/games start",
+    "start:game-dev": "yarn workspace @wmg/games-dev-client start",
     "watch": "yarn build && lerna run --parallel build:watch",
     "build": "lerna run --parallel build:primaries && lerna run --parallel build:secondaries && lerna run --parallel build:tertiaries"
   }

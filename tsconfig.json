@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "jsx": "react",
+    "jsx": "react",
     "target": "esnext",
     "module": "commonjs",
     "strict": true,
@@ -7,6 +9,7 @@
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
-    "declaration": true
+    "declaration": true,
+    "jsx": "react"
   }
 }
