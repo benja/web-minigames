@@ -37,17 +37,18 @@ export default function Index() {
         <AvatarRow
           users={(function () {
             const emptyUsers = new Array(GameLobbySizes[state.queue.type]).fill({});
+            console.log(GameLobbySizes[state.queue.type]);
             state.lobby.players.forEach((p, i) => (emptyUsers[i] = p));
             return emptyUsers;
           })()}
           showName
         />
-        {state.lobby.players.filter(p => p.id === state.account.id)[0].admin && <Button text={'Leave queue'} onClick={() => state.socket.leaveGameSearch(state.queue.type)} />}
+        {state.lobby.players.filter(p => p.id === state.account.id)[0].admin && (
+          <Button text={'Leave queue'} onClick={() => state.socket.leaveGameSearch(state.queue.type)} />
+        )}
       </Centered>
     );
   }
-
-  console.log(state)
 
   return (
     <Container>
@@ -57,7 +58,9 @@ export default function Index() {
             {(state.lobby?.players || []).map((u, index) => (
               <UserEntry {...u} key={`user-${u.username}-index-${index}`} />
             ))}
-            {!state.lobby?.id ? <button onClick={() => state.socket?.createLobby()}>Create lobby</button> :
+            {!state.lobby?.id ? (
+              <button onClick={() => state.socket?.createLobby()}>Create lobby</button>
+            ) : (
               <Button
                 onClick={() => {
                   navigator.clipboard.writeText(`http://localhost:3000/?lobbyId=${state.lobby.id}`);
@@ -71,62 +74,61 @@ export default function Index() {
                 }}
                 text={copied ? 'Copied' : 'Copy lobby link'}
               />
-            }
+            )}
           </Card>
           {state.lobby?.id && (
-          <Card header={'Messages'} subHeader={'Chat directly with your lobby'}>
-            {state.lobby.messages &&
-            <Messages>
-              {state.lobby.messages.map((m, index) => (
-                <Message key={`message-${m}-${index}`}>
-                  <Avatar
-                    name={m.username}
-                    size="25"
-                    round="5px"
-                  />
-                  <p style={{ marginLeft: 5 }}>
-                    <strong>
-                      {m.username}
-                      {(state.account.admin && <strong>👑</strong>) ?? ''} :
-                    </strong>
-                  </p>
-                  <p style={{ marginLeft: 5 }}>{m.message}</p>
-                </Message>
-              ))}
-            </Messages>
-            }
-            <form
-              style={{ display: 'flex', flexDirection: 'row' }}
-              onSubmit={e => {
-                e.preventDefault();
-                if (message) {
-                  state.socket.sendMessage(message);
-                  setMessage('');
-                }
-              }}
-            >
-              <input value={message} onChange={e => setMessage(e.target.value)} />
-              <button>send</button>
-            </form>
-          </Card>
+            <Card header={'Messages'} subHeader={'Chat directly with your lobby'}>
+              {state.lobby.messages && (
+                <Messages>
+                  {state.lobby.messages.map((m, index) => (
+                    <Message key={`message-${m}-${index}`}>
+                      <Avatar name={m.username} size="25" round="5px" />
+                      <p style={{ marginLeft: 5 }}>
+                        <strong>
+                          {m.username}
+                          {(state.account.admin && <strong>👑</strong>) ?? ''} :
+                        </strong>
+                      </p>
+                      <p style={{ marginLeft: 5 }}>{m.message}</p>
+                    </Message>
+                  ))}
+                </Messages>
+              )}
+              <form
+                style={{ display: 'flex', flexDirection: 'row' }}
+                onSubmit={e => {
+                  e.preventDefault();
+                  if (message) {
+                    state.socket.sendMessage(message);
+                    setMessage('');
+                  }
+                }}
+              >
+                <input value={message} onChange={e => setMessage(e.target.value)} />
+                <button>send</button>
+              </form>
+            </Card>
           )}
         </Column>
         <Column widthFlex={2}>
           {games &&
             games.map((game, index) => (
               <ListItem key={`game-${game.type}-${index}`}>
-                <GameEntry onClick={() => {
-                  if (state.lobby) {
-                    const isAdmin = state.lobby.players.filter(p => p.id === state.account.id)[0];
-                    if (isAdmin && isAdmin.admin) {
-                      state.socket.startGameSearch(game.type)
+                <GameEntry
+                  onClick={() => {
+                    if (state.lobby) {
+                      const isAdmin = state.lobby.players.filter(p => p.id === state.account.id)[0];
+                      if (isAdmin && isAdmin.admin) {
+                        state.socket.startGameSearch(game.type);
+                      } else {
+                        toast.error('You must be the lobby leader to start a game.');
+                      }
                     } else {
-                      toast.error("You must be the lobby leader to start a game.")
+                      toast.error('You must be in a lobby to start a game.');
                     }
-                  } else {
-                    toast.error("You must be in a lobby to start a game.")
-                  }
-                }} {...game} />
+                  }}
+                  {...game}
+                />
               </ListItem>
             ))}
         </Column>

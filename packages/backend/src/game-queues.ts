@@ -65,9 +65,7 @@ function findCombinactories(gameType: GameTypes) {
   const lobbyMax = GameLobbySizes[gameType as GameTypes];
   const queue = queues[gameType as GameTypes]!;
 
-  if (queue.length === 0) {
-    return;
-  }
+  if (queue.length === 0) return;
 
   if (queue.length === 1) {
     if (queue[0].numPlayers === lobbyMax) {

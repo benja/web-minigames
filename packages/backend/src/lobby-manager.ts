@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 import { Lobby } from './utils/lobby';
-import { Game } from "@wmg/shared";
+import { Game } from '@wmg/shared';
 
 const lobbies: Map<string, Lobby> = new Map();
 
@@ -68,9 +68,3 @@ export function setLobbyInGame(lobbyId: string, game: Game) {
   lobbies.set(lobby.getId(), lobby);
   return lobby;
 }
-
-/*
-setInterval(() => {
-  console.log(lobbies);
-}, 5000);
- */
