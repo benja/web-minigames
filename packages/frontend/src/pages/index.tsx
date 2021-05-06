@@ -1,18 +1,17 @@
 import { useRouter } from 'next/router';
 import React, { useContext, useEffect, useState } from 'react';
-import { Column, Container, Row } from '../ui/components/layouts';
+import { Card, Column, Container, Row } from '../ui/components/layouts';
 import { StoreContext } from '../utils/store';
 import { GameLobbySizes } from '@wmg/shared';
-import { UserListing } from '../ui/components/organisms';
 import { toast } from 'react-hot-toast';
 import { useGames } from '../hooks/useGames';
 import styled from 'styled-components';
 import Avatar from 'react-avatar';
 import { Centered } from '../ui/components/layouts/Centered';
-import { Text } from '../ui/components/atoms/Text/Text';
-import { AvatarRow, Button } from '../ui/components/molecules';
-import { ListItem } from '../ui/components/atoms/ListItem/ListItem';
-import { GameEntry } from '../ui/components/molecules/GameEntry/GameEntry';
+import { Text } from '../ui';
+import { AvatarRow, Button, UserEntry } from '../ui/components/molecules';
+import { ListItem } from '../ui';
+import { GameEntry } from '../ui/components/molecules';
 
 export default function Index() {
   const router = useRouter();
@@ -54,11 +53,12 @@ export default function Index() {
     <Container>
       <Row>
         <Column widthFlex={1}>
-          <UserListing users={state.lobby?.players || []} />
-          {!state.lobby?.id && <button onClick={() => state.socket?.createLobby()}>Create lobby</button>}
-          {state.lobby?.id && (
-            <>
-              <button
+          <Card header={'Lobby members'} subHeader={'People in your lobby'}>
+            {(state.lobby?.players || []).map((u, index) => (
+              <UserEntry {...u} key={`user-${u.username}-index-${index}`} />
+            ))}
+            {!state.lobby?.id ? <button onClick={() => state.socket?.createLobby()}>Create lobby</button> :
+              <Button
                 onClick={() => {
                   navigator.clipboard.writeText(`http://localhost:3000/?lobbyId=${state.lobby.id}`);
                   toast('Copied lobby link', {
@@ -69,45 +69,50 @@ export default function Index() {
                     setCopied(false);
                   }, 1000);
                 }}
-              >
-                {copied ? 'Copied' : 'Copy lobby link'}
-              </button>
-              <Messages>
-                {state.lobby.messages &&
-                  state.lobby.messages.map(m => (
-                    <Message>
-                      <Avatar
-                        name={
-                          state.lobby.players
-                            .filter(p => p.id === m.id)[0]
-                            .username.split(/(?=[A-Z])/)
-                            .join(' ') ?? ''
-                        }
-                        size="25"
-                        round="5px"
-                      />
-                      <p style={{ marginLeft: 5 }}>
-                        <strong>
-                          {state.lobby.players.filter(p => p.id === m.id)[0].username ?? ''}{' '}
-                          {(state.lobby.players.filter(p => p.id === m.id)[0].admin && <strong>👑</strong>) ?? ''} :
-                        </strong>
-                      </p>
-                      <p style={{ marginLeft: 5 }}>{m.message}</p>
-                    </Message>
-                  ))}
-              </Messages>
-              <form
-                style={{ display: 'flex', flexDirection: 'row' }}
-                onSubmit={e => {
-                  e.preventDefault();
+                text={copied ? 'Copied' : 'Copy lobby link'}
+              />
+            }
+          </Card>
+          {state.lobby?.id && (
+          <Card header={'Messages'} subHeader={'Chat directly with your lobby'}>
+            <Messages>
+              {state.lobby.messages &&
+              state.lobby.messages.map((m, index) => (
+                <Message key={`message-${m}-${index}`}>
+                  <Avatar
+                    name={
+                      state.lobby.players
+                        .filter(p => p.id === m.id)[0]
+                        .username.split(/(?=[A-Z])/)
+                        .join(' ') ?? ''
+                    }
+                    size="25"
+                    round="5px"
+                  />
+                  <p style={{ marginLeft: 5 }}>
+                    <strong>
+                      {state.lobby.players.filter(p => p.id === m.id)[0].username ?? ''}{' '}
+                      {(state.lobby.players.filter(p => p.id === m.id)[0].admin && <strong>👑</strong>) ?? ''} :
+                    </strong>
+                  </p>
+                  <p style={{ marginLeft: 5 }}>{m.message}</p>
+                </Message>
+              ))}
+            </Messages>
+            <form
+              style={{ display: 'flex', flexDirection: 'row' }}
+              onSubmit={e => {
+                e.preventDefault();
+                if (message) {
                   state.socket.sendMessage(message);
                   setMessage('');
-                }}
-              >
-                <input value={message} onChange={e => setMessage(e.target.value)} />
-                <button>send</button>
-              </form>
-            </>
+                }
+              }}
+            >
+              <input value={message} onChange={e => setMessage(e.target.value)} />
+              <button>send</button>
+            </form>
+          </Card>
           )}
         </Column>
         <Column widthFlex={2}>

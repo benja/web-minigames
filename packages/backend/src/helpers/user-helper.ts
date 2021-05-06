@@ -7,7 +7,7 @@ export default class UserHelper {
     const client = getClientById(socket.id);
 
     if (client.currentLobby) {
-     LobbyHelper.leave(socket);
+      LobbyHelper.leave(socket);
     }
 
     deleteClient(socket);

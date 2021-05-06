@@ -1,5 +1,6 @@
 import { Socket } from 'socket.io';
 import { SocketEvents } from '@wmg/shared';
+import { clients } from './client-manager';
 
 export abstract class Listener {
   public readonly eventName: SocketEvents;
@@ -13,7 +14,7 @@ export abstract class Listener {
     try {
       await this.handle(socket, data);
     } catch (err) {
-      console.log(`Emitted error: ${err.message}`);
+      console.log(`[${socket.id}] Emitted error: ${err.message}`);
       socket.emit(SocketEvents.ERROR, err.message);
     }
   }

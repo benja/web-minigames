@@ -69,6 +69,8 @@ export function setLobbyInGame(lobbyId: string, game: Game) {
   return lobby;
 }
 
+/*
 setInterval(() => {
   console.log(lobbies);
 }, 5000);
+ */

@@ -47,6 +47,8 @@ const StyledCard = styled.div`
   height: 100%;
   width: 100%;
   
+  margin: 10px 0;
+  
   display: flex;
   flex-direction: column;
   

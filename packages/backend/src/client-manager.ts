@@ -6,7 +6,7 @@ interface SocketUser {
   admin?: boolean;
   currentLobby?: string;
 }
-const clients: Map<string, SocketUser> = new Map();
+export const clients: Map<string, SocketUser> = new Map();
 
 export function addClient(socket: Socket): void {
   if (hasClient(socket)) throw new Error('User already exists in the cluster.');

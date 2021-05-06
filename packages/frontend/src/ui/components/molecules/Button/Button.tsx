@@ -8,7 +8,7 @@ interface ButtonProps {
 export function Button(props: ButtonProps) {
   return (
     <StyledButton onClick={props.onClick}>
-      <Text>{props.text}</Text>
+      <Text fontSize={12}>{props.text}</Text>
     </StyledButton>
   )
 }
@@ -19,7 +19,7 @@ const StyledButton = styled.div`
   
   width: fit-content;
   
-  padding: 10px 20px;
+  padding: 5px 10px;
   border-radius: 10px;
   color: white;
   
