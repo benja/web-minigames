@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 
 interface TextProps {
   children: string;
@@ -6,8 +7,18 @@ interface TextProps {
 }
 export function Text(props: TextProps) {
   if (props.header) {
-    return <b>{props.children}</b>;
+    return <StyledBold>{props.children}</StyledBold>;
   } else {
-    return <p>{props.children}</p>;
+    return <StyledText>{props.children}</StyledText>;
   }
 }
+
+const StyledText = styled.p`
+  margin: 0;
+  padding: 0;
+`;
+
+const StyledBold = styled.b`
+  margin: 0;
+  padding: 0;
+`;

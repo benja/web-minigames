@@ -11,7 +11,7 @@ export function AvatarRow(props: AvatarRowProps) {
   return (
     <Container>
       {props.users.map(user =>
-        <UserItem>
+        <UserItem key={`user-${user.username}-${user.id}`}>
           <Avatar image={user.image} />
           {props.showName && <Text>{user.username}</Text>}
         </UserItem>

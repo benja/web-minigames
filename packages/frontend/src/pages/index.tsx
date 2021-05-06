@@ -48,6 +48,8 @@ export default function Index() {
     );
   }
 
+  console.log(state)
+
   return (
     <Container>
       <Row>
@@ -110,8 +112,8 @@ export default function Index() {
         </Column>
         <Column widthFlex={2}>
           {games &&
-            games.map(game => (
-              <ListItem>
+            games.map((game, index) => (
+              <ListItem key={`game-${game.type}-${index}`}>
                 <GameEntry onClick={() => {
                   if (state.lobby.players.filter(p => p.id === state.account.id)[0].admin) {
                     state.socket.startGameSearch(game.type)
