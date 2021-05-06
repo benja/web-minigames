@@ -136,7 +136,7 @@ export default function Index() {
 const Messages = styled.div`
   border: 1px solid #dedede;
   border-radius: 5px;
-  height: 150px;
+  height: 250px;
   flex-grow: 1;
   margin-top: 10px;
   padding: 0.5rem;
