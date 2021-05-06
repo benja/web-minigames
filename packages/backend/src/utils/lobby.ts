@@ -28,7 +28,9 @@ export class Lobby {
       const filteredPlayers = this.players.filter(p => p !== id);
       const randomLobbyPlayer = filteredPlayers[Math.floor(Math.random() * filteredPlayers.length)];
 
-      setClientAdmin(randomLobbyPlayer, true);
+      if (randomLobbyPlayer) {
+        setClientAdmin(randomLobbyPlayer, true);
+      }
     }
 
     setCurrentLobby(getClientById(id).socket, undefined);

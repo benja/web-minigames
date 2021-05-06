@@ -1,7 +1,7 @@
-import { Socket } from "socket.io";
-import { Listener } from "../listener";
-import { SocketEvents } from "@wmg/shared";
-import UserHelper from "../helpers/user-helper";
+import { Socket } from 'socket.io';
+import { Listener } from '../listener';
+import { SocketEvents } from '@wmg/shared';
+import UserHelper from '../helpers/user-helper';
 
 export class Disconnecting extends Listener {
   constructor() {
@@ -9,6 +9,6 @@ export class Disconnecting extends Listener {
   }
 
   async handle(socket: Socket) {
-    UserHelper.disconnect(socket)
+    UserHelper.disconnect(socket);
   }
 }

@@ -66,6 +66,7 @@ export function setCurrentLobby(socket: Socket, lobbyId: string | undefined): vo
 setInterval(() => {
   clients.forEach(c => {
     console.log({
+      id: c.socket.id,
       username: c.username,
       admin: c.admin,
       currentLobby: c.currentLobby,
