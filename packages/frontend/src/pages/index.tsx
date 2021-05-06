@@ -75,9 +75,9 @@ export default function Index() {
           </Card>
           {state.lobby?.id && (
           <Card header={'Messages'} subHeader={'Chat directly with your lobby'}>
+            {state.lobby.messages &&
             <Messages>
-              {state.lobby.messages &&
-              state.lobby.messages.map((m, index) => (
+              {state.lobby.messages.map((m, index) => (
                 <Message key={`message-${m}-${index}`}>
                   <Avatar
                     name={m.username}
@@ -94,6 +94,7 @@ export default function Index() {
                 </Message>
               ))}
             </Messages>
+            }
             <form
               style={{ display: 'flex', flexDirection: 'row' }}
               onSubmit={e => {

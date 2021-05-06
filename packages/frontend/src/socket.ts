@@ -42,6 +42,7 @@ export class Sockets {
           id: data.id,
           players: data.players,
           private: data.private,
+          messages: []
         },
       }));
     });
