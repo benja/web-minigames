@@ -1,15 +1,17 @@
-import { GameListener } from "./game-listener";
-import { DrawIt } from "./draw-it";
-import { GameTypes } from "@wmg/shared";
+import { GameListener } from './game-listener';
+import { DrawIt } from './draw-it';
+import { GameTypes } from '@wmg/shared';
 
-const listeners: {
+interface ListenerTypes {
   gameType: GameTypes;
-  listener: GameListener
-}[] = [
+  listener: GameListener;
+}
+
+const listeners: ListenerTypes[] = [
   ...DrawIt.getListeners().map(listener => ({
     gameType: GameTypes.DRAWING,
-    listener
-  }))
-]
+    listener,
+  })),
+];
 
 export default listeners;
