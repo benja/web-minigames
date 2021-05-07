@@ -1,7 +1,7 @@
-import { Socket } from "socket.io";
-import { GameListener } from "./game-listener";
-import { GameTypes } from "@wmg/shared";
-import generateId from "../utils/generate-id";
+import { Socket } from 'socket.io';
+import { GameListener } from './game-listener';
+import { GameTypes } from '@wmg/shared';
+import generateId from '../utils/generate-id';
 
 export interface GameUser {
   socket: Socket;
@@ -22,9 +22,7 @@ export abstract class GameCore<T extends GameTypes> implements IGameCore {
 
   public players: string[] = [];
 
-  protected constructor(gameType: T,
-                        players: string[],
-                        clientManager: ClientHelper) {
+  protected constructor(gameType: T, players: string[], clientManager: ClientHelper) {
     this.gameType = gameType;
     this.clientManager = clientManager;
     this.gameId = generateId();
@@ -48,7 +46,7 @@ export abstract class GameCore<T extends GameTypes> implements IGameCore {
   public emitToAll(eventName: string, data?: any) {
     this.players.forEach(player => {
       this.emit(this.clientManager.getClientById(player).socket, eventName, data);
-    })
+    });
   }
 
   public getClientManager(): ClientHelper {
