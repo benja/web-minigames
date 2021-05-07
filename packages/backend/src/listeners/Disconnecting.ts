@@ -1,4 +1,3 @@
-import { Socket } from 'socket.io';
 import { Listener } from '../listener';
 import { SocketEvents } from '@wmg/shared';
 import UserHelper from '../helpers/user-helper';

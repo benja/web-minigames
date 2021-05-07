@@ -1,4 +1,3 @@
-import { Socket } from 'socket.io';
 import { Listener } from '../listener';
 import { GameTypes, SocketEvents } from '@wmg/shared';
 import QueueHelper from '../helpers/queue.helpers';
