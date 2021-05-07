@@ -6,13 +6,11 @@ let gameManagerInstance: GameManager | null = null;
 export function mountGame() {
   gameManagerInstance = new GameManager();
   gameManagerInstance.start();
-  (window as any)._currentGame = gameManagerInstance;
 }
 
 export function unMountGame() {
   gameManagerInstance?.stop();
   gameManagerInstance = null;
-  (window as any)._currentGame = null;
 }
 
 export class GameManager {
@@ -27,18 +25,14 @@ export class GameManager {
   }
 
   public start() {
-    this.canvas = document.getElementById(
-      DRAW_IT_CANVAS_ID
-    ) as HTMLCanvasElement;
-    this.canvasWrapper = document.getElementById(
-      DRAW_IT_CONTAINER_ID
-    ) as HTMLDivElement;
+    this.canvas = document.getElementById(DRAW_IT_CANVAS_ID) as HTMLCanvasElement;
+    this.canvasWrapper = document.getElementById(DRAW_IT_CONTAINER_ID) as HTMLDivElement;
 
     this.canvas && this.draw();
   }
 
   public stop() {
-    window.removeEventListener("resize", this.updateCanvasSize);
+    window.removeEventListener('resize', this.updateCanvasSize);
   }
 
   public updateCanvasSize() {
@@ -53,13 +47,13 @@ export class GameManager {
   }
 
   public getCanvasContext() {
-    return this.canvas?.getContext("2d");
+    return this.canvas?.getContext('2d');
   }
 
   public getCanvasSize() {
     return {
       width: this.canvas?.width ?? 0,
-      height: this.canvas?.height ?? 0
-    }
+      height: this.canvas?.height ?? 0,
+    };
   }
 }
