@@ -22,7 +22,7 @@ export default function Index() {
   const { lobbyId } = router.query;
 
   const { data: games } = useGames({
-    limit: state.lobby && state.lobby.players.length
+    limit: state.lobby ? state.lobby.players.length : 0
   });
 
   useEffect(() => {
