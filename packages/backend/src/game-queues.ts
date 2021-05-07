@@ -9,22 +9,15 @@ type LobbyMeta = {
   numPlayers: number;
 };
 
-const queues: Partial<Record<GameTypes, LobbyMeta[]>> = {};
+const queues: Record<GameTypes, LobbyMeta[]> = {
+  [GameTypes.DRAWING]: []
+};
 
 export function addToQueue(lobby: Lobby, gameType: GameTypes) {
-  if (!queues[gameType]) {
-    queues[gameType] = [
-      {
-        id: lobby.getId(),
-        numPlayers: lobby.getPlayers().length,
-      },
-    ];
-  } else {
-    queues[gameType]!.push({
-      id: lobby.getId(),
-      numPlayers: lobby.getPlayers().length,
-    });
-  }
+  queues[gameType].push({
+    id: lobby.getId(),
+    numPlayers: lobby.getPlayers().length,
+  });
 }
 
 export function removeFromQueue(lobby: Lobby, gameType: GameTypes) {
@@ -43,25 +36,21 @@ export function removeCollectionFromQueue(lobbies: Lobby[], gameType: GameTypes)
 }
 
 export function removeCollectionFromQueueByLobbyId(lobbyIds: string[], gameType: GameTypes) {
-  if (!queues[gameType]) {
-    return;
-  } else {
-    queues[gameType] = queues[gameType]!.filter(l => !lobbyIds.includes(l.id));
+  queues[gameType] = queues[gameType]!.filter(l => !lobbyIds.includes(l.id));
 
-    // Emit to each of the sockets in that room that the game has started
-    const game = startGameWithLobbyIds(gameType, lobbyIds);
+  // Emit to each of the sockets in that room that the game has started
+  const game = startGameWithLobbyIds(gameType, lobbyIds);
 
-    lobbyIds.forEach(lobby => {
-      getLobbyById(lobby)
-        .getPlayers()
-        .forEach(player => {
-          getClientById(player).socket.emit(SocketEvents.GAME_START, {
-            ...game,
-            clientManager: undefined
-          });
+  lobbyIds.forEach(lobby => {
+    getLobbyById(lobby)
+      .getPlayers()
+      .forEach(player => {
+        getClientById(player).socket.emit(SocketEvents.GAME_START, {
+          ...game,
+          clientManager: undefined
         });
-    });
-  }
+      });
+  });
 }
 
 function findCombinactories(gameType: GameTypes) {
