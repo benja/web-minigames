@@ -1,8 +1,8 @@
 import { Socket } from 'socket.io';
-import { GameTypes, SocketEvents } from "@wmg/shared";
+import { GameTypes, SocketEvents } from '@wmg/shared';
 import { getClient, SocketUser } from '../client-manager';
-import { getGame } from "../game-manager";
-import { GameCore } from "./game-core";
+import { getGame } from '../game-manager';
+import { GameCore } from './game-core';
 
 export abstract class GameListener {
   public readonly eventName: string;
@@ -13,7 +13,7 @@ export abstract class GameListener {
 
   private static fetchCurrentGame(user: SocketUser): GameCore<GameTypes> {
     if (!user.currentGame) {
-      throw new Error("You are not currently in a game.")
+      throw new Error('You are not currently in a game.');
     }
     return getGame(user.currentGame);
   }
