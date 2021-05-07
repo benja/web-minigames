@@ -34,7 +34,7 @@ export class GameManager {
     this.canvas = document.getElementById(DRAW_IT_CANVAS_ID) as HTMLCanvasElement;
     this.canvasWrapper = document.getElementById(DRAW_IT_CONTAINER_ID) as HTMLDivElement;
 
-    this.hand = new Hand(this);
+    this.hand = new Hand();
 
     this.canvas.width = this.canvasWrapper.offsetWidth;
     this.canvas.height = this.canvasWrapper.offsetHeight;
