@@ -18,11 +18,12 @@ export default function Index() {
   const [copied, setCopied] = useState(false);
   const [message, setMessage] = useState('');
 
-  const { data: games } = useGames();
   const { state } = useContext(StoreContext);
   const { lobbyId } = router.query;
 
-  console.log(state);
+  const { data: games } = useGames({
+    limit: state.lobby && state.lobby.players.length,
+  });
 
   useEffect(() => {
     if (!state.socket || state.lobby || !state.account) return;

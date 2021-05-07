@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { GameTypes, SocketEvents } from "@wmg/shared";
+import { GameLobbySizes, GameTypes, SocketEvents } from "@wmg/shared";
 import { getClientById, SocketUser } from '../client-manager';
 import { getLobbyById } from '../lobby-manager';
 import { addToQueue, removeFromQueue } from '../game-queues';
@@ -12,6 +12,9 @@ export default class QueueHelper {
     const lobby = getLobbyById(user.currentLobby);
     if (lobby.getAdmin() !== user.socket.id) {
       throw new Error('You must be the lobby admin to join a game queue.')
+    }
+    if (lobby.getPlayers().length > GameLobbySizes[gameType]) {
+      throw new Error('Your lobby is too full to queue for this event.')
     }
     addToQueue(lobby, gameType);
     lobby.getPlayers().forEach(player => {

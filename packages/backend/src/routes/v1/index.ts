@@ -1,9 +1,12 @@
 import { Request, Response, Router } from 'express';
 import { GameLobbySizes, GameTypes } from '@wmg/shared';
+import * as yup from "yup";
 
 export const api = Router();
 
-api.get('/games', (req: Request, res: Response) => {
+api.get('/games', async (req: Request, res: Response) => {
+  const { limit } = await querySchema.validate(req.query);
+
   return void res.json([
     {
       name: 'Draw it',
@@ -21,5 +24,9 @@ api.get('/games', (req: Request, res: Response) => {
       limit: GameLobbySizes[GameTypes.DRAWING],
       image: 'https://avatars.githubusercontent.com/u/16708653?s=400&u=b96a5b2534bdd50476bddf50d0290985b5888687&v=4',
     },
-  ]);
+  ].filter(g => limit ? g.limit > limit : true));
 });
+
+const querySchema = yup.object({
+  limit: yup.number().notRequired()
+}).required().noUnknown();
