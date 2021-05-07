@@ -22,6 +22,8 @@ export default class LobbyHelper {
   public static join(user: SocketUser, id: string) {
     const lobby = getLobbyById(id);
 
+    if (!user.username) return;
+
     this.leave(user);
 
     setCurrentLobby(user.socket, lobby.getId());
@@ -56,11 +58,13 @@ export default class LobbyHelper {
 
     user.socket.emit(SocketEvents.LOBBY_JOIN, {
       id: lobby.getId(),
-      players: [{
-        id: user.socket.id,
-        username: user.username,
-        admin: true,
-      }],
+      players: [
+        {
+          id: user.socket.id,
+          username: user.username,
+          admin: true,
+        },
+      ],
       private: lobby.isPrivate(),
     });
   }

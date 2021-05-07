@@ -65,9 +65,7 @@ function findCombinactories(gameType: GameTypes) {
   const lobbyMax = GameLobbySizes[gameType as GameTypes];
   const queue = queues[gameType as GameTypes]!;
 
-  if (queue.length === 0) {
-    return;
-  }
+  if (queue.length === 0) return;
 
   if (queue.length === 1) {
     if (queue[0].numPlayers === lobbyMax) {
@@ -118,9 +116,13 @@ function findCombinactories(gameType: GameTypes) {
 }
 
 setInterval(() => {
-  console.log(`Checking ${Object.keys(queues).length} current queues:`);
-  Object.keys(queues).map((gameType: string) => {
-    console.log(`[${gameType}] - ${queues[gameType as GameTypes]!.length} players in the queue`);
-    findCombinactories(gameType as GameTypes);
-  });
+  try {
+    console.log(`Checking ${Object.keys(queues).length} current queues:`);
+    Object.keys(queues).map((gameType: string) => {
+      console.log(`[${gameType}] - ${queues[gameType as GameTypes]!.length} players in the queue`);
+      findCombinactories(gameType as GameTypes);
+    });
+  } catch (err) {
+    console.log(err);
+  }
 }, 5000);

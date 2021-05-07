@@ -30,19 +30,18 @@ export class Sockets {
     });
 
     this.socket.on(SocketEvents.LOBBY_JOIN, (data: Lobby) => {
-      console.log(data);
       this.dispatch(o => ({
         ...o,
         account: {
           ...o.account,
-          admin: data.players && data.players.filter(p => p.username === o.account.username)[0].admin
+          admin: data.players && data.players.filter(p => p.username === o.account.username)[0].admin,
         },
         lobby: {
           ...o.lobby,
           id: data.id,
           players: data.players,
           private: data.private,
-          messages: []
+          messages: [],
         },
       }));
     });

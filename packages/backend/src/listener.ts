@@ -13,7 +13,6 @@ export abstract class Listener {
     console.log(this.eventName, socket.id, data);
     try {
       const client = getClient(socket);
-
       await this.handle(client, data);
     } catch (err) {
       console.log(`[${socket.id}] Emitted error: ${err.message}`);

@@ -9,18 +9,19 @@ interface DrawItProps {
   socket: SocketIOClient.Socket;
   game: Game;
 }
+
 export function DrawIt(props: DrawItProps) {
   useEffect(() => {
     mountGame();
 
     return () => {
       unMountGame();
-    }
-  }, [])
+    };
+  }, []);
 
   return (
     <GameContainer id={DRAW_IT_CONTAINER_ID}>
       <canvas id={DRAW_IT_CANVAS_ID} />
     </GameContainer>
-  )
+  );
 }
