@@ -27,10 +27,8 @@ export class SocketServer {
         socket.on(event.eventName, (data: any) => event._handle(socket, data));
       });
 
-      modules.forEach(module => {
-        module.getListeners().forEach((event: GameListener) => {
-          socket.on(`${module.getGameType()}-${event.eventName}`, (data: any) => event._handle(socket, data))
-        })
+      modules.forEach((event) => {
+        socket.on(`${event.gameType}-${event.listener.eventName}`, (data: any) => event.listener._handle(socket, data))
       })
     });
   }

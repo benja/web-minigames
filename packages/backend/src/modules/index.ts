@@ -1,21 +1,15 @@
-import { GameCore, GameUser } from "./game-core";
-import { DrawIt } from "./draw-it/DrawIt";
-import { getClientById as fetchClient } from "../client-manager";
+import { GameListener } from "./game-listener";
+import { DrawIt } from "./draw-it";
 import { GameTypes } from "@wmg/shared";
 
-function getClientById(clientId: string): GameUser {
-  const client = fetchClient(clientId);
-  if (!client.username) {
-    throw new Error("Client has no username.")
-  }
-  return {
-    socket: client.socket,
-    username: client.username
-  }
-}
-
-const modules: GameCore<GameTypes>[] = [
-  new DrawIt({ getClientById }, [])
+const listeners: {
+  gameType: GameTypes;
+  listener: GameListener
+}[] = [
+  ...DrawIt.getListeners().map(listener => ({
+    gameType: GameTypes.DRAWING,
+    listener
+  }))
 ]
 
-export default modules;
+export default listeners;

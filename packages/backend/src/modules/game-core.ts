@@ -37,8 +37,6 @@ export abstract class GameCore<T extends GameTypes> implements IGameCore {
 
   abstract onPlayerLeave(socketId: string): void;
 
-  abstract getListeners(): GameListener[];
-
   public getGameType(): GameTypes {
     return this.gameType;
   }

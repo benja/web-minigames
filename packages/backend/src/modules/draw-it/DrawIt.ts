@@ -21,7 +21,7 @@ export class DrawIt extends GameCore<GameTypes.DRAWING> {
     return this.emitToAll(DrawItSocketEvents.GAME_PLAYER_LEAVE, socketId);
   }
 
-  getListeners(): GameListener[] {
+  static getListeners(): GameListener[] {
     return listeners;
   }
 }
