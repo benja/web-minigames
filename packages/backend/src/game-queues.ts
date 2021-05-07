@@ -89,17 +89,26 @@ function findCombinactories(gameType: GameTypes) {
       removeCollectionFromQueueByLobbyId([first.id, last.id], gameType);
     } else {
       let group = [first.id, last.id];
-      for (let j = i + 1; j < queue.length - i; j++) {
+
+      // If the length of these two is the same length as the list (could just do equals 2)
+      // Then break because we already know its not a fit
+      if (group.length === queue.length) {
+        break;
+      }
+
+      for (let j = i + 1; j < queue.length - (i + 1); j++) {
         const current = queue[j];
         const temporaryCombination = combination + current.numPlayers;
-        if (temporaryCombination > lobbyMax) {
-          break;
-        } else if (temporaryCombination === lobbyMax) {
+
+        if (temporaryCombination === lobbyMax) {
           // Pair them and remove this one from the array
           removeCollectionFromQueueByLobbyId([...group, current.id], gameType);
           break;
         } else {
+          // Add to the group of potentially matched candidates
+          // Increment the combination key for next iteration
           group = [...group, current.id];
+          combination = temporaryCombination;
         }
       }
     }
@@ -107,9 +116,13 @@ function findCombinactories(gameType: GameTypes) {
 }
 
 setInterval(() => {
-  console.log(`Checking ${Object.keys(queues).length} current queues:`);
-  Object.keys(queues).map((gameType: string) => {
-    console.log(`[${gameType}] - ${queues[gameType as GameTypes]!.length} players in the queue`);
-    findCombinactories(gameType as GameTypes);
-  });
+  try {
+    console.log(`Checking ${Object.keys(queues).length} current queues:`);
+    Object.keys(queues).map((gameType: string) => {
+      console.log(`[${gameType}] - ${queues[gameType as GameTypes]!.length} players in the queue`);
+      findCombinactories(gameType as GameTypes);
+    });
+  } catch (err) {
+    console.log(err);
+  }
 }, 5000);

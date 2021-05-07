@@ -22,13 +22,19 @@ export default function Index() {
   const { state } = useContext(StoreContext);
   const { lobbyId } = router.query;
 
+  console.log(state);
+
   useEffect(() => {
-    if (!state.socket || state.lobby) return;
+    if (!state.socket || state.lobby || !state.account) return;
+
+    // Username is generated on FE and therefore might not exist on lobby join (if you get an invite link)
+    if (!state.account.username || !state.account.id) return;
 
     if (lobbyId && typeof lobbyId === 'string') {
+      console.log('joined', state);
       state.socket.joinLobby(lobbyId);
     }
-  }, [lobbyId, state.lobby, state.socket]);
+  }, [lobbyId, state.lobby, state.socket, state.account]);
 
   if (state.queue) {
     return (
