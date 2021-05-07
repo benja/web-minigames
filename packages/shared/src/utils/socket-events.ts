@@ -14,3 +14,10 @@ export enum SocketEvents {
   GAME_END = 'game_end',
   ERROR = 'error',
 }
+
+export enum DrawItSocketEvents {
+  GAME_SEND_MESSAGE = "game_send_message",
+  GAME_START = "game_start",
+  GAME_END = "game_end",
+  GAME_PLAYER_LEAVE = "GAME_PLAYER_LEAVE"
+}

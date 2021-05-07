@@ -1,12 +1,30 @@
 import { GameTypes } from '@wmg/shared';
-import { GameLobby } from './utils/game';
 import { Lobby } from './utils/lobby';
 import { getLobbyById } from './lobby-manager';
+import { ClientHelper, GameCore } from "./modules/game-core";
+import { DrawIt } from "./modules/draw-it/DrawIt";
+import { getClientById } from "./client-manager";
 
-const games: Map<string, GameLobby> = new Map();
+const games: Map<string, GameCore<GameTypes>> = new Map();
 
-export function startGame(gameType: GameTypes, lobby: Lobby): GameLobby {
-  const game = new GameLobby(gameType, lobby.getPlayers());
+const moduleEvents: ClientHelper = {
+ getClientById: (id: string) => {
+   const client = getClientById(id);
+   return {
+     socket: client.socket,
+     username: client.username
+   }
+ }
+}
+function initGame(gameType: GameTypes, lobbies: Lobby[]): GameCore<GameTypes> {
+  switch (gameType) {
+    case GameTypes.DRAWING:
+      return new DrawIt(moduleEvents, lobbies.map(l => l.getPlayers()).flat());
+  }
+}
+
+export function startGame(gameType: GameTypes, lobby: Lobby): GameCore<GameTypes> {
+  const game = initGame(gameType, [lobby]);
   if (games.has(game.getId())) {
     throw new Error('A game already exists with this id.');
   }
@@ -14,8 +32,8 @@ export function startGame(gameType: GameTypes, lobby: Lobby): GameLobby {
   return game;
 }
 
-export function startGameWithLobbyIds(gameType: GameTypes, lobbies: string[]): GameLobby {
-  const game = new GameLobby(gameType, lobbies.map(l => getLobbyById(l).getPlayers()).flat());
+export function startGameWithLobbyIds(gameType: GameTypes, lobbies: string[]): GameCore<GameTypes> {
+  const game = initGame(gameType, lobbies.map(l => getLobbyById(l)));
   if (games.has(game.getId())) {
     throw new Error('A game already exists with this id.');
   }
@@ -23,8 +41,8 @@ export function startGameWithLobbyIds(gameType: GameTypes, lobbies: string[]): G
   return game;
 }
 
-export function startGameWithLobbies(gameType: GameTypes, lobbies: Lobby[]): GameLobby {
-  const game = new GameLobby(gameType, lobbies.map(l => l.getPlayers()).flat());
+export function startGameWithLobbies(gameType: GameTypes, lobbies: Lobby[]): GameCore<GameTypes> {
+  const game = initGame(gameType, lobbies);
   if (games.has(game.getId())) {
     throw new Error('A game already exists with this id.');
   }
@@ -32,7 +50,7 @@ export function startGameWithLobbies(gameType: GameTypes, lobbies: Lobby[]): Gam
   return game;
 }
 
-export function getGame(gameId: string): GameLobby {
+export function getGame(gameId: string): GameCore<GameTypes> {
   if (!games.has(gameId)) {
     throw new Error('No game exists with this game identifier.');
   }

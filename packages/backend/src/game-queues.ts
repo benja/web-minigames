@@ -49,13 +49,16 @@ export function removeCollectionFromQueueByLobbyId(lobbyIds: string[], gameType:
     queues[gameType] = queues[gameType]!.filter(l => !lobbyIds.includes(l.id));
 
     // Emit to each of the sockets in that room that the game has started
-    startGameWithLobbyIds(gameType, lobbyIds);
+    const game = startGameWithLobbyIds(gameType, lobbyIds);
 
     lobbyIds.forEach(lobby => {
       getLobbyById(lobby)
         .getPlayers()
         .forEach(player => {
-          getClientById(player).socket.emit(SocketEvents.GAME_START, []);
+          getClientById(player).socket.emit(SocketEvents.GAME_START, {
+            ...game,
+            clientManager: undefined
+          });
         });
     });
   }

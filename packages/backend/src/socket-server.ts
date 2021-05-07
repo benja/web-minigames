@@ -1,6 +1,8 @@
 import { Server, Socket } from 'socket.io';
-import { events } from './listeners/index';
+import events from "./listeners";
 import { addClient } from './client-manager';
+import modules from "./modules";
+import { GameListener } from "./modules/game-listener";
 
 export class SocketServer {
   private readonly io: Server;
@@ -22,8 +24,14 @@ export class SocketServer {
       addClient(socket);
 
       events.forEach(event => {
-        socket.on(event.eventName, async (data: any) => event._handle(socket, data));
+        socket.on(event.eventName, (data: any) => event._handle(socket, data));
       });
+
+      modules.forEach(module => {
+        module.getListeners().forEach((event: GameListener) => {
+          socket.on(`${module.getGameType()}-${event.eventName}`, (data: any) => event._handle(socket, data))
+        })
+      })
     });
   }
 }

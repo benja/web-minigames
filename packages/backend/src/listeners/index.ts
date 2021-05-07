@@ -10,7 +10,7 @@ import { Disconnecting } from './Disconnecting';
 import { LobbyKick } from './LobbyKick';
 import { LobbyMessage } from './LobbyMessage';
 
-export const events: Listener[] = [
+const events: Listener[] = [
   new UpdateUsername(),
   new LobbyCreate(),
   new LobbyJoin(),
@@ -22,3 +22,5 @@ export const events: Listener[] = [
   new LeaveQueue(),
   new LobbySetPrivate(),
 ];
+
+export default events;

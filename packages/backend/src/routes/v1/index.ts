@@ -24,7 +24,7 @@ api.get('/games', async (req: Request, res: Response) => {
       limit: GameLobbySizes[GameTypes.DRAWING],
       image: 'https://avatars.githubusercontent.com/u/16708653?s=400&u=b96a5b2534bdd50476bddf50d0290985b5888687&v=4',
     },
-  ].filter(g => limit ? g.limit > limit : true));
+  ].filter(g => limit ? g.limit >= limit : true));
 });
 
 const querySchema = yup.object({

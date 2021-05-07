@@ -5,6 +5,7 @@ export interface SocketUser {
   socket: Socket;
   admin?: boolean;
   currentLobby?: string;
+  currentGame?: string;
 }
 const clients: Map<string, SocketUser> = new Map();
 
@@ -61,4 +62,11 @@ export function setCurrentLobby(socket: Socket, lobbyId: string | undefined): vo
     ...clients.get(socket.id)!,
     currentLobby: lobbyId,
   });
+}
+
+export function setGame(user: SocketUser, gameId: string | undefined): void {
+  clients.set(user.socket.id, {
+    ...user,
+    currentGame: gameId
+  })
 }

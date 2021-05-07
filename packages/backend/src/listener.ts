@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { SocketEvents } from '@wmg/shared';
+import { DrawItSocketEvents, SocketEvents } from "@wmg/shared";
 import { getClient, SocketUser } from './client-manager';
 
 export abstract class Listener {
