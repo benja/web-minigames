@@ -1,12 +1,12 @@
-import { DRAW_IT_CANVAS_ID, DRAW_IT_CONTAINER_ID } from './constants';
+import { DRAW_IT_CANVAS_ID, DRAW_IT_CONTAINER_ID, Tools } from './constants';
 import { renderGame } from './game-renderer';
-import { Hand, Tools } from './hand';
 import { BrushRenderer } from './renderers/brush-renderer';
+import { State } from './index';
 
 let gameManagerInstance: GameManager | null = null;
 
-export function mountGame() {
-  gameManagerInstance = new GameManager();
+export function mountGame(state: State) {
+  gameManagerInstance = new GameManager(state);
   gameManagerInstance.start();
 }
 
@@ -19,22 +19,23 @@ export class GameManager {
   private canvas: HTMLCanvasElement | null = null;
   private canvasWrapper: HTMLDivElement | null = null;
 
-  public hand: Hand | null = null;
   public mousePos: { x: number; y: number } | null = null;
 
-  constructor() {
+  public state: State;
+
+  constructor(state: State) {
     this.draw = this.draw.bind(this);
     this.start = this.start.bind(this);
     this.stop = this.stop.bind(this);
     this.updateCanvasSize = this.updateCanvasSize.bind(this);
     this.mousePos;
+
+    this.state = state;
   }
 
   public start() {
     this.canvas = document.getElementById(DRAW_IT_CANVAS_ID) as HTMLCanvasElement;
     this.canvasWrapper = document.getElementById(DRAW_IT_CONTAINER_ID) as HTMLDivElement;
-
-    this.hand = new Hand();
 
     this.canvas.width = this.canvasWrapper.offsetWidth;
     this.canvas.height = this.canvasWrapper.offsetHeight;
@@ -91,10 +92,14 @@ export class GameManager {
     // mouse left button must be pressed
     if (e.buttons !== 1) return;
 
-    switch (this.hand.activeTool) {
+    switch (this.state.activeTool) {
       case Tools.PAINT_BRUSH:
       case Tools.RUBBER:
         BrushRenderer(this.getCanvasContext(), e);
     }
+  }
+
+  public setState(state: State) {
+    this.state = state;
   }
 }

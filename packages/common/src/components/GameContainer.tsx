@@ -13,4 +13,8 @@ const Container = styled.div`
   width: 800px;
   height: 600px;
   border: 1px solid black;
+
+  canvas {
+    cursor: url(http://www.rw-designer.com/cursor-view/138936.png), default;
+  }
 `;
