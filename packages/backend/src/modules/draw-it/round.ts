@@ -1,4 +1,3 @@
-import { ClientHelper } from '../game-core';
 import { ClientHandler } from '../client-handler';
 import { DrawItSocketEvents, GameTypes, IRoundFinish } from '@wmg/shared';
 import { GameLeaderboard } from '../game-leaderboard';
@@ -33,8 +32,8 @@ export class Round extends ClientHandler<GameTypes.DRAWING> implements IRound {
 
   private roundCountdown: number = Round.DEFAULT_ROUND_LENGTH;
 
-  constructor(clientManager: ClientHelper, players: string[], gameLeaderboard: GameLeaderboard) {
-    super(GameTypes.DRAWING, players, clientManager);
+  constructor(players: string[], gameLeaderboard: GameLeaderboard) {
+    super(GameTypes.DRAWING, players);
     this.globalGameLeaderboard = gameLeaderboard;
     this.roundLeaderboard = new GameLeaderboard(players);
   }
@@ -151,6 +150,37 @@ export class Round extends ClientHandler<GameTypes.DRAWING> implements IRound {
     return GameAPI.emitToCollection(this.players, DrawItSocketEvents.GAME_SEND_MESSAGE, message);
   }
 
+  /**
+   * @returns boolean Returns true if letter is revealed
+   * @param countdownTime Current round timer
+   */
+  triggerLetterReveal(countdownTime: number): boolean {
+    if (!this.currentWord) {
+      throw new Error('Current word is not set.');
+    }
+    if (Round.ROUND_LETTER_REVEAL_ROUNDS.includes(countdownTime)) {
+      if (this.revealedLetters.length + 1 === this.currentWord.length) {
+        return false;
+      }
+      const split = this.currentWord!.split('');
+      let letter: number | null = null;
+      let iterations: number = 0;
+      while (letter === null && iterations < split.length) {
+        const access = Math.floor(Math.random() * split.length);
+        if (!this.revealedLetters.includes(access)) {
+          letter = access;
+        }
+        iterations++;
+      }
+      if (!letter) {
+        return false;
+      }
+      this.revealLetter(letter);
+      return true;
+    }
+    return false;
+  }
+
   revealLetter(letterIndex: number): void {
     if (!this.currentWord) {
       throw new Error('The current word has not been set yet');
@@ -164,5 +194,17 @@ export class Round extends ClientHandler<GameTypes.DRAWING> implements IRound {
     let blanks = new Array(word.length).fill('_');
     revealed.forEach(letter => (blanks[letter] = word[letter]));
     return blanks.join();
+  }
+
+  getRevealedLetters(): number[] {
+    return this.revealedLetters;
+  }
+
+  getRoundLeaderboard(): GameLeaderboard {
+    return this.roundLeaderboard;
+  }
+
+  getCurrentWord(): string {
+    return this.currentWord!;
   }
 }

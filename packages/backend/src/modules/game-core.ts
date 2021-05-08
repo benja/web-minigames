@@ -12,19 +12,14 @@ export interface ClientHelper {
   getClientById: (clientId: string) => GameUser;
 }
 interface IGameCore {
-  onGameEnd: () => void;
   onPlayerLeave: (socketId: string) => void;
 }
 export abstract class GameCore<T extends GameTypes> extends ClientHandler<T> implements IGameCore {
   private readonly gameId: string;
 
-  protected constructor(gameType: T, players: string[], clientManager: ClientHelper) {
-    super(gameType, players, clientManager);
+  protected constructor(gameType: T, players: string[]) {
+    super(gameType, players);
     this.gameId = generateId();
-  }
-
-  onGameEnd(): void {
-    GameAPI.emitToCollection(this.players, SocketEvents.GAME_END);
   }
 
   abstract onPlayerLeave(socketId: string): void;

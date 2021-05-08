@@ -1,74 +1,78 @@
-/*
-import { ClientHelper } from '../game-core';
-import { ClientHandler } from '../client-handler';
-import { DrawItSocketEvents, GameTypes, IRoundFinish } from '@wmg/shared';
+import { DrawItSocketEvents, IRoundFinish } from '@wmg/shared';
 import { GameLeaderboard } from '../game-leaderboard';
 import { Round } from './round';
-import GameAPI from "../game-api";
+import GameAPI from '../game-api';
 
-interface ITaskManager {}
-export class RoundManager implements ITaskManager {
+interface IRoundManager {
+  startRound: () => void;
+  onRoundFinish: () => void;
+}
+export class RoundManager implements IRoundManager {
   // 10 seconds per round
   public static readonly DEFAULT_ROUND_LENGTH = 30;
+  public static readonly DEFAULT_NUMBER_OF_ROUNDS = 1;
 
+  private readonly players: string[];
   private readonly globalGameLeaderboard: GameLeaderboard;
 
   private roundCountdown: number = RoundManager.DEFAULT_ROUND_LENGTH;
 
-  constructor(clientManager: ClientHelper, players: string[], gameLeaderboard: GameLeaderboard) {
+  private readonly numRounds: number;
+
+  private currentRound: Round;
+  private currentRoundIndex: number = 1;
+
+  constructor(players: string[], gameLeaderboard: GameLeaderboard, numRounds?: number) {
     this.globalGameLeaderboard = gameLeaderboard;
+    this.players = players;
+    this.currentRound = new Round(players, gameLeaderboard);
+    this.numRounds = numRounds ?? RoundManager.DEFAULT_NUMBER_OF_ROUNDS;
   }
 
   startRound(): void {
-    const nextDrawer = this.findNextDrawer();
+    const nextDrawer = this.currentRound.findNextDrawer();
     if (!nextDrawer) {
       throw new Error('First selected player as part of the game was null.');
     }
 
     this.roundCountdown = RoundManager.DEFAULT_ROUND_LENGTH;
-    const word = this.generateCurrentWord();
-    (function timer(round: Round, word: string) {
-      if (--round.roundCountdown < 0) {
+    const word = this.currentRound.generateCurrentWord();
+    (function timer(manager: RoundManager, word: string) {
+      if (--manager.roundCountdown < 0) {
         // Emit the end of round
-        return round.onRoundFinish();
+        return manager.onRoundFinish();
       }
 
-      if (Round.ROUND_LETTER_REVEAL_ROUNDS.includes(round.roundCountdown)) {
-        const split = word.split('');
-        let letter: number | null = null;
-        let iterations: number = 0;
-        while (letter === null && iterations < split.length) {
-          const access = Math.floor(Math.random() * split.length);
-          if (!round.revealedLetters.includes(access)) {
-            letter = access;
-          }
-          iterations++;
-        }
-        if (!letter) {
-          return round.onRoundFinish();
-        }
-        round.revealLetter(letter);
-      }
+      manager.currentRound.triggerLetterReveal(manager.roundCountdown);
 
-      setTimeout(() => timer(round, word), 1000);
+      setTimeout(() => timer(manager, word), 1000);
     })(this, word);
 
-    GameAPI.emitToCollection(DrawItSocketEvents.GAME_ROUND_START, {
+    GameAPI.emitToCollection(this.players, DrawItSocketEvents.GAME_ROUND_START, {
       drawer: nextDrawer,
       word: new Array(word.length).fill('_').join(''),
     });
   }
 
   onRoundFinish(): void {
-    this.globalGameLeaderboard.add(this.roundLeaderboard);
+    this.globalGameLeaderboard.add(this.currentRound.getRoundLeaderboard());
 
-    // TODO: Switch to Pub/Sub in the future to notify all clients that the game has finished.
-
-    this.emitToAll(DrawItSocketEvents.GAME_ROUND_END, {
-      correctWord: this.currentWord,
-      roundScores: this.roundLeaderboard.getLeaderboardScores(),
+    GameAPI.emitToCollection(this.players, DrawItSocketEvents.GAME_ROUND_END, {
+      correctWord: this.currentRound.getCurrentWord(),
+      roundScores: this.currentRound.getRoundLeaderboard().getLeaderboardScores(),
       totalScores: this.globalGameLeaderboard.getLeaderboardScores(),
     } as IRoundFinish);
+
+    if (this.currentRoundIndex === this.numRounds) {
+      return GameAPI.handleGameEnd(this.players, {
+        totalScores: this.globalGameLeaderboard.getLeaderboardScores(),
+      });
+    }
+
+    this.currentRound = new Round(this.players, this.globalGameLeaderboard);
+  }
+
+  public getCurrentRound(): Round {
+    return this.currentRound;
   }
 }
- */

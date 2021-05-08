@@ -1,14 +1,16 @@
 import { getClientById } from '../client-manager';
+import { SocketEvents } from '@wmg/shared';
 
 export default class GameAPI {
   public static emit(player: string, eventName: string, data?: any): void {
-    const client = getClientById(player);
-    return void client.socket.emit(eventName, data);
+    return void getClientById(player).socket.emit(eventName, data);
   }
 
   public static emitToCollection(players: string[], eventName: string, data?: any) {
-    players.forEach(player => {
-      getClientById(player).socket.emit(eventName, data);
-    });
+    players.forEach(player => this.emit(player, eventName, data));
+  }
+
+  public static handleGameEnd(players: string[], data?: any) {
+    return this.emitToCollection(players, SocketEvents.GAME_END, data);
   }
 }
