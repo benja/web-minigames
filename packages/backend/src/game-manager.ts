@@ -1,25 +1,15 @@
 import { GameTypes } from '@wmg/shared';
 import { Lobby } from './utils/lobby';
 import { getLobbyById } from './lobby-manager';
-import { ClientHelper, GameCore } from './modules/game-core';
-import { getClientById } from './client-manager';
+import { GameCore } from './modules/game-core';
 import { DrawIt } from './modules/draw-it';
 
 const games: Map<string, GameCore<GameTypes>> = new Map();
 
-const moduleEvents: ClientHelper = {
-  getClientById: (id: string) => {
-    const client = getClientById(id);
-    return {
-      socket: client.socket,
-      username: client.username,
-    };
-  },
-};
 function initGame(gameType: GameTypes, lobbies: Lobby[]): GameCore<GameTypes> {
   switch (gameType) {
     case GameTypes.DRAWING:
-      return new DrawIt(moduleEvents, lobbies.map(l => l.getPlayers()).flat());
+      return new DrawIt(lobbies.map(l => l.getPlayers()).flat());
   }
 }
 
