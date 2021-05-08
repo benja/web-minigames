@@ -10,6 +10,8 @@ interface IGameLeaderboard {
   addPlayer: (id: string) => void;
   removePlayer: (id: string) => void;
   resetScores: () => void;
+  add: (leaderboard: GameLeaderboard) => GameLeaderboard;
+  subtract: (leaderboard: GameLeaderboard) => GameLeaderboard;
 }
 export class GameLeaderboard implements IGameLeaderboard {
   public readonly leaderboardId: string;
@@ -94,5 +96,19 @@ export class GameLeaderboard implements IGameLeaderboard {
     const newLeaderboard: Map<string, number> = new Map();
     this.players.forEach(player => newLeaderboard.set(player, 0));
     this.leaderboard = newLeaderboard;
+  }
+
+  add(leaderboard: GameLeaderboard): GameLeaderboard {
+    leaderboard.getLeaderboardScores().forEach((value, key) => {
+      this.incrementScore(key, value);
+    });
+    return this;
+  }
+
+  subtract(leaderboard: GameLeaderboard): GameLeaderboard {
+    leaderboard.getLeaderboardScores().forEach((value, key) => {
+      this.decrementScore(key, value);
+    });
+    return this;
   }
 }
