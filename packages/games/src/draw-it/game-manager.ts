@@ -50,7 +50,7 @@ export class GameManager {
     window.removeEventListener('resize', this.updateCanvasSize);
     window.removeEventListener('mousedown', e => this.setMousePosition(e));
     window.removeEventListener('mouseenter', e => this.setMousePosition(e));
-    window.removeEventListener('mouseenter', e => this.drawLine(e));
+    window.removeEventListener('mousemove', e => this.drawLine(e));
   }
 
   public updateCanvasSize() {
