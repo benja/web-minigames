@@ -21,13 +21,12 @@ DRAW IT TYPES
 export enum DrawItSocketEvents {
   // Can emit
   GAME_SEND_MESSAGE = 'game_send_message',
-  GAME_START = 'game_start',
-  GAME_END = 'game_end',
   GAME_PLAYER_LEAVE = 'game_player_leave',
   GAME_INTERACTION = 'game_interaction',
 
   // Only receivables
   GAME_CORRECT_GUESS = 'game_correct_guess',
+  GAME_LETTER_REVEAL = 'game_letter_reveal',
   GAME_ROUND_START = 'game_round_start',
   GAME_ROUND_END = 'game_round_end',
 }

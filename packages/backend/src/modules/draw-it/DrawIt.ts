@@ -19,14 +19,6 @@ export class DrawIt extends GameCore<GameTypes.DRAWING> implements IDrawIt {
     this.currentRound = new Round(clientManager, players, this.pointsLeaderboard);
   }
 
-  onGameEnd(): void {
-    return this.emitToAll(DrawItSocketEvents.GAME_END);
-  }
-
-  onGameStart(): void {
-    return this.emitToAll(DrawItSocketEvents.GAME_START);
-  }
-
   onPlayerLeave(socketId: string): void {
     this.players = this.players.filter(p => p !== socketId);
     return this.emitToAll(DrawItSocketEvents.GAME_PLAYER_LEAVE, socketId);

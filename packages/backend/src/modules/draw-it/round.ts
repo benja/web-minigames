@@ -10,10 +10,13 @@ interface IRound {
   getCurrentDrawer: () => string | null;
   generateCurrentWord: () => string;
   guessWord: (player: string, word: string) => void;
+  revealLetter: (letter: number) => void;
 }
 export class Round extends ClientHandler<GameTypes.DRAWING> implements IRound {
   // 10 seconds per round
-  public static readonly DEFAULT_ROUND_LENGTH = 10;
+  public static readonly DEFAULT_ROUND_LENGTH = 30;
+  public static readonly ROUND_LETTER_REVEAL_ROUNDS = [15, 10, 5];
+
   public static readonly DEFAULT_ROUND_SCORE = 500;
 
   private readonly previousDrawers: string[] = [];
@@ -23,6 +26,9 @@ export class Round extends ClientHandler<GameTypes.DRAWING> implements IRound {
   private currentDrawer: string | null = null;
   private currentWord: string | null = null;
   private correctGuessors: string[] = [];
+
+  // Array of letter indexes of the string word
+  private revealedLetters: number[] = [];
 
   private roundCountdown: number = Round.DEFAULT_ROUND_LENGTH;
 
@@ -39,16 +45,37 @@ export class Round extends ClientHandler<GameTypes.DRAWING> implements IRound {
     }
 
     this.roundCountdown = Round.DEFAULT_ROUND_LENGTH;
-    (function timer(round: Round) {
+    const word = this.generateCurrentWord();
+    (function timer(round: Round, word: string) {
       if (--round.roundCountdown < 0) {
-        // Emit round end with the correct word etc.
-        round.onRoundFinish();
-        return;
+        // Emit the end of round
+        return round.onRoundFinish();
       }
-      setTimeout(() => timer(round), 1000);
-    })(this);
 
-    this.emitToAll(DrawItSocketEvents.GAME_ROUND_START, nextDrawer);
+      if (Round.ROUND_LETTER_REVEAL_ROUNDS.includes(round.roundCountdown)) {
+        const split = word.split('');
+        let letter: number | null = null;
+        let iterations: number = 0;
+        while (letter === null && iterations < split.length) {
+          const access = Math.floor(Math.random() * split.length);
+          if (!round.revealedLetters.includes(access)) {
+            letter = access;
+          }
+          iterations++;
+        }
+        if (!letter) {
+          return round.onRoundFinish();
+        }
+        round.revealLetter(letter);
+      }
+
+      setTimeout(() => timer(round, word), 1000);
+    })(this, word);
+
+    this.emitToAll(DrawItSocketEvents.GAME_ROUND_START, {
+      drawer: nextDrawer,
+      word: new Array(word.length).fill('_').join('_'),
+    });
   }
 
   onRoundFinish(): void {
@@ -74,7 +101,6 @@ export class Round extends ClientHandler<GameTypes.DRAWING> implements IRound {
     }
     this.currentDrawer = nextDrawer;
     this.previousDrawers.push(nextDrawer);
-    this.generateCurrentWord();
     return nextDrawer;
   }
 
@@ -119,5 +145,20 @@ export class Round extends ClientHandler<GameTypes.DRAWING> implements IRound {
       return this.emit(player, DrawItSocketEvents.GAME_CORRECT_GUESS);
     }
     return this.emitToAll(DrawItSocketEvents.GAME_SEND_MESSAGE, message);
+  }
+
+  revealLetter(letterIndex: number): void {
+    if (!this.currentWord) {
+      throw new Error('The current word has not been set yet');
+    }
+    this.revealedLetters.push(letterIndex);
+    const secret = Round.getSecretWord(this.currentWord, this.revealedLetters);
+    this.emitToAll(DrawItSocketEvents.GAME_LETTER_REVEAL, secret);
+  }
+
+  static getSecretWord(word: string, revealed: number[]): string {
+    let blanks = new Array(word.length).fill('_');
+    revealed.forEach(letter => (blanks[letter] = word[letter]));
+    return blanks.join();
   }
 }
