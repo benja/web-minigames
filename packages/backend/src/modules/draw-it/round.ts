@@ -2,6 +2,7 @@ import { ClientHelper } from '../game-core';
 import { ClientHandler } from '../client-handler';
 import { DrawItSocketEvents, GameTypes, IRoundFinish } from '@wmg/shared';
 import { GameLeaderboard } from '../game-leaderboard';
+import GameAPI from '../game-api';
 
 interface IRound {
   startRound: () => void;
@@ -72,15 +73,18 @@ export class Round extends ClientHandler<GameTypes.DRAWING> implements IRound {
       setTimeout(() => timer(round, word), 1000);
     })(this, word);
 
-    this.emitToAll(DrawItSocketEvents.GAME_ROUND_START, {
+    GameAPI.emitToCollection(this.players, DrawItSocketEvents.GAME_ROUND_START, {
       drawer: nextDrawer,
-      word: new Array(word.length).fill('_').join('_'),
+      word: new Array(word.length).fill('_').join(''),
     });
   }
 
   onRoundFinish(): void {
     this.globalGameLeaderboard.add(this.roundLeaderboard);
-    this.emitToAll(DrawItSocketEvents.GAME_ROUND_END, {
+
+    // TODO: Switch to Pub/Sub in the future to notify all clients that the game has finished.
+
+    GameAPI.emitToCollection(this.players, DrawItSocketEvents.GAME_ROUND_END, {
       correctWord: this.currentWord,
       roundScores: this.roundLeaderboard.getLeaderboardScores(),
       totalScores: this.globalGameLeaderboard.getLeaderboardScores(),
@@ -137,14 +141,14 @@ export class Round extends ClientHandler<GameTypes.DRAWING> implements IRound {
       throw new Error('Cannot guess word for player that does not exist.');
     }
     if (this.correctGuessors.includes(player)) {
-      return this.emitToSelection(this.correctGuessors, DrawItSocketEvents.GAME_SEND_MESSAGE, message);
+      return GameAPI.emitToCollection(this.correctGuessors, DrawItSocketEvents.GAME_SEND_MESSAGE, message);
     }
     if (message === this.currentWord) {
       this.correctGuessors.push(player);
       this.roundLeaderboard.incrementScore(player, this.calculateScore());
-      return this.emit(player, DrawItSocketEvents.GAME_CORRECT_GUESS);
+      return GameAPI.emit(player, DrawItSocketEvents.GAME_CORRECT_GUESS);
     }
-    return this.emitToAll(DrawItSocketEvents.GAME_SEND_MESSAGE, message);
+    return GameAPI.emitToCollection(this.players, DrawItSocketEvents.GAME_SEND_MESSAGE, message);
   }
 
   revealLetter(letterIndex: number): void {
@@ -153,7 +157,7 @@ export class Round extends ClientHandler<GameTypes.DRAWING> implements IRound {
     }
     this.revealedLetters.push(letterIndex);
     const secret = Round.getSecretWord(this.currentWord, this.revealedLetters);
-    this.emitToAll(DrawItSocketEvents.GAME_LETTER_REVEAL, secret);
+    GameAPI.emitToCollection(this.players, DrawItSocketEvents.GAME_LETTER_REVEAL, secret);
   }
 
   static getSecretWord(word: string, revealed: number[]): string {

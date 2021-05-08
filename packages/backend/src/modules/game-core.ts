@@ -2,6 +2,7 @@ import { Socket } from 'socket.io';
 import { GameTypes, SocketEvents } from '@wmg/shared';
 import generateId from '../utils/generate-id';
 import { ClientHandler } from './client-handler';
+import GameAPI from './game-api';
 
 export interface GameUser {
   socket: Socket;
@@ -23,7 +24,7 @@ export abstract class GameCore<T extends GameTypes> extends ClientHandler<T> imp
   }
 
   onGameEnd(): void {
-    this.emitToAll(SocketEvents.GAME_END);
+    GameAPI.emitToCollection(this.players, SocketEvents.GAME_END);
   }
 
   abstract onPlayerLeave(socketId: string): void;
