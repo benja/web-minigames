@@ -196,10 +196,6 @@ export class Round extends ClientHandler<GameTypes.DRAWING> implements IRound {
     return blanks.join();
   }
 
-  getRevealedLetters(): number[] {
-    return this.revealedLetters;
-  }
-
   getRoundLeaderboard(): GameLeaderboard {
     return this.roundLeaderboard;
   }

@@ -1,16 +1,7 @@
-import { Socket } from 'socket.io';
-import { GameTypes, SocketEvents } from '@wmg/shared';
+import { GameTypes } from '@wmg/shared';
 import generateId from '../utils/generate-id';
 import { ClientHandler } from './client-handler';
-import GameAPI from './game-api';
 
-export interface GameUser {
-  socket: Socket;
-  username?: string;
-}
-export interface ClientHelper {
-  getClientById: (clientId: string) => GameUser;
-}
 interface IGameCore {
   onPlayerLeave: (socketId: string) => void;
 }
