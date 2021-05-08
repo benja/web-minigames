@@ -12,7 +12,7 @@ interface IGameLeaderboard {
   resetScores: () => void;
 }
 export class GameLeaderboard implements IGameLeaderboard {
-  private readonly leaderboardId: string;
+  public readonly leaderboardId: string;
 
   private leaderboard: Map<string, number> = new Map();
   private readonly players: string[];
