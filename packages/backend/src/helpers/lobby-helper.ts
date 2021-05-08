@@ -1,6 +1,5 @@
 import { SocketEvents } from '@wmg/shared';
-import { Socket } from 'socket.io';
-import { getClientById, setClientUsername, setCurrentLobby, SocketUser } from '../client-manager';
+import { getClientById, setClientUsername, SocketUser } from '../client-manager';
 import { getLobbyById, deleteLobby, createLobby, setLobbyPrivate } from '../lobby-manager';
 
 export default class LobbyHelper {
@@ -26,7 +25,7 @@ export default class LobbyHelper {
 
     this.leave(user);
 
-    setCurrentLobby(user.socket, lobby.getId());
+    user.currentLobby = lobby.getId();
 
     lobby.addPlayer(user.socket.id);
 
@@ -52,7 +51,8 @@ export default class LobbyHelper {
     this.leave(user);
 
     const lobby = createLobby(user.socket);
-    setCurrentLobby(user.socket, lobby.getId());
+
+    user.currentLobby = lobby.getId();
 
     console.log(`Created lobby for ${user.username} (${user.socket.id}) with id ${lobby.getId()}`);
 

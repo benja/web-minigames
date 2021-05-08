@@ -1,7 +1,7 @@
 import { Game } from '@wmg/shared';
 import generateId from './generate-id';
 import { SocketEvents } from '@wmg/shared';
-import { getClientById, setClientAdmin, setCurrentLobby } from '../client-manager';
+import { getClientById } from '../client-manager';
 import { getLobbyById } from '../lobby-manager';
 
 export class Lobby {
@@ -23,18 +23,20 @@ export class Lobby {
       throw new Error('Player does not exist in this lobby.');
     }
 
+    const client = getClientById(id);
+
     if (id === this.getAdmin() && this.players.length) {
-      setClientAdmin(id, false);
+      client.admin = false;
 
       const filteredPlayers = this.players.filter(p => p !== id);
       const randomLobbyPlayer = filteredPlayers[Math.floor(Math.random() * filteredPlayers.length)];
 
       if (randomLobbyPlayer) {
-        setClientAdmin(randomLobbyPlayer, true);
+        getClientById(randomLobbyPlayer).admin = true;
       }
     }
 
-    setCurrentLobby(getClientById(id).socket, undefined);
+    client.currentLobby = undefined;
 
     this.players = this.players.filter(p => p !== id);
 
@@ -94,7 +96,7 @@ export class Lobby {
 
   public addPlayer(id: string) {
     if (!this.getAdmin()) {
-      setClientAdmin(id, true);
+      getClientById(id).admin = true;
     }
     return this.players.push(id);
   }

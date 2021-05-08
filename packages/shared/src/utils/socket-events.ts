@@ -20,4 +20,5 @@ export enum DrawItSocketEvents {
   GAME_START = 'game_start',
   GAME_END = 'game_end',
   GAME_PLAYER_LEAVE = 'game_player_leave',
+  GAME_INTERACTION = 'game_interaction',
 }

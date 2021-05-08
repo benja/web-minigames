@@ -21,20 +21,7 @@ export function setClientUsername(socket: Socket, username: string): void {
   const client = clients.get(socket.id);
   if (!client) throw new Error('User does not exists in the cluster.');
 
-  clients.set(socket.id, {
-    ...client,
-    username,
-  });
-}
-
-export function setClientAdmin(id: Socket['id'], status: boolean): void {
-  const client = getClientById(id);
-  if (!client) throw new Error('User does not exists in the cluster.');
-
-  clients.set(id, {
-    ...client,
-    admin: status,
-  });
+  client.username = username;
 }
 
 export function getClientById(id: string): SocketUser {
@@ -54,19 +41,4 @@ export function deleteClient(user: SocketUser): void {
 
 export function hasClient(socket: Socket): boolean {
   return clients.has(socket.id);
-}
-
-export function setCurrentLobby(socket: Socket, lobbyId: string | undefined): void {
-  if (!hasClient(socket)) throw new Error('No client exists with that socket identifier');
-  clients.set(socket.id, {
-    ...clients.get(socket.id)!,
-    currentLobby: lobbyId,
-  });
-}
-
-export function setGame(user: SocketUser, gameId: string | undefined): void {
-  clients.set(user.socket.id, {
-    ...user,
-    currentGame: gameId
-  })
 }
