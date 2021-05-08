@@ -1,3 +1,5 @@
+import generateId from '../utils/generate-id';
+
 interface IGameLeaderboard {
   incrementScore: (id: string, amount: number) => number;
   decrementScore: (id: string, amount: number) => number;
@@ -10,10 +12,13 @@ interface IGameLeaderboard {
   resetScores: () => void;
 }
 export class GameLeaderboard implements IGameLeaderboard {
+  private readonly leaderboardId: string;
+
   private leaderboard: Map<string, number> = new Map();
   private readonly players: string[];
 
   constructor(players: string[]) {
+    this.leaderboardId = generateId();
     if (!players.length) {
       throw new Error('Players of invalid length provided.');
     }
