@@ -8,10 +8,10 @@ import { useGames } from '../hooks/useGames';
 import styled from 'styled-components';
 import Avatar from 'react-avatar';
 import { Centered } from '../ui/components/layouts/Centered';
-import { Text } from '../ui';
-import { AvatarRow, Button, UserEntry } from '../ui/components/molecules';
-import { ListItem } from '../ui';
-import { GameEntry } from '../ui/components/molecules';
+import { Button, Text, ListItem, Input } from '../ui';
+import { AvatarRow, UserEntry, IconInput, GameEntry } from '../ui/components/molecules';
+import { faCheck, faClipboard, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { MessageBox } from '../ui/components/molecules/MessageBox/MessageBox';
 
 export default function Index() {
   const router = useRouter();
@@ -66,54 +66,29 @@ export default function Index() {
               <UserEntry {...u} key={`user-${u.username}-index-${index}`} />
             ))}
             {!state.lobby?.id ? (
-              <button onClick={() => state.socket?.createLobby()}>Create lobby</button>
+              <Button onClick={() => state.socket?.createLobby()} text={'Create lobby'} />
             ) : (
-              <Button
-                onClick={() => {
-                  navigator.clipboard.writeText(`http://localhost:3000/?lobbyId=${state.lobby.id}`);
-                  toast('Copied lobby link', {
-                    icon: '🎉',
-                  });
-                  setCopied(true);
-                  setTimeout(() => {
-                    setCopied(false);
-                  }, 1000);
-                }}
-                text={copied ? 'Copied' : 'Copy lobby link'}
-              />
+              <IconInput text={`http://localhost:3000/?lobbyId=${state.lobby.id}`} icon={!copied ? faClipboard : faCheck} onClick={() => {
+                navigator.clipboard.writeText(`http://localhost:3000/?lobbyId=${state.lobby.id}`);
+                toast('Copied lobby link', {
+                  icon: '🎉',
+                });
+                setCopied(true);
+                setTimeout(() => {
+                  setCopied(false);
+                }, 5000);
+              }}/>
             )}
           </Card>
           {state.lobby?.id && (
             <Card header={'Messages'} subHeader={'Chat directly with your lobby'}>
-              {state.lobby.messages && (
-                <Messages>
-                  {state.lobby.messages.map((m, index) => (
-                    <Message key={`message-${m}-${index}`}>
-                      <Avatar name={m.username} size="25" round="5px" />
-                      <p style={{ marginLeft: 5 }}>
-                        <strong>
-                          {m.username}
-                          {(state.account.admin && <strong>👑</strong>) ?? ''} :
-                        </strong>
-                      </p>
-                      <p style={{ marginLeft: 5 }}>{m.message}</p>
-                    </Message>
-                  ))}
-                </Messages>
-              )}
-              <form
-                style={{ display: 'flex', flexDirection: 'row' }}
-                onSubmit={e => {
-                  e.preventDefault();
-                  if (message) {
-                    state.socket.sendMessage(message);
-                    setMessage('');
-                  }
-                }}
-              >
-                <input value={message} onChange={e => setMessage(e.target.value)} />
-                <button>send</button>
-              </form>
+              <MessageBox messages={state.lobby.messages ?? []} />
+              <IconInput text={message} icon={faPaperPlane} onChange={text => setMessage(text)} onSubmit={() => {
+                if (message) {
+                  state.socket.sendMessage(message);
+                  setMessage('');
+                }
+              }}/>
             </Card>
           )}
         </Column>

@@ -1,2 +1,1 @@
-export { UserListing } from "./UserListing";
-export { GameListing } from "./GameListing";
+export type Test = 3;

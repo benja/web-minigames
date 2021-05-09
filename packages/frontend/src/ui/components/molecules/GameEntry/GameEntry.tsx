@@ -11,7 +11,7 @@ export function GameEntry(props: GameEntryProps) {
     <Card header={props.name} onClick={props.onClick} subHeader={`Limit of ${props.limit} players`}>
       <GameContainer>
         <GameContent>
-          <Text>{props.description}</Text>
+          <Text>{props.description.length > 400 ? `${props.description.substring(0, 400)}` : props.description}</Text>
         </GameContent>
         <GameImage>
           <Image src={props.image} />
@@ -38,6 +38,7 @@ const GameImage = styled.div`
   justify-content: flex-end;
   
   > img {
-    width: 130px;
+    height: 130px;
+    width: auto;
   }
 `;

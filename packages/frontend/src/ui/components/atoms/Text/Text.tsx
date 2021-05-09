@@ -5,6 +5,7 @@ interface TextProps {
   children: React.ReactNode;
   header?: boolean;
   fontSize?: number;
+  style?: React.CSSProperties;
 }
 export function Text(props: TextProps) {
   if (props.header) {

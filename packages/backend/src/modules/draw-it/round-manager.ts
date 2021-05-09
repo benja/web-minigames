@@ -28,7 +28,7 @@ export class RoundManager implements IRoundManager {
     this.globalGameLeaderboard = gameLeaderboard;
     this.players = players;
     this.currentRound = new Round(players, gameLeaderboard);
-    this.numRounds = numRounds ?? RoundManager.DEFAULT_NUMBER_OF_ROUNDS;
+    this.numRounds = numRounds || RoundManager.DEFAULT_NUMBER_OF_ROUNDS;
   }
 
   startRound(): void {

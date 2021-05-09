@@ -26,6 +26,6 @@
     "start": "react-scripts start",
     "eject": "react-scripts eject",
     "build:watch": "tsc --watch --preserveWatchOutput",
-    "build": "tsc"
+    "build:secondaries": "tsc"
   }
 }
