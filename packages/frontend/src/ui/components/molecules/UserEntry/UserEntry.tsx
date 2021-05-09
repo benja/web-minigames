@@ -5,46 +5,44 @@ import Avatar from 'react-avatar';
 import { useState, useContext } from 'react';
 import { StoreContext } from '../../../../utils/store';
 
-interface userEntryProps extends User {}
+interface userEntryProps extends User {
+  /*
+  Is current user that is logged in
+   */
+  active?: boolean;
 
+  usernameOverride: string;
+  onUsernameChange: (name: string) => void;
+  onUsernameSave: () => void;
+}
 export function UserEntry(props: userEntryProps) {
   const { state } = useContext(StoreContext);
-
-  const [username, setUsername] = useState(state.account.username);
   const [showInput, setShowInput] = useState(false);
 
   return (
     <Container>
       <Avatar
-        name={
-          props.username === state.account.username
-            ? username.split(/(?=[A-Z])/).join(' ')
-            : props.username.split(/(?=[A-Z])/).join(' ')
-        }
+        name={props.username.split(/(?=[A-Z])/).join(' ')}
         size="35"
         round="5px"
       />
 
       {showInput ? (
-        <input value={username} onChange={e => setUsername(e.target.value)} />
+        <input value={props.usernameOverride} onChange={e => props.onUsernameChange(e.target.value)} />
       ) : (
-        <Text>{props.username === state.account.username ? username : props.username}</Text>
+        <Text>{props.username}</Text>
       )}
       {props.admin && <strong>👑</strong>}
-      {state.account.admin && props.username !== state.account.username && (
-        <Button
-          onClick={() => {
-            state.socket.kickLobbyPlayer(props.id);
-          }}
-        >
+      {props.active && (
+        <Button onClick={() => state.socket.kickLobbyPlayer(props.id)}>
           Kick
         </Button>
       )}
-      {props.username === state.account.username && (
+      {(props.username === props.usernameOverride || showInput)  && (
         <Button
           onClick={() => {
             if (!showInput) return setShowInput(true);
-            state.socket.updateUsername(username);
+            props.onUsernameSave();
             setShowInput(false);
           }}
         >

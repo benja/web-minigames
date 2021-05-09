@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import Avatar from 'react-avatar';
 import { Message } from "@wmg/shared";
@@ -8,11 +8,19 @@ interface MessageBoxProps {
   messages: Message[];
 }
 export function MessageBox(props: MessageBoxProps) {
+  const ref = useRef<HTMLDivElement>();
+
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.scrollTop = ref.current.scrollHeight;
+    }
+  }, [props.messages])
+
   return (
-    <Container>
+    <Container ref={ref}>
       {props.messages.map((m, index) => (
         <MessageContainer key={`message-${m}-${index}`}>
-          <Avatar name={m.username} size="25" round="5px" />
+          <Avatar name={m.username.split(/(?=[A-Z])/).join(' ')} size="25" round="5px" />
           <Text header style={{ marginLeft: 5 }}>
             {m.username}:
           </Text>

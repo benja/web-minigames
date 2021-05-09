@@ -19,11 +19,19 @@ export default function Index() {
   const [message, setMessage] = useState('');
 
   const { state } = useContext(StoreContext);
+  const [username, setUsername] = useState<string>('');
+
   const { lobbyId } = router.query;
 
   const { data: games } = useGames({
     limit: state.lobby ? state.lobby.players.length : 0,
   });
+
+  useEffect(() => {
+    if (state.account) {
+      setUsername(state.account.username);
+    }
+  }, [state.account])
 
   useEffect(() => {
     if (!state.socket || state.lobby || !state.account) return;
@@ -44,7 +52,6 @@ export default function Index() {
         <AvatarRow
           users={(function () {
             const emptyUsers = new Array(GameLobbySizes[state.queue.type]).fill({});
-            console.log(GameLobbySizes[state.queue.type]);
             state.lobby.players.forEach((p, i) => (emptyUsers[i] = p));
             return emptyUsers;
           })()}
@@ -57,13 +64,21 @@ export default function Index() {
     );
   }
 
+  console.log(state);
+
   return (
     <Container>
       <Row>
         <Column widthFlex={1}>
           <Card header={'Lobby members'} subHeader={'People in your lobby'}>
             {(state.lobby?.players || []).map((u, index) => (
-              <UserEntry {...u} key={`user-${u.username}-index-${index}`} />
+              <UserEntry
+                {...u}
+                key={`user-${u.username}-index-${index}`}
+                usernameOverride={username}
+                onUsernameChange={(name: string) => setUsername(name)}
+                onUsernameSave={() => state.socket.updateUsername(username)}
+              />
             ))}
             {!state.lobby?.id ? (
               <Button onClick={() => state.socket?.createLobby()} text={'Create lobby'} />
