@@ -4,8 +4,6 @@ import { GameLeaderboard } from '../game-leaderboard';
 import GameAPI from '../game-api';
 
 interface IRound {
-  startRound: () => void;
-  onRoundFinish: () => void;
   findNextDrawer: () => string | null;
   getCurrentDrawer: () => string | null;
   generateCurrentWord: () => string;
@@ -38,58 +36,9 @@ export class Round extends ClientHandler<GameTypes.DRAWING> implements IRound {
     this.roundLeaderboard = new GameLeaderboard(players);
   }
 
-  startRound(): void {
-    const nextDrawer = this.findNextDrawer();
-    if (!nextDrawer) {
-      throw new Error('First selected player as part of the game was null.');
-    }
-
-    this.roundCountdown = Round.DEFAULT_ROUND_LENGTH;
-    const word = this.generateCurrentWord();
-    (function timer(round: Round, word: string) {
-      if (--round.roundCountdown < 0) {
-        // Emit the end of round
-        return round.onRoundFinish();
-      }
-
-      if (Round.ROUND_LETTER_REVEAL_ROUNDS.includes(round.roundCountdown)) {
-        const split = word.split('');
-        let letter: number | null = null;
-        let iterations: number = 0;
-        while (letter === null && iterations < split.length) {
-          const access = Math.floor(Math.random() * split.length);
-          if (!round.revealedLetters.includes(access)) {
-            letter = access;
-          }
-          iterations++;
-        }
-        if (!letter) {
-          return round.onRoundFinish();
-        }
-        round.revealLetter(letter);
-      }
-
-      setTimeout(() => timer(round, word), 1000);
-    })(this, word);
-
-    GameAPI.emitToCollection(this.players, DrawItSocketEvents.GAME_ROUND_START, {
-      drawer: nextDrawer,
-      word: new Array(word.length).fill('_').join(''),
-    });
-  }
-
-  onRoundFinish(): void {
-    this.globalGameLeaderboard.add(this.roundLeaderboard);
-
-    // TODO: Switch to Pub/Sub in the future to notify all clients that the game has finished.
-
-    GameAPI.emitToCollection(this.players, DrawItSocketEvents.GAME_ROUND_END, {
-      correctWord: this.currentWord,
-      roundScores: this.roundLeaderboard.getLeaderboardScores(),
-      totalScores: this.globalGameLeaderboard.getLeaderboardScores(),
-    } as IRoundFinish);
-  }
-
+  /*
+  Find the next drawer given the state of the game
+   */
   findNextDrawer(): string | null {
     let nextDrawer: string | null = null;
     for (const drawer of this.players) {
@@ -107,6 +56,7 @@ export class Round extends ClientHandler<GameTypes.DRAWING> implements IRound {
     return nextDrawer;
   }
 
+  // TODO: Word generation
   generateCurrentWord(): string {
     this.currentWord = 'elephant';
     return this.currentWord;
@@ -116,6 +66,9 @@ export class Round extends ClientHandler<GameTypes.DRAWING> implements IRound {
     return this.currentDrawer;
   }
 
+  /*
+  Calculate the score based on how long the game has gone on for
+   */
   private calculateScore(): number {
     return (
       ((Round.DEFAULT_ROUND_LENGTH - this.roundCountdown) / Math.abs(Round.DEFAULT_ROUND_LENGTH)) *
@@ -181,13 +134,20 @@ export class Round extends ClientHandler<GameTypes.DRAWING> implements IRound {
     return false;
   }
 
+  /*
+  Reveal a letter to the players who are guessing
+   */
   revealLetter(letterIndex: number): void {
     if (!this.currentWord) {
       throw new Error('The current word has not been set yet');
     }
     this.revealedLetters.push(letterIndex);
+
+    // Get the secret with replaced letters
     const secret = Round.getSecretWord(this.currentWord, this.revealedLetters);
-    GameAPI.emitToCollection(this.players, DrawItSocketEvents.GAME_LETTER_REVEAL, secret);
+
+    // Emit to all but the drawer
+    GameAPI.emitToCollection(this.players.filter(p => p !== this.currentDrawer), DrawItSocketEvents.GAME_LETTER_REVEAL, secret);
   }
 
   static getSecretWord(word: string, revealed: number[]): string {

@@ -31,7 +31,9 @@ export class RoundManager implements IRoundManager {
     this.numRounds = numRounds || RoundManager.DEFAULT_NUMBER_OF_ROUNDS;
   }
 
+  // Handle the starting of the round
   startRound(): void {
+    // Find the new drawer from the state
     const nextDrawer = this.currentRound.findNextDrawer();
     if (!nextDrawer) {
       throw new Error('First selected player as part of the game was null.');
@@ -39,6 +41,11 @@ export class RoundManager implements IRoundManager {
 
     this.roundCountdown = RoundManager.DEFAULT_ROUND_LENGTH;
     const word = this.currentRound.generateCurrentWord();
+
+    // Emit the word to the drawer
+    GameAPI.emit(nextDrawer, DrawItSocketEvents.GAME_LETTER_REVEAL, word);
+
+    // Start the round timer
     (function timer(manager: RoundManager, word: string) {
       if (--manager.roundCountdown < 0) {
         // Emit the end of round
@@ -56,6 +63,7 @@ export class RoundManager implements IRoundManager {
     });
   }
 
+  // Handling the end of the round
   onRoundFinish(): void {
     this.globalGameLeaderboard.add(this.currentRound.getRoundLeaderboard());
 

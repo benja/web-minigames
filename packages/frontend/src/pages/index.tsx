@@ -2,16 +2,15 @@ import { useRouter } from 'next/router';
 import React, { useContext, useEffect, useState } from 'react';
 import { Card, Column, Container, Row } from '../ui/components/layouts';
 import { StoreContext } from '../utils/store';
-import { GameLobbySizes } from '@wmg/shared';
 import { toast } from 'react-hot-toast';
 import { useGames } from '../hooks/useGames';
 import styled from 'styled-components';
-import Avatar from 'react-avatar';
-import { Centered } from '../ui/components/layouts/Centered';
-import { Button, Text, ListItem, Input } from '../ui';
-import { AvatarRow, UserEntry, IconInput, GameEntry } from '../ui/components/molecules';
+import { Button, ListItem} from '../ui';
+import { UserEntry, IconInput, GameEntry } from '../ui/components/molecules';
 import { faCheck, faClipboard, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-import { MessageBox } from '../ui/components/molecules/MessageBox/MessageBox';
+import { MessageBox } from '../ui/components/molecules';
+import { useLobby } from '../hooks/useLobby';
+import { InQueue } from '../ui/components/templates';
 
 export default function Index() {
   const router = useRouter();
@@ -22,6 +21,8 @@ export default function Index() {
   const [username, setUsername] = useState<string>('');
 
   const { lobbyId } = router.query;
+
+  const { isAdmin } = useLobby();
 
   const { data: games } = useGames({
     limit: state.lobby ? state.lobby.players.length : 0,
@@ -46,26 +47,14 @@ export default function Index() {
   }, [lobbyId, state.lobby, state.socket, state.account]);
 
   if (state.queue) {
-    return (
-      <Centered>
-        <Text header>You are currently in queue for {state.queue.type}...</Text>
-        <AvatarRow
-          users={(function () {
-            const emptyUsers = new Array(GameLobbySizes[state.queue.type]).fill({});
-            state.lobby.players.forEach((p, i) => (emptyUsers[i] = p));
-            return emptyUsers;
-          })()}
-          showName
-        />
-        {state.lobby.players.filter(p => p.id === state.account.id)[0].admin && (
-          <Button text={'Leave queue'} onClick={() => state.socket.leaveGameSearch(state.queue.type)} />
-        )}
-      </Centered>
-    );
+    return <InQueue
+      isAdmin={isAdmin()}
+      queueType={state.queue.type}
+      lobbyPlayers={state.lobby.players}
+      onLeaveQueue={() => state.socket.leaveGameSearch(state.queue.type)}
+    />
   }
-
-  console.log(state);
-
+  
   return (
     <Container>
       <Row>
@@ -114,8 +103,7 @@ export default function Index() {
                 <GameEntry
                   onClick={() => {
                     if (state.lobby) {
-                      const isAdmin = state.lobby.players.filter(p => p.id === state.account.id)[0];
-                      if (isAdmin && isAdmin.admin) {
+                      if (isAdmin()) {
                         state.socket.startGameSearch(game.type);
                       } else {
                         toast.error('You must be the lobby leader to start a game.');
