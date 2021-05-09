@@ -18,13 +18,15 @@ export function Text(props: TextProps) {
 const StyledText = styled.p<TextProps>`
   margin: 0;
   padding: 0;
-  
+
   font-size: ${props => props.fontSize ?? 16}px;
+  color: ${props => props.theme.textPrimary};
 `;
 
 const StyledBold = styled.b<TextProps>`
   margin: 0;
   padding: 0;
-  
+
   font-size: ${props => props.fontSize ?? 16}px;
+  color: ${props => props.theme.textPrimary};
 `;

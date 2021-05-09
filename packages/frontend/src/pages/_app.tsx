@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { AppProps } from 'next/app';
 import { NextComponentType, NextPageContext } from 'next';
-import { createGlobalStyle } from 'styled-components';
+import { createGlobalStyle, ThemeProvider } from 'styled-components';
 import { StoreContext, DefaultStore } from '../utils/store';
 import { useRouter } from 'next/router';
 import { Sockets } from '../socket';
@@ -9,6 +9,7 @@ import { Toaster } from 'react-hot-toast';
 import { SWRConfig } from 'swr';
 import { swrFetcher } from '../hooks';
 import { uniqueNamesGenerator, adjectives, colors } from 'unique-names-generator';
+import { themes } from '../ui/theme';
 
 interface MyAppProps extends AppProps {
   Component: {
@@ -24,14 +25,16 @@ export default function App({ Component, pageProps }: MyAppProps) {
 
   return (
     <SWRConfig value={{ fetcher: swrFetcher }}>
-      <StoreContext.Provider value={{ state: storeContext, dispatch: setStoreContext }}>
-        <Layout>
-          <Toaster />
-          <SocketWrapper />
-          <GlobalStyles />
-          <Component {...pageProps} />
-        </Layout>
-      </StoreContext.Provider>
+      <ThemeProvider theme={themes.dark}>
+        <StoreContext.Provider value={{ state: storeContext, dispatch: setStoreContext }}>
+          <Layout>
+            <Toaster />
+            <SocketWrapper />
+            <GlobalStyles />
+            <Component {...pageProps} />
+          </Layout>
+        </StoreContext.Provider>
+      </ThemeProvider>
     </SWRConfig>
   );
 }

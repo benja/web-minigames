@@ -1,16 +1,16 @@
 import { useRouter } from 'next/router';
 import React, { useContext, useEffect, useState } from 'react';
-import { Card, Column, Container, Row } from '../ui/components/layouts';
+import { Card, Column, Row } from '../ui/components/layouts';
 import { StoreContext } from '../utils/store';
 import { toast } from 'react-hot-toast';
 import { useGames } from '../hooks/useGames';
-import styled from 'styled-components';
-import { Button, ListItem} from '../ui';
+import { Button, ListItem } from '../ui';
 import { UserEntry, IconInput, GameEntry } from '../ui/components/molecules';
 import { faCheck, faClipboard, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { MessageBox } from '../ui/components/molecules';
 import { useLobby } from '../hooks/useLobby';
 import { InQueue } from '../ui/components/templates';
+import { Page } from '../ui/components/templates/Page/Page';
 
 export default function Index() {
   const router = useRouter();
@@ -32,7 +32,7 @@ export default function Index() {
     if (state.account) {
       setUsername(state.account.username);
     }
-  }, [state.account])
+  }, [state.account]);
 
   useEffect(() => {
     if (!state.socket || state.lobby || !state.account) return;
@@ -47,16 +47,18 @@ export default function Index() {
   }, [lobbyId, state.lobby, state.socket, state.account]);
 
   if (state.queue) {
-    return <InQueue
-      isAdmin={isAdmin()}
-      queueType={state.queue.type}
-      lobbyPlayers={state.lobby.players}
-      onLeaveQueue={() => state.socket.leaveGameSearch(state.queue.type)}
-    />
+    return (
+      <InQueue
+        isAdmin={isAdmin()}
+        queueType={state.queue.type}
+        lobbyPlayers={state.lobby.players}
+        onLeaveQueue={() => state.socket.leaveGameSearch(state.queue.type)}
+      />
+    );
   }
-  
+
   return (
-    <Container>
+    <Page>
       <Row>
         <Column widthFlex={1}>
           <Card header={'Lobby members'} subHeader={'People in your lobby'}>
@@ -72,27 +74,36 @@ export default function Index() {
             {!state.lobby?.id ? (
               <Button onClick={() => state.socket?.createLobby()} text={'Create lobby'} />
             ) : (
-              <IconInput text={`http://localhost:3000/?lobbyId=${state.lobby.id}`} icon={!copied ? faClipboard : faCheck} onClick={() => {
-                navigator.clipboard.writeText(`http://localhost:3000/?lobbyId=${state.lobby.id}`);
-                toast('Copied lobby link', {
-                  icon: '🎉',
-                });
-                setCopied(true);
-                setTimeout(() => {
-                  setCopied(false);
-                }, 5000);
-              }}/>
+              <IconInput
+                text={`http://localhost:3000/?lobbyId=${state.lobby.id}`}
+                icon={!copied ? faClipboard : faCheck}
+                onClick={() => {
+                  navigator.clipboard.writeText(`http://localhost:3000/?lobbyId=${state.lobby.id}`);
+                  toast('Copied lobby link', {
+                    icon: '🎉',
+                  });
+                  setCopied(true);
+                  setTimeout(() => {
+                    setCopied(false);
+                  }, 5000);
+                }}
+              />
             )}
           </Card>
           {state.lobby?.id && (
             <Card header={'Messages'} subHeader={'Chat directly with your lobby'}>
               <MessageBox messages={state.lobby.messages ?? []} />
-              <IconInput text={message} icon={faPaperPlane} onChange={text => setMessage(text)} onSubmit={() => {
-                if (message) {
-                  state.socket.sendMessage(message);
-                  setMessage('');
-                }
-              }}/>
+              <IconInput
+                text={message}
+                icon={faPaperPlane}
+                onChange={text => setMessage(text)}
+                onSubmit={() => {
+                  if (message) {
+                    state.socket.sendMessage(message);
+                    setMessage('');
+                  }
+                }}
+              />
             </Card>
           )}
         </Column>
@@ -118,22 +129,6 @@ export default function Index() {
             ))}
         </Column>
       </Row>
-    </Container>
+    </Page>
   );
 }
-
-const Messages = styled.div`
-  border: 1px solid #dedede;
-  border-radius: 5px;
-  height: 250px;
-  flex-grow: 1;
-  margin-top: 10px;
-  padding: 0.5rem;
-  overflow-y: scroll;
-`;
-
-const Message = styled.div`
-  display: flex;
-  flex-direction: row;
-  margin-bottom: 10px;
-`;
