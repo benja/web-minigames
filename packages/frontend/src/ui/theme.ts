@@ -1,5 +1,9 @@
 export const themes = {
-  light: {},
+  light: {
+    backgroundPrimary: 'white',
+    backgroundSecondary: 'white',
+    textPrimary: 'black',
+  },
   dark: {
     backgroundPrimary: '#202225',
     backgroundSecondary: '#36393f',

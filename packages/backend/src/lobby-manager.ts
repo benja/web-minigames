@@ -17,7 +17,6 @@ export function createLobby(socket: Socket): Lobby {
     throw new Error('A lobby already exists with this id.');
   }
   lobby.addPlayer(socket.id);
-  lobbies.set(lobby.getId(), lobby);
   return lobby;
 }
 
@@ -45,7 +44,6 @@ export function setLobbyQueueStatus(lobbyId: string, inQueue: boolean) {
     throw new Error('No lobby exists with this id.');
   }
   lobby.setInQueue(inQueue);
-  lobbies.set(lobby.getId(), lobby);
   return lobby;
 }
 
@@ -55,7 +53,6 @@ export function setLobbyPrivate(lobbyId: string, status: boolean) {
     throw new Error('No lobby exists with this id.');
   }
   lobby.setPrivate(status);
-  lobbies.set(lobby.getId(), lobby);
   return lobby;
 }
 
@@ -65,6 +62,5 @@ export function setLobbyInGame(lobbyId: string, game: Game) {
     throw new Error('No lobby exists with this id.');
   }
   lobby.setGame(game);
-  lobbies.set(lobby.getId(), lobby);
   return lobby;
 }

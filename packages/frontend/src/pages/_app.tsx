@@ -25,7 +25,7 @@ export default function App({ Component, pageProps }: MyAppProps) {
 
   return (
     <SWRConfig value={{ fetcher: swrFetcher }}>
-      <ThemeProvider theme={themes.dark}>
+      <ThemeProvider theme={themes.light}>
         <StoreContext.Provider value={{ state: storeContext, dispatch: setStoreContext }}>
           <Layout>
             <Toaster />
