@@ -2,9 +2,10 @@ import styled from 'styled-components';
 import { Icon, Text } from '../../atoms';
 import { User } from '@wmg/shared';
 import Avatar from 'react-avatar';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { StoreContext } from '../../../../utils/store';
 import { faCheck, faEdit, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import ReactTooltip from 'react-tooltip';
 
 interface userEntryProps extends User {
   /*
@@ -12,14 +13,37 @@ interface userEntryProps extends User {
    */
   active?: boolean;
 
+  /*
+  State username override
+   */
   usernameOverride: string;
+
+  /*
+  On username change state callback
+   */
   onUsernameChange: (name: string) => void;
+
+  /*
+  On username save
+   */
   onUsernameSave: () => void;
+
+  /*
+  Is user kickable
+   */
   kickable?: boolean;
+
+  /*
+  On kick action
+   */
+  onPlayerKick?: () => void;
 }
 export function UserEntry(props: userEntryProps) {
-  const { state } = useContext(StoreContext);
   const [showInput, setShowInput] = useState(false);
+
+  useEffect(() => {
+    ReactTooltip.rebuild();
+  });
 
   return (
     <Container>
@@ -30,9 +54,17 @@ export function UserEntry(props: userEntryProps) {
       ) : (
         <Text tooltip={'Test'}>{props.username}</Text>
       )}
-      {props.admin && <strong>👑</strong>}
+      {props.admin && (
+        <Text header style={{ marginLeft: 10 }} tooltip={'Party leader'}>
+          👑
+        </Text>
+      )}
       {props.kickable && (
-        <Icon onClick={() => state.socket.kickLobbyPlayer(props.id)} icon={faSignOutAlt} tooltip={'Kick player'} />
+        <Icon
+          onClick={props.onPlayerKick ? props.onPlayerKick : () => {}}
+          icon={faSignOutAlt}
+          tooltip={'Kick player'}
+        />
       )}
       {(props.username === props.usernameOverride || showInput) && (
         <Icon
@@ -55,12 +87,13 @@ const Container = styled.div`
   flex-direction: row;
   margin-bottom: 10px;
 
-  > div:first-child {
-    margin-right: 10px;
-  }
-
-  > div:last-child {
-    margin-left: auto;
+  > div {
+    &:first-child {
+      margin-right: 10px;
+    }
+    &:last-child {
+      margin-left: auto;
+    }
   }
 
   > p {
@@ -68,10 +101,4 @@ const Container = styled.div`
   }
 
   overflow-x: hidden;
-`;
-
-const Button = styled.button`
-  background: #dedede;
-  padding: 2px 7px;
-  margin-left: 5px;
 `;

@@ -26,11 +26,11 @@ export default function App({ Component, pageProps }: MyAppProps) {
 
   return (
     <SWRConfig value={{ fetcher: swrFetcher }}>
-      <ThemeProvider theme={themes.light}>
+      <ThemeProvider theme={themes.dark}>
         <StoreContext.Provider value={{ state: storeContext, dispatch: setStoreContext }}>
           <Layout>
             <Toaster />
-            <ReactTooltip id={'wmg'} type={'dark'} />
+            <ReactTooltip id={'wmg'} type={'light'} />
             <SocketWrapper />
             <GlobalStyles />
             <Component {...pageProps} />

@@ -17,6 +17,4 @@ const StyledContainer = styled.div`
   margin: 0 auto;
 
   width: 70%;
-
-  padding: 2rem 0;
 `;

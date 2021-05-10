@@ -8,15 +8,23 @@ interface InputProps {
 }
 export function Input(props: InputProps) {
   return (
-    <StyledInput type={props.type || 'text'} onChange={e => props.onChange(e.target.value)} value={props.text} placeholder={props.placeholder} />
-  )
+    <StyledInput
+      type={props.type || 'text'}
+      onChange={e => props.onChange(e.target.value)}
+      value={props.text}
+      placeholder={props.placeholder}
+    />
+  );
 }
 
 const StyledInput = styled.input`
   width: 100%;
   font-size: 14px;
-        
+
   padding: 10px 15px;
   outline: none;
-  border: 1px solid lightgray;
+  color: ${props => props.theme.textPrimary};
+
+  border: 1px solid ${props => props.theme.textPrimary};
+  background: ${props => props.theme.backgroundSecondary};
 `;

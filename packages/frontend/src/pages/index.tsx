@@ -70,6 +70,7 @@ export default function Index() {
                 kickable={isAdmin() && u.id !== state.account.id}
                 onUsernameChange={(name: string) => setUsername(name)}
                 onUsernameSave={() => state.socket.updateUsername(username)}
+                onPlayerKick={() => state.socket.kickLobbyPlayer(u.id)}
               />
             ))}
             {!state.lobby?.id ? (

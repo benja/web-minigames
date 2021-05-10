@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 interface ButtonProps {
   text: string;
@@ -10,22 +10,23 @@ export function Button(props: ButtonProps) {
     <StyledButton onClick={props.onClick} type={props.type}>
       {props.text}
     </StyledButton>
-  )
+  );
 }
 
 const StyledButton = styled.button`
-  border: 1px solid lightgray;
-  background: white;
-  
+  border: 1px solid ${props => props.theme.textPrimary};
+  background: ${props => props.theme.backgroundSecondary};
+  color: ${props => props.theme.textPrimary};
+
   width: 100%;
-  
+
   padding: 10px 15px;
   border-radius: 10px;
-  
+
   &:focus {
     outline: none;
   }
-  
+
   &:hover {
     cursor: pointer;
   }
