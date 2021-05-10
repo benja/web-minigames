@@ -17,6 +17,7 @@ export function createLobby(socket: Socket): Lobby {
     throw new Error('A lobby already exists with this id.');
   }
   lobby.addPlayer(socket.id);
+  lobbies.set(lobby.getId(), lobby);
   return lobby;
 }
 
@@ -64,3 +65,7 @@ export function setLobbyInGame(lobbyId: string, game: Game) {
   lobby.setGame(game);
   return lobby;
 }
+
+setInterval(() => {
+  console.log(`Lobbies: ` + Object.keys(lobbies));
+}, 2500);
