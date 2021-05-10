@@ -14,6 +14,7 @@ interface userEntryProps extends User {
   usernameOverride: string;
   onUsernameChange: (name: string) => void;
   onUsernameSave: () => void;
+  kickable?: boolean;
 }
 export function UserEntry(props: userEntryProps) {
   const { state } = useContext(StoreContext);
@@ -21,11 +22,7 @@ export function UserEntry(props: userEntryProps) {
 
   return (
     <Container>
-      <Avatar
-        name={props.username.split(/(?=[A-Z])/).join(' ')}
-        size="35"
-        round="5px"
-      />
+      <Avatar name={props.username.split(/(?=[A-Z])/).join(' ')} size="35" round="5px" />
 
       {showInput ? (
         <input value={props.usernameOverride} onChange={e => props.onUsernameChange(e.target.value)} />
@@ -33,12 +30,8 @@ export function UserEntry(props: userEntryProps) {
         <Text>{props.username}</Text>
       )}
       {props.admin && <strong>👑</strong>}
-      {props.active && (
-        <Button onClick={() => state.socket.kickLobbyPlayer(props.id)}>
-          Kick
-        </Button>
-      )}
-      {(props.username === props.usernameOverride || showInput)  && (
+      {props.kickable && <Button onClick={() => state.socket.kickLobbyPlayer(props.id)}>Kick</Button>}
+      {(props.username === props.usernameOverride || showInput) && (
         <Button
           onClick={() => {
             if (!showInput) return setShowInput(true);

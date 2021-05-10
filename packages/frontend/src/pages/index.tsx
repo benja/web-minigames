@@ -67,6 +67,7 @@ export default function Index() {
                 {...u}
                 key={`user-${u.username}-index-${index}`}
                 usernameOverride={username}
+                kickable={isAdmin() && u.id !== state.account.id}
                 onUsernameChange={(name: string) => setUsername(name)}
                 onUsernameSave={() => state.socket.updateUsername(username)}
               />
