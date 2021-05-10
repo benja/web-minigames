@@ -6,11 +6,12 @@ import { toast } from 'react-hot-toast';
 import { useGames } from '../hooks/useGames';
 import { Button, ListItem } from '../ui';
 import { UserEntry, IconInput, GameEntry } from '../ui/components/molecules';
-import { faCheck, faClipboard, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faClipboard, faMoon, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { MessageBox } from '../ui/components/molecules';
 import { useLobby } from '../hooks/useLobby';
 import { InQueue } from '../ui/components/templates';
 import { Page } from '../ui/components/templates/Page/Page';
+import { ToggleState } from '../ui/components/molecules/ToggleState/ToggleState';
 
 export default function Index() {
   const router = useRouter();
@@ -110,6 +111,9 @@ export default function Index() {
               />
             </Card>
           )}
+          <Card header={'Settings'} subHeader={'Change your client settings'}>
+            <ToggleState name={'Dark mode'} icon={faMoon} onToggle={() => {}} />
+          </Card>
         </Column>
         <Column widthFlex={2}>
           {games &&
