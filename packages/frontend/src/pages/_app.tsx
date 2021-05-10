@@ -30,7 +30,7 @@ export default function App({ Component, pageProps }: MyAppProps) {
         <StoreContext.Provider value={{ state: storeContext, dispatch: setStoreContext }}>
           <Layout>
             <Toaster />
-            <ReactTooltip />
+            <ReactTooltip id={'wmg'} type={'dark'} />
             <SocketWrapper />
             <GlobalStyles />
             <Component {...pageProps} />

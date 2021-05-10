@@ -78,6 +78,7 @@ export default function Index() {
               <IconInput
                 text={`http://localhost:3000/?lobbyId=${state.lobby.id}`}
                 icon={!copied ? faClipboard : faCheck}
+                iconTooltip={'Copy lobby link'}
                 onClick={() => {
                   navigator.clipboard.writeText(`http://localhost:3000/?lobbyId=${state.lobby.id}`);
                   toast('Copied lobby link', {
@@ -98,6 +99,7 @@ export default function Index() {
                 text={message}
                 icon={faPaperPlane}
                 onChange={text => setMessage(text)}
+                iconTooltip={'Send message'}
                 onSubmit={() => {
                   if (message) {
                     state.socket.sendMessage(message);

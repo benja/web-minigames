@@ -8,6 +8,7 @@ interface IconButtonProps {
   onClick?: () => void;
   onChange?: (text: string) => void;
   onSubmit?: () => void;
+  iconTooltip?: string;
 }
 export function IconInput(props: IconButtonProps) {
   return (
@@ -19,7 +20,7 @@ export function IconInput(props: IconButtonProps) {
     >
       <Input text={props.text} onChange={props.onChange ? props.onChange : () => {}} />
       <IconContainer onClick={props.onClick}>
-        <Icon icon={props.icon} />
+        <Icon icon={props.icon} tooltip={props.iconTooltip} />
       </IconContainer>
     </Container>
   );

@@ -4,7 +4,7 @@ import { User } from '@wmg/shared';
 import Avatar from 'react-avatar';
 import React, { useState, useContext } from 'react';
 import { StoreContext } from '../../../../utils/store';
-import { faEdit, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faEdit, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 interface userEntryProps extends User {
   /*
@@ -36,7 +36,7 @@ export function UserEntry(props: userEntryProps) {
       )}
       {(props.username === props.usernameOverride || showInput) && (
         <Icon
-          icon={faEdit}
+          icon={!showInput ? faEdit : faCheck}
           onClick={() => {
             if (!showInput) return setShowInput(true);
             props.onUsernameSave();
