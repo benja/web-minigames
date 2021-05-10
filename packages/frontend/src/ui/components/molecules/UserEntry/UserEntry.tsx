@@ -1,9 +1,10 @@
 import styled from 'styled-components';
-import { Text } from '../../atoms';
+import { Icon, Text } from '../../atoms';
 import { User } from '@wmg/shared';
 import Avatar from 'react-avatar';
-import { useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { StoreContext } from '../../../../utils/store';
+import { faEdit, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 interface userEntryProps extends User {
   /*
@@ -27,20 +28,22 @@ export function UserEntry(props: userEntryProps) {
       {showInput ? (
         <input value={props.usernameOverride} onChange={e => props.onUsernameChange(e.target.value)} />
       ) : (
-        <Text>{props.username}</Text>
+        <Text tooltip={'Test'}>{props.username}</Text>
       )}
       {props.admin && <strong>👑</strong>}
-      {props.kickable && <Button onClick={() => state.socket.kickLobbyPlayer(props.id)}>Kick</Button>}
+      {props.kickable && (
+        <Icon onClick={() => state.socket.kickLobbyPlayer(props.id)} icon={faSignOutAlt} tooltip={'Kick player'} />
+      )}
       {(props.username === props.usernameOverride || showInput) && (
-        <Button
+        <Icon
+          icon={faEdit}
           onClick={() => {
             if (!showInput) return setShowInput(true);
             props.onUsernameSave();
             setShowInput(false);
           }}
-        >
-          {showInput ? 'Save' : 'Edit'}
-        </Button>
+          tooltip={'Edit username'}
+        />
       )}
     </Container>
   );
@@ -54,6 +57,10 @@ const Container = styled.div`
 
   > div:first-child {
     margin-right: 10px;
+  }
+
+  > div:last-child {
+    margin-left: auto;
   }
 
   > p {

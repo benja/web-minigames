@@ -10,6 +10,7 @@ import { SWRConfig } from 'swr';
 import { swrFetcher } from '../hooks';
 import { uniqueNamesGenerator, adjectives, colors } from 'unique-names-generator';
 import { themes } from '../ui/theme';
+import ReactTooltip from 'react-tooltip';
 
 interface MyAppProps extends AppProps {
   Component: {
@@ -29,6 +30,7 @@ export default function App({ Component, pageProps }: MyAppProps) {
         <StoreContext.Provider value={{ state: storeContext, dispatch: setStoreContext }}>
           <Layout>
             <Toaster />
+            <ReactTooltip />
             <SocketWrapper />
             <GlobalStyles />
             <Component {...pageProps} />

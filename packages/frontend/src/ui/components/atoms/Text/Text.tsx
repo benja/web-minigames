@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import ReactTooltip from 'react-tooltip';
 
 interface TextProps {
   children: React.ReactNode;
+  tooltip?: string;
   header?: boolean;
   fontSize?: number;
   style?: React.CSSProperties;
