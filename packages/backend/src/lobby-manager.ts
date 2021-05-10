@@ -65,7 +65,3 @@ export function setLobbyInGame(lobbyId: string, game: Game) {
   lobby.setGame(game);
   return lobby;
 }
-
-setInterval(() => {
-  console.log(`Lobbies: ` + Object.keys(lobbies));
-}, 2500);
