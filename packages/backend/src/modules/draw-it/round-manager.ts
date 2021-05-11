@@ -10,7 +10,7 @@ interface IRoundManager {
 }
 export class RoundManager implements IRoundManager {
   // 10 seconds per round
-  public static readonly DEFAULT_ROUND_LENGTH = 15;
+  public static readonly DEFAULT_ROUND_LENGTH = 60;
 
   // 1 round per game
   public static readonly DEFAULT_NUMBER_OF_ROUNDS = 5;
