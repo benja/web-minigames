@@ -7,7 +7,7 @@ const queues: Record<GameTypes, Lobby[]> = {
 };
 
 export function addToQueue(lobby: Lobby, gameType: GameTypes) {
-  if (lobby.getPlayers().length === GameLobbySizes[gameType as GameTypes]) {
+  if (lobby.getPlayers().length === GameLobbySizes[gameType]) {
     startGameWithLobbies(gameType, [lobby]);
     return;
   }

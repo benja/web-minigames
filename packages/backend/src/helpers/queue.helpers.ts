@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { GameLobbySizes, GameTypes, SocketEvents } from "@wmg/shared";
+import { GameLobbySizes, GameTypes, SocketEvents } from '@wmg/shared';
 import { getClientById, SocketUser } from '../client-manager';
 import { getLobbyById } from '../lobby-manager';
 import { addToQueue, removeFromQueue } from '../game-queues';
@@ -11,15 +11,15 @@ export default class QueueHelper {
     }
     const lobby = getLobbyById(user.currentLobby);
     if (lobby.getAdmin() !== user.socket.id) {
-      throw new Error('You must be the lobby admin to join a game queue.')
+      throw new Error('You must be the lobby admin to join a game queue.');
     }
     if (lobby.getPlayers().length > GameLobbySizes[gameType]) {
-      throw new Error('Your lobby is too full to queue for this event.')
+      throw new Error('Your lobby is too full to queue for this event.');
     }
-    addToQueue(lobby, gameType);
     lobby.getPlayers().forEach(player => {
-      getClientById(player).socket.emit(SocketEvents.QUEUE_JOIN, gameType)
+      getClientById(player).socket.emit(SocketEvents.QUEUE_JOIN, gameType);
     });
+    addToQueue(lobby, gameType);
   }
 
   public static leave(user: SocketUser, gameType: GameTypes) {
@@ -28,11 +28,11 @@ export default class QueueHelper {
     }
     const lobby = getLobbyById(user.currentLobby);
     if (lobby.getAdmin() !== user.socket.id) {
-      throw new Error('You must be the lobby admin to leave a game queue.')
+      throw new Error('You must be the lobby admin to leave a game queue.');
     }
-    removeFromQueue(lobby, gameType);
     lobby.getPlayers().forEach(player => {
-      getClientById(player).socket.emit(SocketEvents.QUEUE_LEAVE, gameType)
+      getClientById(player).socket.emit(SocketEvents.QUEUE_LEAVE, gameType);
     });
+    removeFromQueue(lobby, gameType);
   }
 }
