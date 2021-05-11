@@ -7,7 +7,15 @@ const queues: Record<GameTypes, Lobby[]> = {
 };
 
 export function addToQueue(lobby: Lobby, gameType: GameTypes) {
-  // TODO Check if they are in the queue already
+  if (lobby.getPlayers().length === GameLobbySizes[gameType as GameTypes]) {
+    startGameWithLobbies(gameType, [lobby]);
+    return;
+  }
+
+  const queue = queues[gameType];
+  if (!!queue.find(l => l.getId() === lobby.getId())) {
+    throw new Error('Your lobby is already in a queue.');
+  }
   queues[gameType].push(lobby);
 }
 
