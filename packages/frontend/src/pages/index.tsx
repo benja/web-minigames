@@ -12,6 +12,9 @@ import { useLobby } from '../hooks/useLobby';
 import { InQueue } from '../ui/components/templates';
 import { Page } from '../ui/components/templates/Page/Page';
 import { ToggleState } from '../ui/components/molecules/ToggleState/ToggleState';
+import { GameTypes } from '@wmg/shared';
+import { DrawIt } from '@wmg/games';
+import { Text } from '../ui/components/atoms/Text/Text';
 
 export default function Index() {
   const router = useRouter();
@@ -56,6 +59,13 @@ export default function Index() {
         onLeaveQueue={() => state.socket.leaveGameSearch(state.queue.type)}
       />
     );
+  }
+
+  if (state.game) {
+    switch (state.game.gameType) {
+      case GameTypes.DRAWING:
+        return <DrawIt socket={state.socket.socket} game={state.game} />;
+    }
   }
 
   return (
@@ -116,7 +126,7 @@ export default function Index() {
           </Card>
         </Column>
         <Column widthFlex={2}>
-          {games &&
+          {games && state.lobby ? (
             games.map((game, index) => (
               <ListItem key={`game-${game.type}-${index}`}>
                 <GameEntry
@@ -134,7 +144,10 @@ export default function Index() {
                   {...game}
                 />
               </ListItem>
-            ))}
+            ))
+          ) : (
+            <Text style={{ marginTop: 15 }}>Join or create a lobby to see games</Text>
+          )}
         </Column>
       </Row>
     </Page>

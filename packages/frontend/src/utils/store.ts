@@ -1,5 +1,5 @@
 import { createContext, Dispatch, SetStateAction } from 'react';
-import { Lobby, Queue, User } from '@wmg/shared';
+import { Lobby, Queue, User, Game, GameTypes } from '@wmg/shared';
 import { Sockets } from '../socket';
 
 export interface DefaultStore {
@@ -7,6 +7,10 @@ export interface DefaultStore {
   account?: User;
   lobby?: Lobby;
   queue?: Queue;
+  game?: {
+    gameId: string;
+    gameType: GameTypes;
+  };
 }
 
 interface StoreContext {

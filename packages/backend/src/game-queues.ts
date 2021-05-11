@@ -10,7 +10,7 @@ type LobbyMeta = {
 };
 
 const queues: Record<GameTypes, LobbyMeta[]> = {
-  [GameTypes.DRAWING]: []
+  [GameTypes.DRAWING]: [],
 };
 
 export function addToQueue(lobby: Lobby, gameType: GameTypes) {
@@ -47,7 +47,7 @@ export function removeCollectionFromQueueByLobbyId(lobbyIds: string[], gameType:
       .forEach(player => {
         getClientById(player).socket.emit(SocketEvents.GAME_START, {
           ...game,
-          clientManager: undefined
+          clientManager: undefined,
         });
       });
   });

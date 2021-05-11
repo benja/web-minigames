@@ -6,7 +6,7 @@ import { NextRouter } from 'next/router';
 import toast from 'react-hot-toast';
 
 export class Sockets {
-  private readonly socket: SocketIOClient.Socket = null;
+  public readonly socket: SocketIOClient.Socket = null;
   private readonly dispatch: Dispatch<SetStateAction<DefaultStore>>;
   private router: NextRouter;
 
@@ -26,7 +26,7 @@ export class Sockets {
     });
 
     this.socket.on(SocketEvents.ERROR, (message: string) => {
-      toast.error(message);
+      // toast.error(message);
     });
 
     this.socket.on(SocketEvents.LOBBY_JOIN, (data: Lobby) => {
@@ -109,10 +109,11 @@ export class Sockets {
       }));
     });
 
-    this.socket.on(SocketEvents.GAME_START, (elem: []) => {
+    this.socket.on(SocketEvents.GAME_START, data => {
       this.dispatch(o => ({
         ...o,
         queue: undefined,
+        game: data,
       }));
     });
 

@@ -2,7 +2,6 @@ import { Server, Socket } from 'socket.io';
 import events from './listeners';
 import { addClient } from './client-manager';
 import modules from './modules';
-import { GameListener } from './modules/game-listener';
 
 export class SocketServer {
   private readonly io: Server;
