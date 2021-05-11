@@ -91,7 +91,7 @@ export class Round implements IRound {
    * @param message Message they have sent
    */
   guessWord(player: string, message: string): void {
-    if (!!this.players.find(p => p.id === player)) {
+    if (!this.players.find(p => p.id === player)) {
       throw new Error('Cannot guess word for player that does not exist.');
     }
     if (this.correctGuessors.includes(player)) {
