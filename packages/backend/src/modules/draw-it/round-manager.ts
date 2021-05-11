@@ -2,6 +2,8 @@ import { DrawItSocketEvents, IRoundFinish } from '@wmg/shared';
 import { GameLeaderboard } from '../game-leaderboard';
 import { Round } from './round';
 import GameAPI from '../game-api';
+import { Socket } from 'socket.io';
+import { ClientManager } from '../client-manager';
 
 interface IRoundManager {
   startRound: () => void;
@@ -14,7 +16,7 @@ export class RoundManager implements IRoundManager {
   // 1 round per game
   public static readonly DEFAULT_NUMBER_OF_ROUNDS = 1;
 
-  private readonly players: string[];
+  private readonly clientManager: ClientManager;
   private readonly globalGameLeaderboard: GameLeaderboard;
 
   private roundCountdown: number = RoundManager.DEFAULT_ROUND_LENGTH;
@@ -24,10 +26,10 @@ export class RoundManager implements IRoundManager {
   private currentRound: Round;
   private currentRoundIndex: number = 1;
 
-  constructor(players: string[], gameLeaderboard: GameLeaderboard, numRounds?: number) {
+  constructor(clientManager: ClientManager, gameLeaderboard: GameLeaderboard, numRounds?: number) {
     this.globalGameLeaderboard = gameLeaderboard;
-    this.players = players;
-    this.currentRound = new Round(players, gameLeaderboard);
+    this.clientManager = clientManager;
+    this.currentRound = new Round(clientManager.getSockets(), gameLeaderboard);
     this.numRounds = numRounds || RoundManager.DEFAULT_NUMBER_OF_ROUNDS;
   }
 
@@ -55,7 +57,7 @@ export class RoundManager implements IRoundManager {
     })(this, word);
 
     // Emit that the round has started
-    GameAPI.emitToCollection(this.players, DrawItSocketEvents.GAME_ROUND_START, {
+    GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_ROUND_START, {
       drawer: nextDrawer,
       word: new Array(word.length).fill('_').join(''),
     });
@@ -69,7 +71,7 @@ export class RoundManager implements IRoundManager {
     this.globalGameLeaderboard.add(this.currentRound.getRoundLeaderboard());
 
     // Emit the end of round scores
-    GameAPI.emitToCollection(this.players, DrawItSocketEvents.GAME_ROUND_END, {
+    GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_ROUND_END, {
       correctWord: this.currentRound.getCurrentWord(),
       roundScores: this.currentRound.getRoundLeaderboard().getLeaderboardScores(),
       totalScores: this.globalGameLeaderboard.getLeaderboardScores(),
@@ -77,13 +79,13 @@ export class RoundManager implements IRoundManager {
 
     // If it is the final round. Handle the ending of the game
     if (this.currentRoundIndex === this.numRounds) {
-      return GameAPI.handleGameEnd(this.players, {
+      return GameAPI.handleGameEnd(this.clientManager.getSocketIds(), {
         totalScores: this.globalGameLeaderboard.getLeaderboardScores(),
       });
     }
 
     // Create a new current round instance
-    this.currentRound = new Round(this.players, this.globalGameLeaderboard);
+    this.currentRound = new Round(this.clientManager.getSockets(), this.globalGameLeaderboard);
 
     // Start the new round after 2.5 seconds
     setTimeout(() => this.startRound(), 2500);

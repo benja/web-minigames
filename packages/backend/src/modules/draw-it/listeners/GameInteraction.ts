@@ -10,6 +10,6 @@ export class GameInteraction extends GameListener {
   }
 
   async handle(user: SocketUser, game: GameCore<GameTypes.DRAWING>, message: string) {
-    GameAPI.emitToCollection(game.getPlayers(), DrawItSocketEvents.GAME_INTERACTION, message);
+    GameAPI.emitToSockets(game.getClientManager().getSockets(), DrawItSocketEvents.GAME_INTERACTION, message);
   }
 }

@@ -3,13 +3,26 @@ import { Lobby } from './utils/lobby';
 import { getLobbyById } from './lobby-manager';
 import { GameCore } from './modules/game-core';
 import { DrawIt } from './modules/draw-it';
+import { getClientById } from './client-manager';
 
 const games: Map<string, GameCore<GameTypes>> = new Map();
 
 function initGame(gameType: GameTypes, lobbies: Lobby[]): GameCore<GameTypes> {
   switch (gameType) {
     case GameTypes.DRAWING:
-      return new DrawIt(lobbies.map(l => l.getPlayers()).flat());
+      return new DrawIt(
+        lobbies
+          .map(l =>
+            l.getPlayers().map(p => {
+              const client = getClientById(p);
+              return {
+                username: client.username!,
+                socket: client.socket,
+              };
+            }),
+          )
+          .flat(),
+      );
   }
 }
 
