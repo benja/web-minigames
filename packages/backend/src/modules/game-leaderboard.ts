@@ -57,7 +57,7 @@ export class GameLeaderboard implements IGameLeaderboard {
 
   incrementScore(id: string, amount: number): number {
     const entry = this.leaderboard.get(id);
-    if (!entry) {
+    if (entry === undefined) {
       throw new Error('This player is not a part of this leaderboard.');
     }
     this.leaderboard.set(id, entry + amount);
@@ -66,7 +66,7 @@ export class GameLeaderboard implements IGameLeaderboard {
 
   decrementScore(id: string, amount: number): number {
     const entry = this.leaderboard.get(id);
-    if (!entry) {
+    if (entry === undefined) {
       throw new Error('This player is not a part of this leaderboard.');
     }
     this.leaderboard.set(id, entry - amount);

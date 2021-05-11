@@ -9,11 +9,12 @@ interface IRound {
   generateCurrentWord: () => string;
   guessWord: (player: string, word: string) => void;
   revealLetter: (letter: number) => void;
+  isFinished: () => boolean;
 }
 export class Round implements IRound {
   // 10 seconds per round
   public static readonly DEFAULT_ROUND_LENGTH = 30;
-  public static readonly ROUND_LETTER_REVEAL_ROUNDS = [15, 10, 5];
+  public static readonly ROUND_LETTER_REVEAL_ROUNDS = [45, 30, 15];
 
   public static readonly DEFAULT_ROUND_SCORE = 500;
 
@@ -167,5 +168,9 @@ export class Round implements IRound {
 
   getCurrentWord(): string {
     return this.currentWord!;
+  }
+
+  isFinished(): boolean {
+    return this.previousDrawers.length === this.players.length;
   }
 }

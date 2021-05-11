@@ -10,10 +10,10 @@ interface IRoundManager {
 }
 export class RoundManager implements IRoundManager {
   // 10 seconds per round
-  public static readonly DEFAULT_ROUND_LENGTH = 30;
+  public static readonly DEFAULT_ROUND_LENGTH = 15;
 
   // 1 round per game
-  public static readonly DEFAULT_NUMBER_OF_ROUNDS = 1;
+  public static readonly DEFAULT_NUMBER_OF_ROUNDS = 5;
 
   private readonly clientManager: ClientManager;
   private readonly globalGameLeaderboard: GameLeaderboard;
@@ -50,7 +50,9 @@ export class RoundManager implements IRoundManager {
         return manager.onRoundFinish();
       }
 
-      manager.currentRound.triggerLetterReveal(manager.roundCountdown);
+      if (Round.ROUND_LETTER_REVEAL_ROUNDS.includes(manager.roundCountdown)) {
+        manager.currentRound.triggerLetterReveal(manager.roundCountdown);
+      }
 
       setTimeout(() => timer(manager, word), 1000);
     })(this, word);
@@ -67,6 +69,10 @@ export class RoundManager implements IRoundManager {
 
   // Handling the end of the round
   onRoundFinish(): void {
+    if (!this.currentRound.isFinished()) {
+      return this.startRound();
+    }
+
     this.globalGameLeaderboard.add(this.currentRound.getRoundLeaderboard());
 
     // Emit the end of round scores
