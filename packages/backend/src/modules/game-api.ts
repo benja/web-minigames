@@ -18,4 +18,8 @@ export default class GameAPI {
   public static emitToSockets(sockets: Socket[], eventName: string, data?: any) {
     sockets.forEach(socket => socket.emit(eventName, data));
   }
+
+  public static emitToSocket(socket: Socket, eventName: string, data?: any) {
+    socket.emit(eventName, data);
+  }
 }

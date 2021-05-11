@@ -2,12 +2,13 @@ import { DrawItSocketEvents } from '@wmg/shared';
 import { GameLeaderboard } from '../game-leaderboard';
 import GameAPI from '../game-api';
 import { Socket } from 'socket.io';
+import { ClientManager } from '../client-manager';
 
 interface IRound {
   findNextDrawer: () => string | null;
   getCurrentDrawer: () => string | null;
   generateCurrentWord: () => string;
-  guessWord: (player: string, word: string) => void;
+  guessWord: (socket: Socket, word: string) => void;
   revealLetter: (letter: number) => void;
   isFinished: () => boolean;
 }
@@ -21,7 +22,7 @@ export class Round implements IRound {
   private readonly previousDrawers: string[] = [];
   private readonly globalGameLeaderboard: GameLeaderboard;
   private readonly roundLeaderboard: GameLeaderboard;
-  private readonly players: Socket[];
+  private readonly clientManager: ClientManager;
 
   private currentDrawer: string | null = null;
   private currentWord: string | null = null;
@@ -32,10 +33,10 @@ export class Round implements IRound {
 
   private roundCountdown: number = Round.DEFAULT_ROUND_LENGTH;
 
-  constructor(players: Socket[], gameLeaderboard: GameLeaderboard) {
-    this.players = players;
+  constructor(clientManager: ClientManager, gameLeaderboard: GameLeaderboard) {
+    this.clientManager = clientManager;
     this.globalGameLeaderboard = gameLeaderboard;
-    this.roundLeaderboard = new GameLeaderboard(players.map(s => s.id));
+    this.roundLeaderboard = new GameLeaderboard(clientManager.getSocketIds());
   }
 
   /*
@@ -43,11 +44,11 @@ export class Round implements IRound {
    */
   findNextDrawer(): string | null {
     let nextDrawer: string | null = null;
-    for (const drawer of this.players) {
-      if (this.previousDrawers.includes(drawer.id)) {
+    for (const drawer of this.clientManager.getSocketIds()) {
+      if (this.previousDrawers.includes(drawer)) {
         continue;
       }
-      nextDrawer = drawer.id;
+      nextDrawer = drawer;
       break;
     }
     if (!nextDrawer) {
@@ -87,22 +88,22 @@ export class Round implements IRound {
    *
    * Send all players the message
    *
-   * @param player Player that has send the message
+   * @param socket Player that has send the message
    * @param message Message they have sent
    */
-  guessWord(player: string, message: string): void {
-    if (!this.players.find(p => p.id === player)) {
+  guessWord(socket: Socket, message: string): void {
+    if (!this.clientManager.getSocketIds().find(p => p === socket.id)) {
       throw new Error('Cannot guess word for player that does not exist.');
     }
-    if (this.correctGuessors.includes(player)) {
+    if (this.correctGuessors.includes(socket.id)) {
       return GameAPI.emitToCollection(this.correctGuessors, DrawItSocketEvents.GAME_SEND_MESSAGE, message);
     }
     if (message === this.currentWord) {
-      this.correctGuessors.push(player);
-      this.roundLeaderboard.incrementScore(player, this.calculateScore());
-      return GameAPI.emit(player, DrawItSocketEvents.GAME_CORRECT_GUESS);
+      this.correctGuessors.push(socket.id);
+      this.roundLeaderboard.incrementScore(socket.id, this.calculateScore());
+      return GameAPI.emitToSocket(socket, DrawItSocketEvents.GAME_CORRECT_GUESS);
     }
-    return GameAPI.emitToSockets(this.players, DrawItSocketEvents.GAME_SEND_MESSAGE, message);
+    return GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_SEND_MESSAGE, message);
   }
 
   /**
@@ -150,7 +151,7 @@ export class Round implements IRound {
 
     // Emit to all but the drawer
     GameAPI.emitToSockets(
-      this.players.filter(p => p.id !== this.currentDrawer),
+      this.clientManager.getSockets().filter(p => p.id !== this.currentDrawer),
       DrawItSocketEvents.GAME_LETTER_REVEAL,
       secret,
     );
@@ -171,6 +172,6 @@ export class Round implements IRound {
   }
 
   isFinished(): boolean {
-    return this.previousDrawers.length === this.players.length;
+    return this.previousDrawers.length === this.clientManager.getSockets().length;
   }
 }

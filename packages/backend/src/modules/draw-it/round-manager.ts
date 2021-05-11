@@ -28,7 +28,7 @@ export class RoundManager implements IRoundManager {
   constructor(clientManager: ClientManager, gameLeaderboard: GameLeaderboard, numRounds?: number) {
     this.globalGameLeaderboard = gameLeaderboard;
     this.clientManager = clientManager;
-    this.currentRound = new Round(clientManager.getSockets(), gameLeaderboard);
+    this.currentRound = new Round(clientManager, gameLeaderboard);
     this.numRounds = numRounds || RoundManager.DEFAULT_NUMBER_OF_ROUNDS;
   }
 
@@ -90,7 +90,7 @@ export class RoundManager implements IRoundManager {
     }
 
     // Create a new current round instance
-    this.currentRound = new Round(this.clientManager.getSockets(), this.globalGameLeaderboard);
+    this.currentRound = new Round(this.clientManager, this.globalGameLeaderboard);
 
     // Start the new round after 2.5 seconds
     setTimeout(() => this.startRound(), 2500);
