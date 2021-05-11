@@ -62,13 +62,21 @@ export class RoundManager implements IRoundManager {
     })(this, word);
 
     // Emit that the round has started
-    GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_TURN_START, {
-      drawer: nextDrawer,
-      word: new Array(word.length).fill('_').join(''),
-    });
+    // Emit this message to the people that arent the current drawer
+    GameAPI.emitToSockets(
+      this.clientManager.getSockets().filter(s => s.id !== this.currentRound.getCurrentDrawer()),
+      DrawItSocketEvents.GAME_TURN_START,
+      {
+        drawer: nextDrawer,
+        word: new Array(word.length).fill('_').join(''),
+      },
+    );
 
     // Emit the word to the drawer
-    GameAPI.emit(nextDrawer, DrawItSocketEvents.GAME_LETTER_REVEAL, word);
+    GameAPI.emit(nextDrawer, DrawItSocketEvents.GAME_LETTER_REVEAL, {
+      drawer: nextDrawer,
+      word: word,
+    });
   }
 
   // Handling the end of the round
