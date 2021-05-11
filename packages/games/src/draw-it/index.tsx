@@ -9,6 +9,8 @@ import { useState } from 'react';
 import { DEFAULT_BRUSH_RADIUS } from './constants';
 import { GameManager } from './game-manager';
 import { GameTypes } from '@wmg/shared';
+import { SocketEvents } from '@wmg/shared';
+import { DrawItSocketEvents } from '@wmg/shared';
 
 interface DrawItProps {
   socket: SocketIOClient.Socket;
@@ -56,8 +58,6 @@ export function DrawIt(props: DrawItProps) {
     brushRadius: DEFAULT_BRUSH_RADIUS,
     color: '#000000',
   });
-
-  console.log(props);
 
   useEffect(() => {
     mountGame(state);
