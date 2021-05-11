@@ -1,5 +1,5 @@
 import { GameCore, IdentifiableUser } from '../game-core';
-import { DrawItSocketEvents, GameTypes } from '@wmg/shared';
+import { DrawItSocketEvents, GameTypes, SocketEvents } from '@wmg/shared';
 import listeners from './listeners';
 import { GameListener } from '../game-listener';
 import { GameLeaderboard } from '../game-leaderboard';
@@ -33,6 +33,21 @@ export class DrawIt extends GameCore<GameTypes.DRAWING> implements IDrawIt {
   }
 
   start(): void {
+    GameAPI.emitToSockets(this.getClientManager().getSockets(), SocketEvents.GAME_START, {
+      gameId: this.getId(),
+      gameType: this.getGameType(),
+      players: this.getClientManager()
+        .getPlayers()
+        .map(p => ({
+          id: p.socket.id,
+          username: p.username,
+        })),
+      leaderboard: {
+        leaderboardId: this.pointsLeaderboard.leaderboardId,
+        leaderboard: this.pointsLeaderboard.getLeaderboardScores(),
+      },
+    });
+
     this.roundManager.startRound();
   }
 }

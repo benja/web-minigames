@@ -4,8 +4,8 @@ interface IGameLeaderboard {
   incrementScore: (id: string, amount: number) => number;
   decrementScore: (id: string, amount: number) => number;
   resetScore: (id: string) => void;
-  getLeaderboardScores: () => Map<string, number>;
-  getSortedLeaderboardScores: () => Map<string, number>;
+  getLeaderboardScores: () => Record<string, number>;
+  getSortedLeaderboardScores: () => Record<string, number>;
   getWinner: () => string;
   addPlayer: (id: string) => void;
   removePlayer: (id: string) => void;
@@ -28,8 +28,16 @@ export class GameLeaderboard implements IGameLeaderboard {
     this.players = players;
   }
 
-  getLeaderboardScores(): Map<string, number> {
-    return this.leaderboard;
+  static serialize(leaderboard: Map<string, number>): Record<string, number> {
+    const mappedLeaderboard: Record<string, number> = {};
+    leaderboard.forEach((value, key) => {
+      mappedLeaderboard[key] = value;
+    });
+    return mappedLeaderboard;
+  }
+
+  getLeaderboardScores(): Record<string, number> {
+    return GameLeaderboard.serialize(this.leaderboard);
   }
 
   getWinner(): string {
@@ -72,8 +80,8 @@ export class GameLeaderboard implements IGameLeaderboard {
     this.leaderboard.set(id, 0);
   }
 
-  getSortedLeaderboardScores(): Map<string, number> {
-    return new Map([...this.leaderboard.entries()].sort((a, b) => a[1] - b[1]));
+  getSortedLeaderboardScores(): Record<string, number> {
+    return GameLeaderboard.serialize(new Map([...this.leaderboard.entries()].sort((a, b) => a[1] - b[1])));
   }
 
   addPlayer(id: string): void {
@@ -99,15 +107,17 @@ export class GameLeaderboard implements IGameLeaderboard {
   }
 
   add(leaderboard: GameLeaderboard): GameLeaderboard {
-    leaderboard.getLeaderboardScores().forEach((value, key) => {
-      this.incrementScore(key, value);
+    const scores = leaderboard.getLeaderboardScores();
+    Object.keys(scores).forEach(key => {
+      this.incrementScore(key, scores[key]);
     });
     return this;
   }
 
   subtract(leaderboard: GameLeaderboard): GameLeaderboard {
-    leaderboard.getLeaderboardScores().forEach((value, key) => {
-      this.decrementScore(key, value);
+    const scores = leaderboard.getLeaderboardScores();
+    Object.keys(scores).forEach(key => {
+      this.decrementScore(key, scores[key]);
     });
     return this;
   }

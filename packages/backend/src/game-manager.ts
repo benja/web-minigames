@@ -1,6 +1,5 @@
 import { GameTypes } from '@wmg/shared';
 import { Lobby } from './utils/lobby';
-import { getLobbyById } from './lobby-manager';
 import { GameCore } from './modules/game-core';
 import { DrawIt } from './modules/draw-it';
 import { getClientById } from './client-manager';
@@ -26,34 +25,14 @@ function initGame(gameType: GameTypes, lobbies: Lobby[]): GameCore<GameTypes> {
   }
 }
 
-export function startGame(gameType: GameTypes, lobby: Lobby): GameCore<GameTypes> {
-  const game = initGame(gameType, [lobby]);
-  if (games.has(game.getId())) {
-    throw new Error('A game already exists with this id.');
-  }
-  games.set(game.getId(), game);
-  return game;
-}
-
-export function startGameWithLobbyIds(gameType: GameTypes, lobbies: string[]): GameCore<GameTypes> {
-  const game = initGame(
-    gameType,
-    lobbies.map(l => getLobbyById(l)),
-  );
-  if (games.has(game.getId())) {
-    throw new Error('A game already exists with this id.');
-  }
-  games.set(game.getId(), game);
-  game.start();
-  return game;
-}
-
 export function startGameWithLobbies(gameType: GameTypes, lobbies: Lobby[]): GameCore<GameTypes> {
   const game = initGame(gameType, lobbies);
   if (games.has(game.getId())) {
     throw new Error('A game already exists with this id.');
   }
   games.set(game.getId(), game);
+  console.log('Starting game...');
+  game.start();
   return game;
 }
 

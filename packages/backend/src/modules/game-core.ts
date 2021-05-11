@@ -1,7 +1,8 @@
-import { GameTypes } from '@wmg/shared';
+import { GameTypes, SocketEvents } from '@wmg/shared';
 import generateId from '../utils/generate-id';
 import { SocketUser } from '../client-manager';
 import { ClientManager } from './client-manager';
+import GameAPI from './game-api';
 
 interface IGameCore {
   onPlayerLeave: (socketId: string) => void;

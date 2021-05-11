@@ -16,6 +16,11 @@ export default class GameAPI {
   }
 
   public static emitToSockets(sockets: Socket[], eventName: string, data?: any) {
-    sockets.forEach(socket => socket.emit(eventName, data));
+    console.log('emitting');
+    sockets.forEach(socket => {
+      console.log('emitting 1');
+      socket.emit(eventName, data);
+    });
+    console.log('done');
   }
 }
