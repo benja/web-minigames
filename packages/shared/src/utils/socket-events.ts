@@ -29,6 +29,8 @@ export enum DrawItSocketEvents {
   GAME_LETTER_REVEAL = 'game_letter_reveal',
   GAME_ROUND_START = 'game_round_start',
   GAME_ROUND_END = 'game_round_end',
+  GAME_TURN_START = 'game_turn_start',
+  GAME_TURN_END = 'game_turn_end',
 }
 
 // Emitted on GAME_ROUND_END

@@ -34,6 +34,10 @@ export class RoundManager implements IRoundManager {
 
   // Handle the starting of the round
   startRound(): void {
+    if (this.currentRound.isFirstTurn()) {
+      GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_ROUND_START);
+    }
+
     // Find the new drawer from the state
     const nextDrawer = this.currentRound.findNextDrawer();
     if (!nextDrawer) {
@@ -58,7 +62,7 @@ export class RoundManager implements IRoundManager {
     })(this, word);
 
     // Emit that the round has started
-    GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_ROUND_START, {
+    GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_TURN_START, {
       drawer: nextDrawer,
       word: new Array(word.length).fill('_').join(''),
     });
@@ -69,6 +73,11 @@ export class RoundManager implements IRoundManager {
 
   // Handling the end of the round
   onRoundFinish(): void {
+    GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_TURN_END, {
+      correctWord: this.currentRound.getCurrentWord(),
+      roundScores: this.currentRound.getRoundLeaderboard().getLeaderboardScores(),
+    });
+
     if (!this.currentRound.isFinished()) {
       return this.startRound();
     }

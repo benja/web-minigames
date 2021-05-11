@@ -11,6 +11,7 @@ interface IRound {
   guessWord: (socket: Socket, word: string) => void;
   revealLetter: (letter: number) => void;
   isFinished: () => boolean;
+  isFirstTurn: () => boolean;
 }
 export class Round implements IRound {
   // 10 seconds per round
@@ -173,5 +174,9 @@ export class Round implements IRound {
 
   isFinished(): boolean {
     return this.previousDrawers.length === this.clientManager.getSockets().length;
+  }
+
+  isFirstTurn(): boolean {
+    return this.previousDrawers.length === 0 || this.currentDrawer === null;
   }
 }
