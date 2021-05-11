@@ -1,7 +1,7 @@
-import { ClientHandler } from '../client-handler';
-import { DrawItSocketEvents, GameTypes, IRoundFinish } from '@wmg/shared';
+import { DrawItSocketEvents } from '@wmg/shared';
 import { GameLeaderboard } from '../game-leaderboard';
 import GameAPI from '../game-api';
+import { Socket } from 'socket.io';
 
 interface IRound {
   findNextDrawer: () => string | null;
@@ -10,7 +10,7 @@ interface IRound {
   guessWord: (player: string, word: string) => void;
   revealLetter: (letter: number) => void;
 }
-export class Round extends ClientHandler<GameTypes.DRAWING> implements IRound {
+export class Round implements IRound {
   // 10 seconds per round
   public static readonly DEFAULT_ROUND_LENGTH = 30;
   public static readonly ROUND_LETTER_REVEAL_ROUNDS = [15, 10, 5];
@@ -20,6 +20,7 @@ export class Round extends ClientHandler<GameTypes.DRAWING> implements IRound {
   private readonly previousDrawers: string[] = [];
   private readonly globalGameLeaderboard: GameLeaderboard;
   private readonly roundLeaderboard: GameLeaderboard;
+  private readonly players: Socket[];
 
   private currentDrawer: string | null = null;
   private currentWord: string | null = null;
@@ -30,10 +31,10 @@ export class Round extends ClientHandler<GameTypes.DRAWING> implements IRound {
 
   private roundCountdown: number = Round.DEFAULT_ROUND_LENGTH;
 
-  constructor(players: string[], gameLeaderboard: GameLeaderboard) {
-    super(GameTypes.DRAWING, players);
+  constructor(players: Socket[], gameLeaderboard: GameLeaderboard) {
+    this.players = players;
     this.globalGameLeaderboard = gameLeaderboard;
-    this.roundLeaderboard = new GameLeaderboard(players);
+    this.roundLeaderboard = new GameLeaderboard(players.map(s => s.id));
   }
 
   /*
@@ -42,10 +43,10 @@ export class Round extends ClientHandler<GameTypes.DRAWING> implements IRound {
   findNextDrawer(): string | null {
     let nextDrawer: string | null = null;
     for (const drawer of this.players) {
-      if (this.previousDrawers.includes(drawer)) {
+      if (this.previousDrawers.includes(drawer.id)) {
         continue;
       }
-      nextDrawer = drawer;
+      nextDrawer = drawer.id;
       break;
     }
     if (!nextDrawer) {
@@ -89,7 +90,7 @@ export class Round extends ClientHandler<GameTypes.DRAWING> implements IRound {
    * @param message Message they have sent
    */
   guessWord(player: string, message: string): void {
-    if (!this.players.includes(player)) {
+    if (!!this.players.find(p => p.id === player)) {
       throw new Error('Cannot guess word for player that does not exist.');
     }
     if (this.correctGuessors.includes(player)) {
@@ -100,7 +101,7 @@ export class Round extends ClientHandler<GameTypes.DRAWING> implements IRound {
       this.roundLeaderboard.incrementScore(player, this.calculateScore());
       return GameAPI.emit(player, DrawItSocketEvents.GAME_CORRECT_GUESS);
     }
-    return GameAPI.emitToCollection(this.players, DrawItSocketEvents.GAME_SEND_MESSAGE, message);
+    return GameAPI.emitToSockets(this.players, DrawItSocketEvents.GAME_SEND_MESSAGE, message);
   }
 
   /**
@@ -147,7 +148,11 @@ export class Round extends ClientHandler<GameTypes.DRAWING> implements IRound {
     const secret = Round.getSecretWord(this.currentWord, this.revealedLetters);
 
     // Emit to all but the drawer
-    GameAPI.emitToCollection(this.players.filter(p => p !== this.currentDrawer), DrawItSocketEvents.GAME_LETTER_REVEAL, secret);
+    GameAPI.emitToSockets(
+      this.players.filter(p => p.id !== this.currentDrawer),
+      DrawItSocketEvents.GAME_LETTER_REVEAL,
+      secret,
+    );
   }
 
   static getSecretWord(word: string, revealed: number[]): string {

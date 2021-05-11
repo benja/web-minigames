@@ -1,4 +1,4 @@
-import { GameCore } from '../game-core';
+import { GameCore, IdentifiableUser } from '../game-core';
 import { DrawItSocketEvents, GameTypes } from '@wmg/shared';
 import listeners from './listeners';
 import { GameListener } from '../game-listener';
@@ -13,15 +13,15 @@ export class DrawIt extends GameCore<GameTypes.DRAWING> implements IDrawIt {
   private readonly pointsLeaderboard: GameLeaderboard;
   private readonly roundManager: RoundManager;
 
-  constructor(players: string[]) {
+  constructor(players: IdentifiableUser[]) {
     super(GameTypes.DRAWING, players);
-    this.pointsLeaderboard = new GameLeaderboard(players);
-    this.roundManager = new RoundManager(players, this.pointsLeaderboard);
+    this.pointsLeaderboard = new GameLeaderboard(this.getClientManager().getSocketIds());
+    this.roundManager = new RoundManager(this.getClientManager(), this.pointsLeaderboard);
   }
 
   onPlayerLeave(socketId: string): void {
-    this.players = this.players.filter(p => p !== socketId);
-    return GameAPI.emitToCollection(this.players, DrawItSocketEvents.GAME_PLAYER_LEAVE, socketId);
+    this.getClientManager().removePlayerBySocketId(socketId);
+    return GameAPI.emitToSockets(this.getClientManager().getSockets(), DrawItSocketEvents.GAME_PLAYER_LEAVE, socketId);
   }
 
   static getListeners(): GameListener[] {

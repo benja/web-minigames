@@ -1,16 +1,20 @@
 import { GameTypes } from '@wmg/shared';
 import generateId from '../utils/generate-id';
-import { ClientHandler } from './client-handler';
-import GameAPI from './game-api';
+import { SocketUser } from '../client-manager';
+import { ClientManager } from './client-manager';
 
 interface IGameCore {
   onPlayerLeave: (socketId: string) => void;
 }
-export abstract class GameCore<T extends GameTypes> extends ClientHandler<T> implements IGameCore {
+export type IdentifiableUser = Required<Pick<SocketUser, 'username' | 'socket'>>;
+export abstract class GameCore<T extends GameTypes> implements IGameCore {
   private readonly gameId: string;
+  private readonly gameType: T;
+  private readonly clientManager: ClientManager;
 
-  protected constructor(gameType: T, players: string[]) {
-    super(gameType, players);
+  protected constructor(gameType: T, players: IdentifiableUser[]) {
+    this.gameType = gameType;
+    this.clientManager = new ClientManager(players);
     this.gameId = generateId();
   }
 
@@ -20,5 +24,13 @@ export abstract class GameCore<T extends GameTypes> extends ClientHandler<T> imp
 
   public getId(): string {
     return this.gameId;
+  }
+
+  public getGameType(): GameTypes {
+    return this.gameType;
+  }
+
+  public getClientManager(): ClientManager {
+    return this.clientManager;
   }
 }
