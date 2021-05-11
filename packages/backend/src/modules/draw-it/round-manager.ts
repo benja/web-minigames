@@ -2,7 +2,6 @@ import { DrawItSocketEvents, IRoundFinish } from '@wmg/shared';
 import { GameLeaderboard } from '../game-leaderboard';
 import { Round } from './round';
 import GameAPI from '../game-api';
-import { Socket } from 'socket.io';
 import { ClientManager } from '../client-manager';
 
 interface IRoundManager {

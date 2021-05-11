@@ -34,6 +34,6 @@ export enum DrawItSocketEvents {
 // Emitted on GAME_ROUND_END
 export interface IRoundFinish {
   correctWord: string;
-  roundScores: Map<string, number>;
-  totalScores: Map<String, number>;
+  roundScores: Record<string, number>;
+  totalScores: Record<string, number>;
 }
