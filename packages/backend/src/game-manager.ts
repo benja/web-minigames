@@ -31,6 +31,7 @@ export function startGameWithLobbyIds(gameType: GameTypes, lobbies: string[]): G
     throw new Error('A game already exists with this id.');
   }
   games.set(game.getId(), game);
+  game.start();
   return game;
 }
 

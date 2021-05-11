@@ -31,4 +31,8 @@ export class DrawIt extends GameCore<GameTypes.DRAWING> implements IDrawIt {
   guessWord(player: string, word: string): void {
     return this.roundManager.getCurrentRound().guessWord(player, word);
   }
+
+  start(): void {
+    this.roundManager.startRound();
+  }
 }

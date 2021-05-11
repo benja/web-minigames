@@ -1,6 +1,7 @@
 import { GameTypes } from '@wmg/shared';
 import generateId from '../utils/generate-id';
 import { ClientHandler } from './client-handler';
+import GameAPI from './game-api';
 
 interface IGameCore {
   onPlayerLeave: (socketId: string) => void;
@@ -12,6 +13,8 @@ export abstract class GameCore<T extends GameTypes> extends ClientHandler<T> imp
     super(gameType, players);
     this.gameId = generateId();
   }
+
+  abstract start(): void;
 
   abstract onPlayerLeave(socketId: string): void;
 
