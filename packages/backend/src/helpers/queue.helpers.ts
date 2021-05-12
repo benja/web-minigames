@@ -1,4 +1,3 @@
-import { Socket } from 'socket.io';
 import { GameLobbySizes, GameTypes, SocketEvents } from '@wmg/shared';
 import { getClientById, SocketUser } from '../client-manager';
 import { getLobbyById } from '../lobby-manager';

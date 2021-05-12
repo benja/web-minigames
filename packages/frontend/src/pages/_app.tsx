@@ -9,7 +9,8 @@ import { Toaster } from 'react-hot-toast';
 import { SWRConfig } from 'swr';
 import { swrFetcher } from '../hooks';
 import { uniqueNamesGenerator, adjectives, colors } from 'unique-names-generator';
-import { themes } from '../ui/theme';
+import { DarkTheme, LightTheme } from '../ui/theme';
+import { ThemeContext } from '../helpers/theme';
 import ReactTooltip from 'react-tooltip';
 
 interface MyAppProps extends AppProps {
@@ -22,22 +23,25 @@ interface MyAppProps extends AppProps {
 
 export default function App({ Component, pageProps }: MyAppProps) {
   const Layout = Component.Layout || React.Fragment;
-  const [state, dispatch] = useState<DefaultStore>({});
+  const [storeContext, setStoreContext] = useState<DefaultStore>({});
+  const [themeName, setThemeName] = useState<'dark' | 'light'>('dark');
 
   return (
-    <SWRConfig value={{ fetcher: swrFetcher }}>
-      <ThemeProvider theme={themes.dark}>
-        <StoreContext.Provider value={{ state, dispatch }}>
-          <Layout>
-            <Toaster />
-            <ReactTooltip id={'wmg'} type={'light'} />
-            <SocketWrapper />
-            <GlobalStyles />
-            <Component {...pageProps} />
-          </Layout>
-        </StoreContext.Provider>
-      </ThemeProvider>
-    </SWRConfig>
+    <ThemeContext.Provider value={{ state: themeName, dispatch: setThemeName }}>
+      <SWRConfig value={{ fetcher: swrFetcher }}>
+        <ThemeProvider theme={themeName === 'dark' ? DarkTheme : LightTheme}>
+          <StoreContext.Provider value={{ state: storeContext, dispatch: setStoreContext }}>
+            <Layout>
+              <Toaster />
+              <ReactTooltip id={'wmg'} type={'light'} />
+              <SocketWrapper />
+              <GlobalStyles />
+              <Component {...pageProps} />
+            </Layout>
+          </StoreContext.Provider>
+        </ThemeProvider>
+      </SWRConfig>
+    </ThemeContext.Provider>
   );
 }
 

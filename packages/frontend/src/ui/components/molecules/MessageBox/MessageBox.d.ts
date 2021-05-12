@@ -1,4 +1,4 @@
-import { Message } from "@wmg/shared";
+import { Message } from '@wmg/shared';
 interface MessageBoxProps {
     messages: Message[];
 }

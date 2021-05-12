@@ -29,6 +29,6 @@ export function MessageBox(props) {
                 _jsxs(Text, __assign({ header: true, style: { marginLeft: 5 } }, { children: [m.username, ":"] }), void 0),
                 _jsx(Text, __assign({ style: { marginLeft: 5 } }, { children: m.message }), void 0)] }, "message-" + m + "-" + index)); }) }), void 0));
 }
-var Container = styled.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  border: 1px solid #dedede;\n  border-radius: 5px;\n  height: 250px;\n  flex-grow: 1;\n  margin-top: 10px;\n  padding: 0.5rem;\n  overflow-y: scroll;\n"], ["\n  border: 1px solid #dedede;\n  border-radius: 5px;\n  height: 250px;\n  flex-grow: 1;\n  margin-top: 10px;\n  padding: 0.5rem;\n  overflow-y: scroll;\n"])));
+var Container = styled.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  border: 1px solid ", ";\n  border-radius: 5px;\n  height: 250px;\n  flex-grow: 1;\n  margin-top: 10px;\n  padding: 0.5rem;\n  overflow-y: scroll;\n"], ["\n  border: 1px solid ", ";\n  border-radius: 5px;\n  height: 250px;\n  flex-grow: 1;\n  margin-top: 10px;\n  padding: 0.5rem;\n  overflow-y: scroll;\n"])), function (props) { return props.theme.textPrimary; });
 var MessageContainer = styled.div(templateObject_2 || (templateObject_2 = __makeTemplateObject(["\n  display: flex;\n  flex-direction: row;\n  margin-bottom: 10px;\n"], ["\n  display: flex;\n  flex-direction: row;\n  margin-bottom: 10px;\n"])));
 var templateObject_1, templateObject_2;

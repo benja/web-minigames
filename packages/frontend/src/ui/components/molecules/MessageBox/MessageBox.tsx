@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import Avatar from 'react-avatar';
-import { Message } from "@wmg/shared";
+import { Message } from '@wmg/shared';
 import { Text } from '../../atoms';
 
 interface MessageBoxProps {
@@ -14,7 +14,7 @@ export function MessageBox(props: MessageBoxProps) {
     if (ref.current) {
       ref.current.scrollTop = ref.current.scrollHeight;
     }
-  }, [props.messages])
+  }, [props.messages]);
 
   return (
     <Container ref={ref}>
@@ -28,11 +28,11 @@ export function MessageBox(props: MessageBoxProps) {
         </MessageContainer>
       ))}
     </Container>
-  )
+  );
 }
 
 const Container = styled.div`
-  border: 1px solid #dedede;
+  border: 1px solid ${props => props.theme.textPrimary};
   border-radius: 5px;
   height: 250px;
   flex-grow: 1;

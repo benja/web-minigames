@@ -39,7 +39,7 @@ const Container = styled.form`
 
 const IconContainer = styled.div`
   padding: 10px 15px;
-  border: 1px solid lightgray;
+  border: 1px solid ${props => props.theme.textPrimary};
   border-width: 1px 1px 1px 0;
 
   border-radius: 0 5px 5px 0;
