@@ -4,7 +4,7 @@ import { getClient, SocketUser } from '../client-manager';
 import { getGame } from '../game-manager';
 import { GameCore } from './game-core';
 
-export abstract class GameListener {
+export abstract class GameListener<T = any> {
   public readonly eventName: string;
 
   protected constructor(eventName: string) {
@@ -18,7 +18,7 @@ export abstract class GameListener {
     return getGame(user.currentGame);
   }
 
-  public async _handle(socket: Socket, data?: any) {
+  public async _handle(socket: Socket, data?: T) {
     console.log(this.eventName, socket.id, data);
 
     try {
@@ -33,5 +33,5 @@ export abstract class GameListener {
     }
   }
 
-  abstract handle(user: SocketUser, game: GameCore<GameTypes>, data?: any): Promise<any>;
+  abstract handle(user: SocketUser, game: GameCore<GameTypes>, data?: T): Promise<unknown>;
 }

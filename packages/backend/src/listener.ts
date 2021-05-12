@@ -2,14 +2,14 @@ import { Socket } from 'socket.io';
 import { SocketEvents } from '@wmg/shared';
 import { getClient, SocketUser } from './client-manager';
 
-export abstract class Listener {
+export abstract class Listener<T = any> {
   public readonly eventName: SocketEvents;
 
   protected constructor(eventName: SocketEvents) {
     this.eventName = eventName;
   }
 
-  public async _handle(socket: Socket, data?: any) {
+  public async _handle(socket: Socket, data?: T) {
     console.log(this.eventName, socket.id, data);
     try {
       const client = getClient(socket);
@@ -20,5 +20,5 @@ export abstract class Listener {
     }
   }
 
-  abstract handle(user: SocketUser, data?: any): Promise<any>;
+  abstract handle(user: SocketUser, data?: T): Promise<unknown>;
 }
