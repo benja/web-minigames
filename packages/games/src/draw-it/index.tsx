@@ -8,17 +8,16 @@ import styled from 'styled-components';
 import { useState } from 'react';
 import { DEFAULT_BRUSH_RADIUS } from './constants';
 import { GameManager } from './game-manager';
-import { GameTypes } from '@wmg/shared';
-import { SocketEvents } from '@wmg/shared';
-import { DrawItSocketEvents } from '@wmg/shared';
+import { DefaultStore } from '../utils/store';
+import { GameSocket } from '../GameSocket';
+import { Card } from '../../../frontend/src/ui/components/layouts/Card/Card';
+import { MessageBox } from '../../../frontend/src/ui/components/molecules/MessageBox/MessageBox';
+import { IconInput } from '../../../frontend/src/ui/components/molecules/IconInput/IconInput';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
 interface DrawItProps {
   socket: SocketIOClient.Socket;
-  // game: Game;
-  game: {
-    gameId: string;
-    gameType: GameTypes;
-  };
+  game: Game;
 }
 
 const colors = [
@@ -46,21 +45,21 @@ const colors = [
   '#723B08',
 ];
 
-export interface State {
-  activeTool: Tools;
-  brushRadius: number;
-  color: string;
-}
-
 export function DrawIt(props: DrawItProps) {
-  const [state, setState] = useState<State>({
-    activeTool: Tools.PAINT_BRUSH,
-    brushRadius: DEFAULT_BRUSH_RADIUS,
-    color: '#000000',
+  const [state, dispatch] = useState<DefaultStore>({
+    hand: {
+      activeTool: Tools.PAINT_BRUSH,
+      brushRadius: DEFAULT_BRUSH_RADIUS,
+      color: '#000000',
+    },
   });
 
+  const [message, setMessage] = useState('');
+
+  const isDrawer = state.game && state.gameSocket && state.game?.drawer === state.gameSocket?.socket?.id;
+
   useEffect(() => {
-    mountGame(state);
+    mountGame();
 
     return () => {
       unMountGame();
@@ -68,65 +67,123 @@ export function DrawIt(props: DrawItProps) {
   }, []);
 
   useEffect(() => {
+    if (state.gameSocket) return;
+
+    const sockets = new GameSocket(props.socket, props.game, dispatch);
+
+    dispatch(o => ({
+      ...o,
+      gameSocket: sockets,
+    }));
+  }, [props]);
+
+  useEffect(() => {
     GameManager.getGameManager().setState(state);
   }, [state]);
 
   return (
     <Container>
-      <GameContainer id={DRAW_IT_CONTAINER_ID}>
-        <canvas id={DRAW_IT_CANVAS_ID} />
-      </GameContainer>
+      {/* Users */}
 
-      <input
-        type="range"
-        min="1"
-        max="25"
-        value={state.brushRadius}
-        onChange={e =>
-          setState(o => ({
-            ...o,
-            brushRadius: Number(e.target.value),
-          }))
-        }
-      />
+      {state.game && (
+        <div>
+          <h3>{state.game.word}</h3>
+        </div>
+      )}
+      <div style={{ display: 'flex', flexDirection: 'row' }}>
+        <GameContainer id={DRAW_IT_CONTAINER_ID}>
+          <canvas id={DRAW_IT_CANVAS_ID} />
+        </GameContainer>
 
-      <div style={{ display: 'flex' }}>
-        <ActiveColor color={state.color}></ActiveColor>
-        <ColorsContainer>
-          {colors.map(c => (
-            <Color
-              onClick={() =>
-                setState(o => ({
-                  ...o,
-                  color: c,
-                }))
-              }
-              color={c}
-            ></Color>
-          ))}
-        </ColorsContainer>
+        {/* Chat */}
+        <div style={{ width: '600px', height: 'fit-content' }}>
+          <Card header={'Messages'} subHeader={'Chat directly with your lobby'}>
+            <MessageBox messages={state.game?.messages ?? []} />
+            {!isDrawer && (
+              <IconInput
+                text={message}
+                icon={faPaperPlane}
+                onChange={text => setMessage(text)}
+                iconTooltip={'Send message'}
+                onSubmit={() => {
+                  if (message) {
+                    state.gameSocket.guessWord(message);
+                    setMessage('');
+                  }
+                }}
+              />
+            )}
+          </Card>
+        </div>
       </div>
 
-      <button
-        onClick={() =>
-          setState(o => ({
-            ...o,
-            activeTool: Tools.PAINT_BRUSH,
-          }))
-        }
-      >
-        pencil
-      </button>
-      <button
-        onClick={() =>
-          setState(o => ({
-            ...o,
-            activeTool: Tools.RUBBER,
-          }))
-        }
-      >
-        rubber
-      </button>
+      {/* If you are current drawer */}
+      {isDrawer && (
+        <div style={{ padding: 20, background: '#ebce96' }}>
+          <input
+            type="range"
+            min="1"
+            max="25"
+            value={state.hand?.brushRadius}
+            onChange={e =>
+              dispatch(o => ({
+                ...o,
+                hand: {
+                  ...o.hand,
+                  brushRadius: Number(e.target.value),
+                },
+              }))
+            }
+          />
+
+          <div style={{ display: 'flex' }}>
+            <ActiveColor color={state.hand?.color}></ActiveColor>
+            <ColorsContainer>
+              {colors.map(c => (
+                <Color
+                  onClick={() =>
+                    dispatch(o => ({
+                      ...o,
+                      hand: {
+                        ...o.hand,
+                        color: c,
+                      },
+                    }))
+                  }
+                  color={c}
+                ></Color>
+              ))}
+            </ColorsContainer>
+          </div>
+
+          <button
+            onClick={() =>
+              dispatch(o => ({
+                ...o,
+                hand: {
+                  ...o.hand,
+                  activeTool: Tools.PAINT_BRUSH,
+                },
+              }))
+            }
+          >
+            pencil
+          </button>
+          <button
+            onClick={() =>
+              dispatch(o => ({
+                ...o,
+                hand: {
+                  ...o.hand,
+                  activeTool: Tools.RUBBER,
+                },
+              }))
+            }
+          >
+            rubber
+          </button>
+        </div>
+      )}
     </Container>
   );
 }

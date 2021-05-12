@@ -24,6 +24,12 @@ export function setClientUsername(socket: Socket, username: string): void {
   client.username = username;
 }
 
+export function setCurrentGame(socket: Socket, id: string): void {
+  const client = clients.get(socket.id);
+  if (!client) throw new Error('User does not exists in the cluster.');
+  client.currentGame = id;
+}
+
 export function getClientById(id: string): SocketUser {
   if (!clients.has(id)) throw new Error('Client does not exist.');
   return clients.get(id)!;

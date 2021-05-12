@@ -20,6 +20,7 @@ export abstract class GameListener {
 
   public async _handle(socket: Socket, data?: any) {
     console.log(this.eventName, socket.id, data);
+
     try {
       const client = getClient(socket);
 

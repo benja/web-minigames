@@ -6,6 +6,7 @@ import { GameLeaderboard } from '../game-leaderboard';
 import GameAPI from '../game-api';
 import { RoundManager } from './round-manager';
 import { Socket } from 'socket.io';
+import { getClientById, setCurrentGame } from '../../client-manager';
 
 interface IDrawIt {
   guessWord: (socket: Socket, word: string) => void;
@@ -48,6 +49,12 @@ export class DrawIt extends GameCore<GameTypes.DRAWING> implements IDrawIt {
         leaderboard: this.pointsLeaderboard.getLeaderboardScores(),
       },
     });
+
+    this.getClientManager()
+      .getPlayers()
+      .forEach(p => {
+        setCurrentGame(p.socket, this.getId());
+      });
 
     this.roundManager.startRound();
   }

@@ -3,6 +3,7 @@ import { GameLeaderboard } from '../game-leaderboard';
 import GameAPI from '../game-api';
 import { Socket } from 'socket.io';
 import { ClientManager } from '../client-manager';
+import { getClientById } from '../../client-manager';
 
 interface IRound {
   findNextDrawer: () => string | null;
@@ -104,7 +105,14 @@ export class Round implements IRound {
       this.roundLeaderboard.incrementScore(socket.id, this.calculateScore());
       return GameAPI.emitToSocket(socket, DrawItSocketEvents.GAME_CORRECT_GUESS);
     }
-    return GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_SEND_MESSAGE, message);
+
+    const client = getClientById(socket.id);
+
+    return GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_SEND_MESSAGE, {
+      id: socket.id,
+      username: client.username,
+      message,
+    });
   }
 
   /**

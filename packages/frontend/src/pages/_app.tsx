@@ -22,12 +22,12 @@ interface MyAppProps extends AppProps {
 
 export default function App({ Component, pageProps }: MyAppProps) {
   const Layout = Component.Layout || React.Fragment;
-  const [storeContext, setStoreContext] = useState<DefaultStore>({});
+  const [state, dispatch] = useState<DefaultStore>({});
 
   return (
     <SWRConfig value={{ fetcher: swrFetcher }}>
       <ThemeProvider theme={themes.dark}>
-        <StoreContext.Provider value={{ state: storeContext, dispatch: setStoreContext }}>
+        <StoreContext.Provider value={{ state, dispatch }}>
           <Layout>
             <Toaster />
             <ReactTooltip id={'wmg'} type={'light'} />

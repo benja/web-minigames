@@ -1,17 +1,24 @@
 import { createContext, Dispatch, SetStateAction } from 'react';
-import { Lobby, Queue, User, Game, GameTypes } from '@wmg/shared';
-import { Sockets } from '../socket';
+import { Tools } from '../draw-it/constants';
+import { GameSocket } from '../GameSocket';
 
 export interface DefaultStore {
-  socket?: Sockets;
-  account?: User;
-  lobby?: Lobby;
-  queue?: Queue;
-  game?: Game;
+  gameSocket?: GameSocket;
+  game?: {
+    drawer: string;
+    word: string;
+    messages?: any[];
+  };
+  hand?: {
+    activeTool: Tools;
+    brushRadius: number;
+    color: string;
+  };
 }
 
 interface StoreContext {
   state: DefaultStore;
   dispatch: Dispatch<SetStateAction<DefaultStore>>;
 }
+
 export const StoreContext = createContext<StoreContext>({} as StoreContext);

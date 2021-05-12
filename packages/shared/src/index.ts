@@ -11,12 +11,16 @@ export interface User {
 }
 
 export interface Game {
-  name: string;
-  description: string;
-  image: string;
-  limit: number;
-  players: User[];
-  type: GameTypes;
+  gameId: string;
+  gameType: string;
+  leaderboard: {
+    [key: string]: number;
+  };
+  leaderboardId: string;
+  players: {
+    id: string;
+    username: string;
+  }[];
 }
 
 export interface Message {

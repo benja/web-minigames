@@ -1,12 +1,12 @@
 import { DRAW_IT_CANVAS_ID, DRAW_IT_CONTAINER_ID, Tools } from './constants';
 import { renderGame } from './game-renderer';
 import { BrushRenderer } from './renderers/brush-renderer';
-import { State } from './index';
+import { DefaultStore } from '../utils/store';
 
 let gameManagerInstance: GameManager | null = null;
 
-export function mountGame(state: State) {
-  gameManagerInstance = new GameManager(state);
+export function mountGame() {
+  gameManagerInstance = new GameManager();
   gameManagerInstance.start();
 }
 
@@ -21,16 +21,14 @@ export class GameManager {
 
   public mousePos: { x: number; y: number } | null = null;
 
-  public state: State;
+  public state: DefaultStore;
 
-  constructor(state: State) {
+  constructor() {
     this.draw = this.draw.bind(this);
     this.start = this.start.bind(this);
     this.stop = this.stop.bind(this);
     this.updateCanvasSize = this.updateCanvasSize.bind(this);
     this.mousePos;
-
-    this.state = state;
   }
 
   public start() {
@@ -90,16 +88,16 @@ export class GameManager {
 
   public drawLine(e: MouseEvent) {
     // mouse left button must be pressed
-    if (e.buttons !== 1) return;
+    if (e.buttons !== 1 || this.state.game.drawer !== this.state.gameSocket.socket.id) return;
 
-    switch (this.state.activeTool) {
+    switch (this.state.hand?.activeTool) {
       case Tools.PAINT_BRUSH:
       case Tools.RUBBER:
         BrushRenderer(this.getCanvasContext(), e);
     }
   }
 
-  public setState(state: State) {
+  public setState(state: DefaultStore) {
     this.state = state;
   }
 }
