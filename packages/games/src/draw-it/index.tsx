@@ -1,4 +1,3 @@
-// Game logic
 import { useEffect } from 'react';
 import { Game } from '@wmg/shared';
 import { GameContainer } from '@wmg/common';
@@ -10,10 +9,6 @@ import { DEFAULT_BRUSH_RADIUS } from './constants';
 import { GameManager } from './game-manager';
 import { DefaultStore } from '../utils/store';
 import { GameSocket } from '../GameSocket';
-import { Card } from '../../../frontend/src/ui/components/layouts/Card/Card';
-import { MessageBox } from '../../../frontend/src/ui/components/molecules/MessageBox/MessageBox';
-import { IconInput } from '../../../frontend/src/ui/components/molecules/IconInput/IconInput';
-import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
 interface DrawItProps {
   socket: SocketIOClient.Socket;
@@ -96,25 +91,7 @@ export function DrawIt(props: DrawItProps) {
         </GameContainer>
 
         {/* Chat */}
-        <div style={{ width: '600px', height: 'fit-content' }}>
-          <Card header={'Messages'} subHeader={'Chat directly with your lobby'}>
-            <MessageBox messages={state.game?.messages ?? []} />
-            {!isDrawer && (
-              <IconInput
-                text={message}
-                icon={faPaperPlane}
-                onChange={text => setMessage(text)}
-                iconTooltip={'Send message'}
-                onSubmit={() => {
-                  if (message) {
-                    state.gameSocket.guessWord(message);
-                    setMessage('');
-                  }
-                }}
-              />
-            )}
-          </Card>
-        </div>
+        <div style={{ width: '600px', height: 'fit-content' }}></div>
       </div>
 
       {/* If you are current drawer */}
@@ -137,7 +114,7 @@ export function DrawIt(props: DrawItProps) {
           />
 
           <div style={{ display: 'flex' }}>
-            <ActiveColor color={state.hand?.color}></ActiveColor>
+            <ActiveColor color={state.hand?.color} />
             <ColorsContainer>
               {colors.map(c => (
                 <Color
@@ -151,7 +128,7 @@ export function DrawIt(props: DrawItProps) {
                     }))
                   }
                   color={c}
-                ></Color>
+                />
               ))}
             </ColorsContainer>
           </div>

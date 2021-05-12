@@ -50,12 +50,6 @@ export class DrawIt extends GameCore<GameTypes.DRAWING> implements IDrawIt {
       },
     });
 
-    this.getClientManager()
-      .getPlayers()
-      .forEach(p => {
-        setCurrentGame(p.socket, this.getId());
-      });
-
     this.roundManager.startRound();
   }
 }

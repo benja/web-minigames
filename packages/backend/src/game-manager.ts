@@ -2,7 +2,7 @@ import { GameTypes } from '@wmg/shared';
 import { Lobby } from './utils/lobby';
 import { GameCore } from './modules/game-core';
 import { DrawIt } from './modules/draw-it';
-import { getClientById } from './client-manager';
+import { getClientById, setCurrentGame } from './client-manager';
 
 const games: Map<string, GameCore<GameTypes>> = new Map();
 
@@ -31,7 +31,11 @@ export function startGameWithLobbies(gameType: GameTypes, lobbies: Lobby[]): Gam
     throw new Error('A game already exists with this id.');
   }
   games.set(game.getId(), game);
-  console.log('Starting game...');
+  game
+    .getClientManager()
+    .getSockets()
+    .forEach(socket => setCurrentGame(socket, game.getId()));
+
   game.start();
   return game;
 }

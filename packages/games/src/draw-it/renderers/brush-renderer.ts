@@ -1,6 +1,5 @@
 import { Tools } from '../constants';
 import { GameManager } from '../game-manager';
-import { DefaultStore } from '../../utils/store';
 
 export function BrushRenderer(ctx: CanvasRenderingContext2D, e: MouseEvent) {
   const GM = GameManager.getGameManager();
