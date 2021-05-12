@@ -1,14 +1,11 @@
-export const themes = {
-  light: {
-    backgroundPrimary: '#e8e8e8',
-    backgroundSecondary: 'white',
-    textPrimary: 'black',
-  },
-  dark: {
-    backgroundPrimary: '#202225',
-    backgroundSecondary: '#36393f',
-    textPrimary: '#dcddde',
-  },
-} as const;
+export const LightTheme = {
+  backgroundPrimary: '#e8e8e8',
+  backgroundSecondary: 'white',
+  textPrimary: 'black',
+};
 
-export type Theme = typeof themes.dark;
+export const DarkTheme = {
+  backgroundPrimary: '#202225',
+  backgroundSecondary: '#36393f',
+  textPrimary: '#dcddde',
+};

@@ -1,20 +1,17 @@
 import { useRouter } from 'next/router';
 import React, { useContext, useEffect, useState } from 'react';
 import { Card, Column, Row } from '../ui/components/layouts';
+import { Button, ListItem, Text } from '../ui/components/atoms';
+import { UserEntry, IconInput, GameEntry, ToggleState, MessageBox } from '../ui/components/molecules';
+import { InQueue, Page } from '../ui/components/templates';
 import { StoreContext } from '../utils/store';
 import { toast } from 'react-hot-toast';
 import { useGames } from '../hooks/useGames';
-import { Button, ListItem } from '../ui';
-import { UserEntry, IconInput, GameEntry } from '../ui/components/molecules';
 import { faCheck, faClipboard, faMoon, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-import { MessageBox } from '../ui/components/molecules';
 import { useLobby } from '../hooks/useLobby';
-import { InQueue } from '../ui/components/templates';
-import { Page } from '../ui/components/templates/Page/Page';
-import { ToggleState } from '../ui/components/molecules/ToggleState/ToggleState';
 import { GameTypes } from '@wmg/shared';
 import { DrawIt } from '@wmg/games';
-import { Text } from '../ui/components/atoms/Text/Text';
+import { ThemeContext } from '../helpers/theme';
 
 export default function Index() {
   const router = useRouter();
@@ -22,6 +19,8 @@ export default function Index() {
   const [message, setMessage] = useState('');
 
   const { state } = useContext(StoreContext);
+  const { state: theme, dispatch: setTheme } = useContext(ThemeContext);
+
   const [username, setUsername] = useState<string>('');
 
   const { lobbyId } = router.query;
@@ -122,7 +121,11 @@ export default function Index() {
             </Card>
           )}
           <Card header={'Settings'} subHeader={'Change your client settings'}>
-            <ToggleState name={'Dark mode'} icon={faMoon} onToggle={() => {}} />
+            <ToggleState
+              name={'Dark mode'}
+              icon={faMoon}
+              onToggle={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            />
           </Card>
         </Column>
         <Column widthFlex={2}>
