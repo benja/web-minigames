@@ -8,6 +8,6 @@
   "private": false,
   "scripts": {
     "build:watch": "tsc --watch --preserveWatchOutput",
-    "build": "tsc"
+    "build:primaries": "tsc"
   }
 }

@@ -45,6 +45,9 @@ export class RoundManager implements IRoundManager {
     }
 
     this.roundCountdown = RoundManager.DEFAULT_ROUND_LENGTH;
+
+    GameAPI.emit(nextDrawer, DrawItSocketEvents.GAME_PICK_WORD, [])
+
     const word = this.currentRound.generateCurrentWord();
 
     // Start the round timer

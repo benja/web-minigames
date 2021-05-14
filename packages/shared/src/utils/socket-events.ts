@@ -23,6 +23,7 @@ export enum DrawItSocketEvents {
   GAME_SEND_MESSAGE = 'game_send_message',
   GAME_PLAYER_LEAVE = 'game_player_leave',
   GAME_INTERACTION = 'game_interaction',
+  GAME_PICK_WORD = 'game_pick_word',
 
   // Only receivables
   GAME_CORRECT_GUESS = 'game_correct_guess',
