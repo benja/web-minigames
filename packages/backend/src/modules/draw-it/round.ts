@@ -4,6 +4,7 @@ import GameAPI from '../game-api';
 import { Socket } from 'socket.io';
 import { ClientManager } from '../client-manager';
 import { getClientById } from '../../client-manager';
+import words from './words';
 
 interface IRound {
   findNextDrawer: () => string | null;
@@ -29,6 +30,7 @@ export class Round implements IRound {
   private currentDrawer: string | null = null;
   private currentWord: string | null = null;
   private correctGuessors: string[] = [];
+  private previousWords: string[] = [];
 
   // Array of letter indexes of the string word
   private revealedLetters: number[] = [];
@@ -61,10 +63,16 @@ export class Round implements IRound {
     return nextDrawer;
   }
 
-  // TODO: Word generation
   generateCurrentWord(): string {
-    this.currentWord = 'elephant';
-    return this.currentWord;
+    let word: string | null = null;
+    while (!word) {
+      const newWord = words[Math.floor(Math.random() * words.length)];
+      if (!this.previousWords.includes(newWord)) {
+        word = newWord;
+      }
+    }
+    this.currentWord = word;
+    return word;
   }
 
   getCurrentDrawer(): string | null {

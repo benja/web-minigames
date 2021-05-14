@@ -70,11 +70,13 @@ export class RoundManager implements IRoundManager {
       if (socket.id === nextDrawer) {
         GameAPI.emitToSocket(socket, DrawItSocketEvents.GAME_TURN_START, {
           drawer: nextDrawer,
+          roundLength: Round.DEFAULT_ROUND_LENGTH,
           word: word,
         });
       } else {
         GameAPI.emitToSocket(socket, DrawItSocketEvents.GAME_TURN_START, {
           drawer: nextDrawer,
+          roundLength: Round.DEFAULT_ROUND_LENGTH,
           word: new Array(word.length).fill('_').join(''),
         });
       }

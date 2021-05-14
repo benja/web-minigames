@@ -23,6 +23,14 @@ export interface Game {
   }[];
 }
 
+export interface GameListing {
+  name: string;
+  description: string;
+  type: GameTypes;
+  limit: number;
+  image: string;
+}
+
 export interface Message {
   id: string;
   username: string;

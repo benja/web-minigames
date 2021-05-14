@@ -6,10 +6,10 @@ import { GameLeaderboard } from '../game-leaderboard';
 import GameAPI from '../game-api';
 import { RoundManager } from './round-manager';
 import { Socket } from 'socket.io';
-import { getClientById, setCurrentGame } from '../../client-manager';
 
 interface IDrawIt {
   guessWord: (socket: Socket, word: string) => void;
+  startInteraction: (socket: Socket, interaction: any) => void;
 }
 export class DrawIt extends GameCore<GameTypes.DRAWING> implements IDrawIt {
   private readonly pointsLeaderboard: GameLeaderboard;
@@ -32,6 +32,17 @@ export class DrawIt extends GameCore<GameTypes.DRAWING> implements IDrawIt {
 
   guessWord(socket: Socket, word: string): void {
     return this.roundManager.getCurrentRound().guessWord(socket, word);
+  }
+
+  startInteraction(socket: Socket, interaction: any) {
+    if (this.roundManager.getCurrentRound().getCurrentDrawer() !== socket.id) {
+      return;
+    }
+    return GameAPI.emitToSockets(
+      this.getClientManager().getSockets(),
+      DrawItSocketEvents.GAME_INTERACTION,
+      interaction,
+    );
   }
 
   start(): void {

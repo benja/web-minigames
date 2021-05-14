@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import { Game } from '@wmg/shared';
+import { GameListing } from '@wmg/shared';
 import * as querystring from 'querystring';
 
 export function useGames(
@@ -7,5 +7,5 @@ export function useGames(
     limit: number;
   }>,
 ) {
-  return useSWR<Game[]>(`/games?${querystring.stringify(options)}`);
+  return useSWR<GameListing[]>(`/games?${querystring.stringify(options)}`);
 }
