@@ -10,16 +10,13 @@ interface IRoundManager {
   onRoundFinish: () => void;
 }
 export class RoundManager implements IRoundManager {
-  // 10 seconds per round
-  public static readonly DEFAULT_ROUND_LENGTH = 60;
-
-  // 1 round per game
+  // 5 round per game
   public static readonly DEFAULT_NUMBER_OF_ROUNDS = 5;
 
   private readonly clientManager: ClientManager;
   private readonly globalGameLeaderboard: GameLeaderboard;
 
-  private roundCountdown: number = RoundManager.DEFAULT_ROUND_LENGTH;
+  private roundCountdown: number = Round.DEFAULT_ROUND_LENGTH;
 
   private readonly numRounds: number;
 
@@ -46,11 +43,15 @@ export class RoundManager implements IRoundManager {
       throw new Error('First selected player as part of the game was null.');
     }
 
-    this.roundCountdown = RoundManager.DEFAULT_ROUND_LENGTH;
+    this.roundCountdown = Round.DEFAULT_ROUND_LENGTH;
 
+    // Generate the word options
     const wordOptions = this.currentRound.generateWordSelection();
 
+    // Ship the options to the new drawer
     GameAPI.emit(nextDrawer, DrawItSocketEvents.GAME_PICK_WORD, wordOptions);
+
+    // TODO: Potentially tell other users who's the new drawer
 
     setTimeout(() => {
       let word = this.currentRound.getCurrentWord();
@@ -89,16 +90,17 @@ export class RoundManager implements IRoundManager {
         }
       });
     }, Round.WORD_PICK_TIME * 1000);
-
   }
 
   // Handling the end of the round
   onRoundFinish(): void {
+    // Tell players the round has ended
     GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_TURN_END, {
       correctWord: this.currentRound.getCurrentWord(),
       roundScores: this.currentRound.getRoundLeaderboard().getLeaderboardScores(),
     });
 
+    // If the game isn't finished, start a new round
     if (!this.currentRound.isFinished()) {
       return this.startRound();
     }
