@@ -198,7 +198,7 @@ export class Round implements IRound {
   }
 
   isFirstTurn(): boolean {
-    return this.previousDrawers.length === 0 || this.currentDrawer === null;
+    return this.previousDrawers.length <= 1 || this.currentDrawer === null;
   }
 
   selectWord(word: string): string {

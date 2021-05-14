@@ -35,6 +35,7 @@ export class RoundManager implements IRoundManager {
 
   // Handle the starting of the round
   startRound(): void {
+    // If its the first turn, tell players round has started
     if (this.currentRound.isFirstTurn()) {
       GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_ROUND_START);
     }
