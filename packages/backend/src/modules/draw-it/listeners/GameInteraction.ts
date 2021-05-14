@@ -1,7 +1,6 @@
 import { DrawItSocketEvents } from '@wmg/shared';
 import { SocketUser } from '../../../client-manager';
 import { GameListener } from '../../game-listener';
-import GameAPI from '../../game-api';
 import { DrawIt } from '../DrawIt';
 
 export class GameInteraction extends GameListener {
