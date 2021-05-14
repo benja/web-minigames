@@ -1,9 +1,9 @@
-import styled from "styled-components";
-import { Text, Image } from "../../atoms";
-import { Card } from "../../layouts";
-import { Game } from "@wmg/shared";
+import styled from 'styled-components';
+import { Text, Image } from '../../atoms';
+import { Card } from '../../layouts';
+import { GameListing } from '@wmg/shared';
 
-interface GameEntryProps extends Game {
+interface GameEntryProps extends GameListing {
   onClick: () => void;
 }
 export function GameEntry(props: GameEntryProps) {
@@ -18,7 +18,7 @@ export function GameEntry(props: GameEntryProps) {
         </GameImage>
       </GameContainer>
     </Card>
-  )
+  );
 }
 
 const GameContainer = styled.div`
@@ -36,7 +36,7 @@ const GameImage = styled.div`
   display: flex;
   flex: 1;
   justify-content: flex-end;
-  
+
   > img {
     height: 130px;
     width: auto;

@@ -86,21 +86,24 @@ export default function Index() {
             {!state.lobby?.id ? (
               <Button onClick={() => state.socket?.createLobby()} text={'Create lobby'} />
             ) : (
-              <IconInput
-                text={`http://localhost:3000/?lobbyId=${state.lobby.id}`}
-                icon={!copied ? faClipboard : faCheck}
-                iconTooltip={'Copy lobby link'}
-                onClick={() => {
-                  navigator.clipboard.writeText(`http://localhost:3000/?lobbyId=${state.lobby.id}`);
-                  toast('Copied lobby link', {
-                    icon: '🎉',
-                  });
-                  setCopied(true);
-                  setTimeout(() => {
-                    setCopied(false);
-                  }, 5000);
-                }}
-              />
+              <>
+                <IconInput
+                  text={`http://localhost:3000/?lobbyId=${state.lobby.id}`}
+                  icon={!copied ? faClipboard : faCheck}
+                  iconTooltip={'Copy lobby link'}
+                  onClick={() => {
+                    navigator.clipboard.writeText(`http://localhost:3000/?lobbyId=${state.lobby.id}`);
+                    toast('Copied lobby link', {
+                      icon: '🎉',
+                    });
+                    setCopied(true);
+                    setTimeout(() => {
+                      setCopied(false);
+                    }, 5000);
+                  }}
+                />
+                <Button text={'Leave lobby'} onClick={() => router.push('/').then(() => state.socket?.leaveLobby())} />
+              </>
             )}
           </Card>
           {state.lobby?.id && (
