@@ -3,6 +3,7 @@ import { GameLeaderboard } from '../game-leaderboard';
 import { Round } from './round';
 import GameAPI from '../game-api';
 import { ClientManager } from '../client-manager';
+import WordUtil from './utils/word-util';
 
 interface IRoundManager {
   startRound: () => void;
@@ -46,41 +47,48 @@ export class RoundManager implements IRoundManager {
 
     this.roundCountdown = RoundManager.DEFAULT_ROUND_LENGTH;
 
-    GameAPI.emit(nextDrawer, DrawItSocketEvents.GAME_PICK_WORD, [])
+    const wordOptions = this.currentRound.generateWordSelection();
 
-    const word = this.currentRound.generateCurrentWord();
+    GameAPI.emit(nextDrawer, DrawItSocketEvents.GAME_PICK_WORD, wordOptions);
 
-    // Start the round timer
-    (function timer(manager: RoundManager, word: string) {
-      if (--manager.roundCountdown < 0) {
-        // Emit the end of round
-        return manager.onRoundFinish();
+    setTimeout(() => {
+      let word = this.currentRound.getCurrentWord();
+      if (!word) {
+        word = this.currentRound.selectWord(WordUtil.pickRandomWord(this.currentRound.getWordOptions()));
       }
+      // Start the round timer
+      (function timer(manager: RoundManager, word: string) {
+        if (--manager.roundCountdown < 0) {
+          // Emit the end of round
+          return manager.onRoundFinish();
+        }
 
-      if (Round.ROUND_LETTER_REVEAL_ROUNDS.includes(manager.roundCountdown)) {
-        manager.currentRound.triggerLetterReveal(manager.roundCountdown);
-      }
+        if (Round.ROUND_LETTER_REVEAL_ROUNDS.includes(manager.roundCountdown)) {
+          manager.currentRound.triggerLetterReveal(manager.roundCountdown);
+        }
 
-      setTimeout(() => timer(manager, word), 1000);
-    })(this, word);
+        setTimeout(() => timer(manager, word), 1000);
+      })(this, word);
 
-    // Emit that the round has started
-    // Emit this message to the people that arent the current drawer
-    this.clientManager.getSockets().forEach(socket => {
-      if (socket.id === nextDrawer) {
-        GameAPI.emitToSocket(socket, DrawItSocketEvents.GAME_TURN_START, {
-          drawer: nextDrawer,
-          roundLength: Round.DEFAULT_ROUND_LENGTH,
-          word: word,
-        });
-      } else {
-        GameAPI.emitToSocket(socket, DrawItSocketEvents.GAME_TURN_START, {
-          drawer: nextDrawer,
-          roundLength: Round.DEFAULT_ROUND_LENGTH,
-          word: new Array(word.length).fill('_').join(''),
-        });
-      }
-    });
+      // Emit that the round has started
+      // Emit this message to the people that arent the current drawer
+      this.clientManager.getSockets().forEach(socket => {
+        if (socket.id === nextDrawer) {
+          GameAPI.emitToSocket(socket, DrawItSocketEvents.GAME_TURN_START, {
+            drawer: nextDrawer,
+            roundLength: Round.DEFAULT_ROUND_LENGTH,
+            word: word,
+          });
+        } else {
+          GameAPI.emitToSocket(socket, DrawItSocketEvents.GAME_TURN_START, {
+            drawer: nextDrawer,
+            roundLength: Round.DEFAULT_ROUND_LENGTH,
+            word: new Array(word.length).fill('_').join(''),
+          });
+        }
+      });
+    }, Round.WORD_PICK_TIME * 1000);
+
   }
 
   // Handling the end of the round

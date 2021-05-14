@@ -1,5 +1,17 @@
 
+export default class WordUtil {
+  public static pickRandomWord(words: string[]): string {
+    return words[Math.floor(Math.random() * words.length)];
+  }
 
-export function PickRandomWord(words: string[]): string {
-  return '';
+  public static pickCollection(words: string[], set: number = 3): string[] {
+    const subset: string[] = [];
+    while (subset.length < set) {
+      const newWord = WordUtil.pickRandomWord(words);
+      if (!subset.includes(newWord)) {
+        subset.push(newWord);
+      }
+    }
+    return subset;
+  }
 }

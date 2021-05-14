@@ -9,6 +9,7 @@ import { Socket } from 'socket.io';
 
 interface IDrawIt {
   guessWord: (socket: Socket, word: string) => void;
+  pickWord: (socket: Socket, word: string) => void;
   startInteraction: (socket: Socket, interaction: any) => void;
 }
 export class DrawIt extends GameCore<GameTypes.DRAWING> implements IDrawIt {
@@ -36,7 +37,7 @@ export class DrawIt extends GameCore<GameTypes.DRAWING> implements IDrawIt {
 
   startInteraction(socket: Socket, interaction: any) {
     if (this.roundManager.getCurrentRound().getCurrentDrawer() !== socket.id) {
-      return;
+      throw new Error("You are not the current drawer.");
     }
     return GameAPI.emitToSockets(
       this.getClientManager().getSockets(),
@@ -62,5 +63,12 @@ export class DrawIt extends GameCore<GameTypes.DRAWING> implements IDrawIt {
     });
 
     this.roundManager.startRound();
+  }
+
+  pickWord(socket: Socket, word: string): void {
+    if (this.roundManager.getCurrentRound().getCurrentDrawer() !== socket.id) {
+      throw new Error("You are not the current drawer.");
+    }
+    this.roundManager.getCurrentRound().selectWord(word);
   }
 }
