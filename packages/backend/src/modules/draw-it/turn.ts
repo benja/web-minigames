@@ -177,10 +177,18 @@ export class Turn {
       return;
     }
     if (compareTwoStrings(message, this.turnWord!) > 0.6) {
-      // Emit to the user
+      // Emit to the user that the guess was close
       GameAPI.emit(guesser, DrawItSocketEvents.GAME_SEND_MESSAGE, {
         type: MessageType.ALERT,
         message: `Your guess was close!`,
+      });
+
+      // Emit to the user their actual message
+      GameAPI.emit(guesser, DrawItSocketEvents.GAME_SEND_MESSAGE, {
+        id: guesser,
+        type: MessageType.MESSAGE,
+        username: client?.username,
+        message,
       });
 
       // Emit to every other user
@@ -192,14 +200,14 @@ export class Turn {
           message: `${this.clientManager.getPlayer(guesser)?.username}s guess was close!`,
         },
       );
+    } else {
+      return GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_SEND_MESSAGE, {
+        id: guesser,
+        type: MessageType.MESSAGE,
+        username: client?.username,
+        message,
+      });
     }
-
-    return GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_SEND_MESSAGE, {
-      id: guesser,
-      type: MessageType.MESSAGE,
-      username: client?.username,
-      message,
-    });
   }
 
   revealLetter(letterIndex: number): void {
