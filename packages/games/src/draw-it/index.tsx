@@ -110,7 +110,11 @@ export function DrawIt(props: DrawItProps) {
               display: 'flex',
               flexDirection: 'column',
               padding: 5,
-              backgroundColor: state.game?.drawer === p.id ? 'gold' : 'rgba(0,0,0,.3)',
+              backgroundColor: state.game.correctGuessors.includes(p.id)
+                ? '#32CD30'
+                : state.game?.drawer === p.id
+                ? 'gold'
+                : 'rgba(0,0,0,.3)',
             }}
           >
             <img
