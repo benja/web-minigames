@@ -121,7 +121,7 @@ export class Round implements IRound {
     if (message === this.currentWord) {
       this.correctGuessors.push(socket.id);
       this.roundLeaderboard.incrementScore(socket.id, this.calculateScore());
-      return GameAPI.emitToSocket(socket, DrawItSocketEvents.GAME_CORRECT_GUESS);
+      return GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_CORRECT_GUESS, socket.id);
     }
 
     return GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_SEND_MESSAGE, {
