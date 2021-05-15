@@ -4,6 +4,7 @@ import { Turn } from './turn';
 import GameAPI from '../game-api';
 import { DrawItSocketEvents, IRoundFinish } from '@wmg/shared';
 import { RoundManager } from './round-manager';
+import generateId from '../../utils/generate-id';
 
 interface IRound {
   findNextDrawer: () => string | null;
@@ -11,6 +12,9 @@ interface IRound {
   isFirstTurn: () => boolean;
 }
 export class Round implements IRound {
+  // Game identifier
+  private readonly roundId: string;
+
   private readonly globalGameLeaderboard: GameLeaderboard;
   private readonly roundLeaderboard: GameLeaderboard;
   private readonly clientManager: ClientManager;
@@ -19,6 +23,7 @@ export class Round implements IRound {
   private turns: Turn[] = [];
 
   constructor(clientManager: ClientManager, gameLeaderboard: GameLeaderboard, roundManager: RoundManager) {
+    this.roundId = generateId();
     this.clientManager = clientManager;
     this.roundManager = roundManager;
     this.globalGameLeaderboard = gameLeaderboard;

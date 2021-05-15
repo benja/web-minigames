@@ -68,6 +68,12 @@ export class Turn {
         turn.triggerLetterReveal(turn.turnCountdown);
       }
 
+      GameAPI.emitToSockets(
+        turn.getClientManager().getSockets(),
+        DrawItSocketEvents.GAME_COUNTDOWN,
+        turn.turnCountdown,
+      );
+
       setTimeout(() => timer(turn), 1000);
     })(this);
 
@@ -244,6 +250,10 @@ export class Turn {
   // TODO Find a better way of determining whether the round has started
   hasTurnStarted(): boolean {
     return this.turnCountdown !== Turn.DEFAULT_TURN_LENGTH;
+  }
+
+  getClientManager(): ClientManager {
+    return this.clientManager;
   }
 
   static getSecretWord(word: string, revealed: number[]): string {
