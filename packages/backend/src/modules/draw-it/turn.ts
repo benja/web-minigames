@@ -177,10 +177,21 @@ export class Turn {
       return;
     }
     if (compareTwoStrings(message, this.turnWord!) > 0.6) {
+      // Emit to the user
       GameAPI.emit(guesser, DrawItSocketEvents.GAME_SEND_MESSAGE, {
         type: MessageType.ALERT,
         message: `Your guess was close!`,
       });
+
+      // Emit to every other user
+      GameAPI.emitToSockets(
+        this.clientManager.getSockets().filter(s => s.id !== guesser),
+        DrawItSocketEvents.GAME_SEND_MESSAGE,
+        {
+          type: MessageType.ALERT,
+          message: `${this.clientManager.getPlayer(guesser)?.username}s guess was close!`,
+        },
+      );
     }
 
     return GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_SEND_MESSAGE, {
