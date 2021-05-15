@@ -37,7 +37,7 @@ export class DrawIt extends GameCore<GameTypes.DRAWING> implements IDrawIt {
 
   startInteraction(socket: Socket, interaction: any) {
     if (this.roundManager.getCurrentRound().getCurrentDrawer() !== socket.id) {
-      throw new Error("You are not the current drawer.");
+      throw new Error('You are not the current drawer.');
     }
     return GameAPI.emitToSockets(
       this.getClientManager().getSockets(),
@@ -67,8 +67,9 @@ export class DrawIt extends GameCore<GameTypes.DRAWING> implements IDrawIt {
 
   pickWord(socket: Socket, word: string): void {
     if (this.roundManager.getCurrentRound().getCurrentDrawer() !== socket.id) {
-      throw new Error("You are not the current drawer.");
+      throw new Error('You are not the current drawer.');
     }
     this.roundManager.getCurrentRound().selectWord(word);
+    this.roundManager.triggerRoundStart();
   }
 }

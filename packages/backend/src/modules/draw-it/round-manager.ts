@@ -7,6 +7,7 @@ import WordUtil from './utils/word-util';
 
 interface IRoundManager {
   startRound: () => void;
+  triggerRoundStart: () => void;
   onRoundFinish: () => void;
 }
 export class RoundManager implements IRoundManager {
@@ -53,43 +54,51 @@ export class RoundManager implements IRoundManager {
 
     // TODO: Potentially tell other users who's the new drawer
 
-    setTimeout(() => {
-      let word = this.currentRound.getCurrentWord();
-      if (!word) {
-        word = this.currentRound.selectWord(WordUtil.pickRandomWord(this.currentRound.getWordOptions()));
+    setTimeout(() => this.triggerRoundStart(), Round.WORD_PICK_TIME * 1000);
+  }
+
+  // Trigger a round start
+  triggerRoundStart(): void {
+    // If the round has started already then return
+    // This can be triggered when the user doesnt pick the word
+    if (this.currentRound.hasRoundStarted()) {
+      return;
+    }
+    let word = this.currentRound.getCurrentWord();
+    if (!word) {
+      word = this.currentRound.selectWord(WordUtil.pickRandomWord(this.currentRound.getWordOptions()));
+    }
+    // Start the round timer
+    (function timer(manager: RoundManager, word: string) {
+      if (--manager.roundCountdown < 0) {
+        // Emit the end of round
+        return manager.onRoundFinish();
       }
-      // Start the round timer
-      (function timer(manager: RoundManager, word: string) {
-        if (--manager.roundCountdown < 0) {
-          // Emit the end of round
-          return manager.onRoundFinish();
-        }
 
-        if (Round.ROUND_LETTER_REVEAL_ROUNDS.includes(manager.roundCountdown)) {
-          manager.currentRound.triggerLetterReveal(manager.roundCountdown);
-        }
+      if (Round.ROUND_LETTER_REVEAL_ROUNDS.includes(manager.roundCountdown)) {
+        manager.currentRound.triggerLetterReveal(manager.roundCountdown);
+      }
 
-        setTimeout(() => timer(manager, word), 1000);
-      })(this, word);
+      setTimeout(() => timer(manager, word), 1000);
+    })(this, word);
 
-      // Emit that the round has started
-      // Emit this message to the people that arent the current drawer
-      this.clientManager.getSockets().forEach(socket => {
-        if (socket.id === nextDrawer) {
-          GameAPI.emitToSocket(socket, DrawItSocketEvents.GAME_TURN_START, {
-            drawer: nextDrawer,
-            roundLength: Round.DEFAULT_ROUND_LENGTH,
-            word: word,
-          });
-        } else {
-          GameAPI.emitToSocket(socket, DrawItSocketEvents.GAME_TURN_START, {
-            drawer: nextDrawer,
-            roundLength: Round.DEFAULT_ROUND_LENGTH,
-            word: new Array(word.length).fill('_').join(''),
-          });
-        }
-      });
-    }, Round.WORD_PICK_TIME * 1000);
+    // Emit that the round has started
+    // Emit this message to the people that arent the current drawer
+    this.clientManager.getSockets().forEach(socket => {
+      if (socket.id === this.currentRound.getCurrentDrawer()) {
+        GameAPI.emitToSocket(socket, DrawItSocketEvents.GAME_TURN_START, {
+          drawer: this.currentRound.getCurrentDrawer(),
+          roundLength: Round.DEFAULT_ROUND_LENGTH,
+          word: word,
+        });
+      } else {
+        GameAPI.emitToSocket(socket, DrawItSocketEvents.GAME_TURN_START, {
+          drawer: this.currentRound.getCurrentDrawer(),
+          roundLength: Round.DEFAULT_ROUND_LENGTH,
+          word: new Array(word.length).fill('_').join(''),
+        });
+      }
+    });
   }
 
   // Handling the end of the round
