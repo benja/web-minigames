@@ -25,6 +25,10 @@ export class ClientManager {
     return this.players;
   }
 
+  getPlayer(id: string): IdentifiableUser | null {
+    return this.players.find(p => p.socket.id === id) ?? null;
+  }
+
   removePlayer(player: IdentifiableUser): IdentifiableUser[] {
     this.players = this.players.filter(p => p.socket.id !== player.socket.id);
     return this.players;

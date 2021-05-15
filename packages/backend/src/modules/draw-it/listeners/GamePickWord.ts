@@ -9,6 +9,6 @@ export class GamePickWord extends GameListener {
   }
 
   async handle(user: SocketUser, game: DrawIt, message: string) {
-    game.pickWord(user.socket, message);
+    game.getRoundManager().getCurrentRound()?.getCurrentTurn()?.selectWord(user.socket.id, message);
   }
 }
