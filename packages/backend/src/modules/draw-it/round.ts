@@ -1,4 +1,4 @@
-import { DrawItSocketEvents } from '@wmg/shared';
+import { DrawItSocketEvents, MessageType } from '@wmg/shared';
 import { GameLeaderboard } from '../game-leaderboard';
 import GameAPI from '../game-api';
 import { Socket } from 'socket.io';
@@ -114,6 +114,7 @@ export class Round implements IRound {
     if (this.correctGuessors.includes(socket.id)) {
       return GameAPI.emitToCollection(this.correctGuessors, DrawItSocketEvents.GAME_SEND_MESSAGE, {
         id: socket.id,
+        type: MessageType.MESSAGE,
         username: client.username,
         message,
       });
@@ -126,6 +127,7 @@ export class Round implements IRound {
 
     return GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_SEND_MESSAGE, {
       id: socket.id,
+      type: MessageType.MESSAGE,
       username: client.username,
       message,
     });
