@@ -4,6 +4,7 @@ import { Round } from './round';
 import GameAPI from '../game-api';
 import { ClientManager } from '../client-manager';
 import WordUtil from './utils/word-util';
+import { Socket } from 'socket.io';
 
 interface IRoundManager {
   startRound: () => void;
@@ -12,6 +13,7 @@ interface IRoundManager {
   hasRoundStarted: () => boolean;
   onGameEnd: () => void;
   serializeWord: (word: string) => string;
+  guessWord: (socket: Socket, word: string) => void;
 }
 export class RoundManager implements IRoundManager {
   // 5 round per game
@@ -171,5 +173,13 @@ export class RoundManager implements IRoundManager {
       if (word.charAt(i) === ' ') underscored[i] = ' ';
     }
     return underscored.join('');
+  }
+
+  guessWord(socket: Socket, word: string): void {
+    const roundOver = this.currentRound.guessWord(socket, word);
+    if (roundOver) {
+      this.currentRound.resetRound();
+      return this.startRound();
+    }
   }
 }
