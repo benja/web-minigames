@@ -171,9 +171,9 @@ export class Turn {
       return;
     }
     if (compareTwoStrings(message, this.turnWord!) > 0.6) {
-      GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_SEND_MESSAGE, {
+      GameAPI.emit(guesser, DrawItSocketEvents.GAME_SEND_MESSAGE, {
         type: MessageType.ALERT,
-        message: `${this.clientManager.getPlayer(guesser)?.username}'s guess was close!`,
+        message: `Your guess was close!`,
       });
     }
 
