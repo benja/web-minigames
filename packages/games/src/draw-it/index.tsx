@@ -126,7 +126,7 @@ export function DrawIt(props: DrawItProps) {
 
       {state.game && (
         <div>
-          {!isDrawer && state.game.roundLength && <h3>Time left: {time}</h3>}
+          {state.game.roundLength && <h3>Time left: {time}</h3>}
           {state.game?.currentRound && (
             <h3>
               Round {state.game.currentRound} of {state.gameSocket?.game?.numRounds}
