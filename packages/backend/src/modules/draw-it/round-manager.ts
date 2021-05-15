@@ -10,10 +10,15 @@ interface IRoundManager {
   triggerRoundStart: () => void;
   onRoundFinish: () => void;
   hasRoundStarted: () => boolean;
+  onGameEnd: () => void;
+  serializeWord: (word: string) => string;
 }
 export class RoundManager implements IRoundManager {
   // 5 round per game
   public static readonly DEFAULT_NUMBER_OF_ROUNDS = 5;
+
+  // Game identifier
+  private readonly gameId: string;
 
   private readonly clientManager: ClientManager;
   private readonly globalGameLeaderboard: GameLeaderboard;
@@ -25,7 +30,8 @@ export class RoundManager implements IRoundManager {
   private currentRound: Round;
   private currentRoundIndex: number = 1;
 
-  constructor(clientManager: ClientManager, gameLeaderboard: GameLeaderboard, numRounds?: number) {
+  constructor(gameId: string, clientManager: ClientManager, gameLeaderboard: GameLeaderboard, numRounds?: number) {
+    this.gameId = gameId;
     this.globalGameLeaderboard = gameLeaderboard;
     this.clientManager = clientManager;
     this.currentRound = new Round(clientManager, gameLeaderboard);
@@ -97,7 +103,7 @@ export class RoundManager implements IRoundManager {
         GameAPI.emitToSocket(socket, DrawItSocketEvents.GAME_TURN_START, {
           drawer: this.currentRound.getCurrentDrawer(),
           roundLength: Round.DEFAULT_ROUND_LENGTH,
-          word: new Array(word.length).fill('_').join(''),
+          word: this.serializeWord(word),
         });
       }
     });
@@ -105,6 +111,11 @@ export class RoundManager implements IRoundManager {
 
   // Handling the end of the round
   onRoundFinish(): void {
+    // Check if there are still people in the game
+    if (!this.clientManager.getSockets().length) {
+      return this.onGameEnd();
+    }
+
     // Tell players the round has ended
     GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_TURN_END, {
       correctWord: this.currentRound.getCurrentWord(),
@@ -113,6 +124,7 @@ export class RoundManager implements IRoundManager {
 
     // If the game isn't finished, start a new round
     if (!this.currentRound.isFinished()) {
+      this.currentRound.resetRound();
       return this.startRound();
     }
 
@@ -127,9 +139,7 @@ export class RoundManager implements IRoundManager {
 
     // If it is the final round. Handle the ending of the game
     if (this.currentRoundIndex === this.numRounds) {
-      return GameAPI.handleGameEnd(this.clientManager.getSocketIds(), {
-        totalScores: this.globalGameLeaderboard.getLeaderboardScores(),
-      });
+      return this.onGameEnd();
     }
 
     // Create a new current round instance
@@ -146,5 +156,20 @@ export class RoundManager implements IRoundManager {
   // TODO Find a better way of determining whether the round has started
   hasRoundStarted(): boolean {
     return this.roundCountdown !== Round.DEFAULT_ROUND_LENGTH;
+  }
+
+  // Reusable trigger for game ending
+  onGameEnd(): void {
+    return GameAPI.handleGameEnd(this.gameId, this.clientManager.getSocketIds(), {
+      totalScores: this.globalGameLeaderboard.getLeaderboardScores(),
+    });
+  }
+
+  serializeWord(word: string): string {
+    let underscored = new Array(word.length).fill('_');
+    for (let i = 0; i < word.length; i++) {
+      if (word.charAt(i) === ' ') underscored[i] = ' ';
+    }
+    return underscored.join('');
   }
 }

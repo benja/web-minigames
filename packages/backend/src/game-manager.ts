@@ -49,7 +49,7 @@ export function getGame(gameId: string): GameCore<GameTypes> {
 
 export function endGame(gameId: string): void {
   if (!games.has(gameId)) {
-    throw new Error('No game exists with this game identifier.');
+    return;
   }
   return void games.delete(gameId);
 }

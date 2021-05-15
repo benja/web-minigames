@@ -16,6 +16,7 @@ interface IRound {
   revealLetter: (letter: number) => void;
   isFinished: () => boolean;
   isFirstTurn: () => boolean;
+  resetRound: () => void;
 }
 export class Round implements IRound {
   // 60 seconds per round
@@ -57,6 +58,8 @@ export class Round implements IRound {
   Find the next drawer given the state of the game
    */
   findNextDrawer(): string | null {
+    console.log(this.clientManager.getPlayers(), this.previousDrawers);
+
     let nextDrawer: string | null = null;
     for (const drawer of this.clientManager.getSocketIds()) {
       if (this.previousDrawers.includes(drawer)) {
@@ -216,5 +219,12 @@ export class Round implements IRound {
 
   getWordOptions(): string[] {
     return this.wordSelection;
+  }
+
+  resetRound(): void {
+    this.currentWord = null;
+    this.currentDrawer = null;
+    this.wordSelection = [];
+    this.revealedLetters = [];
   }
 }
