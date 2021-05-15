@@ -90,9 +90,13 @@ export class Round implements IRound {
   /*
   Calculate the score based on how long the game has gone on for
    */
+
+  // TODO - The reason the score is 0 is because roundCountdown is not changed
   private calculateScore(): number {
+    console.log(Round.DEFAULT_ROUND_LENGTH, this.roundCountdown, Round.DEFAULT_ROUND_SCORE);
+
     return (
-      ((Round.DEFAULT_ROUND_LENGTH - this.roundCountdown) / Math.abs(Round.DEFAULT_ROUND_LENGTH)) *
+      (1 - (Round.DEFAULT_ROUND_LENGTH - this.roundCountdown) / Math.abs(Round.DEFAULT_ROUND_LENGTH)) *
       Round.DEFAULT_ROUND_SCORE
     );
   }

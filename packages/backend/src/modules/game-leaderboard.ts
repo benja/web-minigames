@@ -60,6 +60,8 @@ export class GameLeaderboard implements IGameLeaderboard {
     if (entry === undefined) {
       throw new Error('This player is not a part of this leaderboard.');
     }
+    console.log(id, entry, amount);
+
     this.leaderboard.set(id, entry + amount);
     return entry + amount;
   }
