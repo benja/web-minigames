@@ -276,9 +276,9 @@ export class Turn {
   }
 
   static getSecretWord(word: string, revealed: number[]): string {
-    let blanks = new Array(word.length).fill('_');
+    let blanks = Turn.serializeWord(word).split('');
     revealed.forEach(letter => (blanks[letter] = word[letter]));
-    return blanks.join();
+    return blanks.join('');
   }
 
   static serializeWord(word: string): string {

@@ -110,7 +110,11 @@ export function DrawIt(props: DrawItProps) {
               display: 'flex',
               flexDirection: 'column',
               padding: 5,
-              backgroundColor: state.game?.drawer === p.id ? 'gold' : 'rgba(0,0,0,.3)',
+              backgroundColor: state.game.correctGuessors.includes(p.id)
+                ? '#32CD30'
+                : state.game?.drawer === p.id
+                ? 'gold'
+                : 'rgba(0,0,0,.3)',
             }}
           >
             <img
@@ -126,7 +130,7 @@ export function DrawIt(props: DrawItProps) {
 
       {state.game && (
         <div>
-          {!isDrawer && state.game.roundLength && <h3>Time left: {time}</h3>}
+          {state.game.roundLength && <h3>Time left: {time}</h3>}
           {state.game?.currentRound && (
             <h3>
               Round {state.game.currentRound} of {state.gameSocket?.game?.numRounds}
