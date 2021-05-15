@@ -41,7 +41,9 @@ export class DrawIt extends GameCore<GameTypes.DRAWING> implements IDrawIt {
       throw new Error('You are not the current drawer.');
     }
     return GameAPI.emitToSockets(
-      this.getClientManager().getSockets(),
+      this.getClientManager()
+        .getSockets()
+        .filter(s => s.id !== socket.id),
       DrawItSocketEvents.GAME_INTERACTION,
       interaction,
     );
