@@ -4,6 +4,7 @@ import { ClientManager } from '../client-manager';
 import GameAPI from '../game-api';
 import { DrawItSocketEvents, MessageType } from '@wmg/shared';
 import { Round } from './round';
+import { compareTwoStrings } from 'string-similarity';
 
 export class Turn {
   // Max score potential
@@ -168,6 +169,12 @@ export class Turn {
         this.triggerTurnEnd();
       }
       return;
+    }
+    if (compareTwoStrings(message, this.turnWord!) > 0.6) {
+      GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_SEND_MESSAGE, {
+        type: MessageType.ALERT,
+        message: `${this.clientManager.getPlayer(guesser)?.username}'s guess was close!`,
+      });
     }
 
     return GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_SEND_MESSAGE, {
