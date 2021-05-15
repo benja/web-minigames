@@ -70,4 +70,8 @@ export class RoundManager implements IRoundManager {
   isFinished() {
     return this.rounds.length === this.numRounds;
   }
+
+  getNumberOfRounds(): number {
+    return this.numRounds;
+  }
 }

@@ -61,6 +61,7 @@ export class DrawIt extends GameCore<GameTypes.DRAWING> implements IDrawIt {
         leaderboardId: this.pointsLeaderboard.leaderboardId,
         leaderboard: this.pointsLeaderboard.getLeaderboardScores(),
       },
+      numRounds: this.roundManager.getNumberOfRounds(),
     });
 
     this.roundManager.startRound();
