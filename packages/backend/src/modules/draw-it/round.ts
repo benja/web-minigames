@@ -5,19 +5,12 @@ import GameAPI from '../game-api';
 import { DrawItSocketEvents, IRoundFinish } from '@wmg/shared';
 import { RoundManager } from './round-manager';
 
-// TODO: Migrate this out to a Turn class as well
 interface IRound {
   findNextDrawer: () => string | null;
   isFinished: () => boolean;
   isFirstTurn: () => boolean;
 }
 export class Round implements IRound {
-  // 60 seconds per round
-  public static readonly DEFAULT_ROUND_LENGTH = 20;
-
-  // Max score potential
-  public static readonly DEFAULT_ROUND_SCORE = 500;
-
   private readonly globalGameLeaderboard: GameLeaderboard;
   private readonly roundLeaderboard: GameLeaderboard;
   private readonly clientManager: ClientManager;

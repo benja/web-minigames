@@ -6,6 +6,9 @@ import { DrawItSocketEvents, MessageType } from '@wmg/shared';
 import { Round } from './round';
 
 export class Turn {
+  // Max score potential
+  public static readonly DEFAULT_TURN_SCORE = 500;
+
   // 60 seconds per round
   public static readonly DEFAULT_TURN_LENGTH = 20;
 
@@ -71,13 +74,13 @@ export class Turn {
       if (socket.id === this.turnDrawer) {
         GameAPI.emitToSocket(socket, DrawItSocketEvents.GAME_TURN_START, {
           drawer: this.turnDrawer,
-          roundLength: Round.DEFAULT_ROUND_LENGTH,
+          roundLength: Turn.DEFAULT_TURN_LENGTH,
           word: this.turnWord,
         });
       } else {
         GameAPI.emitToSocket(socket, DrawItSocketEvents.GAME_TURN_START, {
           drawer: this.turnDrawer,
-          roundLength: Round.DEFAULT_ROUND_LENGTH,
+          roundLength: Turn.DEFAULT_TURN_LENGTH,
           word: Turn.serializeWord(this.turnWord!),
         });
       }
@@ -85,6 +88,15 @@ export class Turn {
   }
 
   private triggerTurnEnd() {
+    // Average out scores for drawer
+    const scores = this.round.getRoundLeaderboard().getLeaderboardScores();
+    this.round
+      .getRoundLeaderboard()
+      .incrementScore(
+        this.turnDrawer,
+        Object.values(scores).reduce((acc, val) => acc + val, 0) / Object.values(scores).length,
+      );
+
     // Tell players the round has ended
     GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_TURN_END, {
       correctWord: this.turnWord,
@@ -118,7 +130,7 @@ export class Turn {
     return this.turnDrawer;
   }
 
-  getCorrectGuessors(): string[] {
+  getCorrectGuessers(): string[] {
     return this.correctGuessers;
   }
 
@@ -128,8 +140,8 @@ export class Turn {
 
   private calculateScore(): number {
     return (
-      (1 - (Round.DEFAULT_ROUND_LENGTH - this.turnCountdown) / Math.abs(Round.DEFAULT_ROUND_LENGTH)) *
-      Round.DEFAULT_ROUND_SCORE
+      (1 - (Turn.DEFAULT_TURN_LENGTH - this.turnCountdown) / Math.abs(Turn.DEFAULT_TURN_LENGTH)) *
+      Turn.DEFAULT_TURN_SCORE
     );
   }
 
