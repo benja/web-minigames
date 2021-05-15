@@ -31,7 +31,7 @@ export class GameLeaderboard implements IGameLeaderboard {
   static serialize(leaderboard: Map<string, number>): Record<string, number> {
     const mappedLeaderboard: Record<string, number> = {};
     leaderboard.forEach((value, key) => {
-      mappedLeaderboard[key] = value;
+      mappedLeaderboard[key] = Math.round(value);
     });
     return mappedLeaderboard;
   }
