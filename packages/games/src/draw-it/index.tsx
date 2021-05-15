@@ -87,19 +87,17 @@ export function DrawIt(props: DrawItProps) {
   }, [state]);
 
   useEffect(() => {
-    let interval = null;
+    let timer = null;
     if (!state.game) return;
 
     if (state.game?.roundLength !== null) {
       setTime(state.game.roundLength);
-      interval = setInterval(() => {
+      timer = setInterval(() => {
         setTime(t => t - 1);
       }, 1000);
     }
 
-    return () => {
-      interval = null;
-    };
+    return () => clearInterval(timer);
   }, [state.game?.roundLength]);
 
   return (
@@ -143,6 +141,21 @@ export function DrawIt(props: DrawItProps) {
                   <p>{word}</p>
                 </WordContainer>
               ))}
+
+            {!isDrawer && state.game?.roundScores && (
+              <div style={{ background: 'orange', display: 'flex', flexDirection: 'column', width: '100%' }}>
+                <h3>
+                  The correct word was: <strong>{state.game.correctWord}</strong>
+                </h3>
+                <h3>Round scores</h3>
+                {Object.keys(state.game?.roundScores).map(o => (
+                  <p>
+                    <strong>{state.gameSocket.game.players.find(p => p.id === o).username}</strong>
+                    {state.game.roundScores[o]}
+                  </p>
+                ))}
+              </div>
+            )}
           </Modal>
           <canvas id={DRAW_IT_CANVAS_ID} />
         </GameContainer>
@@ -292,6 +305,7 @@ const Modal = styled.div<{ visible?: boolean }>`
   left: 0;
   right: 0;
   bottom: 0;
+  width: 100%;
   background: rgba(0, 0, 0, 0.2);
 `;
 
