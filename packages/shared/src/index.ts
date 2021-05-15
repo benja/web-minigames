@@ -38,8 +38,8 @@ export enum MessageType {
 
 export interface Message {
   type: MessageType;
-  id: string;
-  username: string;
+  id?: string;
+  username?: string;
   message: string;
 }
 

@@ -130,12 +130,9 @@ export class GameSocket {
         game: {
           ...o.game,
           correctGuessors: [...o.game.correctGuessors, socketId],
+          // message: [...o.game.messages],
         },
       }));
-
-      toast('Correct!', {
-        icon: '☑️',
-      });
     });
 
     this.socket.on(DrawItSocketEvents.GAME_PLAYER_LEAVE, (message: string) => {
