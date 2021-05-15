@@ -8,7 +8,6 @@ import { RoundManager } from './round-manager';
 import { Socket } from 'socket.io';
 
 interface IDrawIt {
-  guessWord: (socket: Socket, word: string) => void;
   pickWord: (socket: Socket, word: string) => void;
   startInteraction: (socket: Socket, interaction: any) => void;
 }
@@ -34,10 +33,6 @@ export class DrawIt extends GameCore<GameTypes.DRAWING> implements IDrawIt {
 
   static getListeners(): GameListener[] {
     return listeners;
-  }
-
-  guessWord(socket: Socket, word: string): void {
-    return this.roundManager.getCurrentRound().guessWord(socket, word);
   }
 
   startInteraction(socket: Socket, interaction: any) {
@@ -78,5 +73,9 @@ export class DrawIt extends GameCore<GameTypes.DRAWING> implements IDrawIt {
     }
     this.roundManager.getCurrentRound().selectWord(word);
     this.roundManager.triggerRoundStart();
+  }
+
+  getRoundManager(): RoundManager {
+    return this.roundManager;
   }
 }

@@ -12,7 +12,7 @@ interface IRound {
   getCurrentDrawer: () => string | null;
   generateWordSelection: () => string[];
   selectWord: (word: string) => void;
-  guessWord: (socket: Socket, word: string) => void;
+  guessWord: (socket: Socket, word: string) => boolean;
   revealLetter: (letter: number) => void;
   isFinished: () => boolean;
   isFirstTurn: () => boolean;
@@ -109,31 +109,34 @@ export class Round implements IRound {
    * @param socket Player that has send the message
    * @param message Message they have sent
    */
-  guessWord(socket: Socket, message: string): void {
+  guessWord(socket: Socket, message: string): boolean {
     if (!this.clientManager.getSocketIds().find(p => p === socket.id)) {
       throw new Error('Cannot guess word for player that does not exist.');
     }
     const client = getClientById(socket.id);
     if (this.correctGuessors.includes(socket.id)) {
-      return GameAPI.emitToCollection(this.correctGuessors, DrawItSocketEvents.GAME_SEND_MESSAGE, {
+      GameAPI.emitToCollection(this.correctGuessors, DrawItSocketEvents.GAME_SEND_MESSAGE, {
         id: socket.id,
         type: MessageType.MESSAGE,
         username: client.username,
         message,
       });
+      return false;
     }
     if (message === this.currentWord) {
+      GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_CORRECT_GUESS, socket.id);
       this.correctGuessors.push(socket.id);
       this.roundLeaderboard.incrementScore(socket.id, this.calculateScore());
-      return GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_CORRECT_GUESS, socket.id);
+      return this.correctGuessors.length === this.clientManager.getPlayers().length;
     }
 
-    return GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_SEND_MESSAGE, {
+    GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_SEND_MESSAGE, {
       id: socket.id,
       type: MessageType.MESSAGE,
       username: client.username,
       message,
     });
+    return false;
   }
 
   /**
