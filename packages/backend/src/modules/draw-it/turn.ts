@@ -76,12 +76,14 @@ export class Turn {
           drawer: this.turnDrawer,
           roundLength: Turn.DEFAULT_TURN_LENGTH,
           word: this.turnWord,
+          previousDrawers: this.round.getPreviousDrawers(),
         });
       } else {
         GameAPI.emitToSocket(socket, DrawItSocketEvents.GAME_TURN_START, {
           drawer: this.turnDrawer,
           roundLength: Turn.DEFAULT_TURN_LENGTH,
           word: Turn.serializeWord(this.turnWord!),
+          previousDrawers: this.round.getPreviousDrawers(),
         });
       }
     });
