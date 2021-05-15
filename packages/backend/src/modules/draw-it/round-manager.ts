@@ -9,6 +9,7 @@ interface IRoundManager {
   startRound: () => void;
   triggerRoundStart: () => void;
   onRoundFinish: () => void;
+  hasRoundStarted: () => boolean;
 }
 export class RoundManager implements IRoundManager {
   // 5 round per game
@@ -46,13 +47,14 @@ export class RoundManager implements IRoundManager {
 
     this.roundCountdown = Round.DEFAULT_ROUND_LENGTH;
 
+    // Tell all players in the game who the drawer is
+    GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_DRAWER_SELECTED, nextDrawer);
+
     // Generate the word options
     const wordOptions = this.currentRound.generateWordSelection();
 
     // Ship the options to the new drawer
     GameAPI.emit(nextDrawer, DrawItSocketEvents.GAME_PICK_WORD, wordOptions);
-
-    // TODO: Potentially tell other users who's the new drawer
 
     setTimeout(() => this.triggerRoundStart(), Round.WORD_PICK_TIME * 1000);
   }
@@ -61,7 +63,7 @@ export class RoundManager implements IRoundManager {
   triggerRoundStart(): void {
     // If the round has started already then return
     // This can be triggered when the user doesnt pick the word
-    if (this.currentRound.hasRoundStarted()) {
+    if (this.hasRoundStarted()) {
       return;
     }
     let word = this.currentRound.getCurrentWord();
@@ -137,7 +139,12 @@ export class RoundManager implements IRoundManager {
     setTimeout(() => this.startRound(), 2500);
   }
 
-  public getCurrentRound(): Round {
+  getCurrentRound(): Round {
     return this.currentRound;
+  }
+
+  // TODO Find a better way of determining whether the round has started
+  hasRoundStarted(): boolean {
+    return this.roundCountdown !== Round.DEFAULT_ROUND_LENGTH;
   }
 }

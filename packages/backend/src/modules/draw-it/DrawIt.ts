@@ -22,6 +22,7 @@ export class DrawIt extends GameCore<GameTypes.DRAWING> implements IDrawIt {
     this.roundManager = new RoundManager(this.getClientManager(), this.pointsLeaderboard);
   }
 
+  // TODO trigger game end if the last player leaves
   onPlayerLeave(socketId: string): void {
     this.getClientManager().removePlayerBySocketId(socketId);
     return GameAPI.emitToSockets(this.getClientManager().getSockets(), DrawItSocketEvents.GAME_PLAYER_LEAVE, socketId);

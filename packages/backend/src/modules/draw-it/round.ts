@@ -16,7 +16,6 @@ interface IRound {
   revealLetter: (letter: number) => void;
   isFinished: () => boolean;
   isFirstTurn: () => boolean;
-  hasRoundStarted: () => boolean;
 }
 export class Round implements IRound {
   // 60 seconds per round
@@ -212,9 +211,5 @@ export class Round implements IRound {
 
   getWordOptions(): string[] {
     return this.wordSelection;
-  }
-
-  hasRoundStarted(): boolean {
-    return !!this.currentDrawer && !!this.currentWord;
   }
 }

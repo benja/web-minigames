@@ -28,6 +28,7 @@ export enum DrawItSocketEvents {
   // Only receivables
   GAME_CORRECT_GUESS = 'game_correct_guess',
   GAME_LETTER_REVEAL = 'game_letter_reveal',
+  GAME_DRAWER_SELECTED = 'game_drawer_selected',
   GAME_ROUND_START = 'game_round_start',
   GAME_ROUND_END = 'game_round_end',
   GAME_TURN_START = 'game_turn_start',
