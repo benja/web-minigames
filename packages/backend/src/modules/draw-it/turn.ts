@@ -68,6 +68,12 @@ export class Turn {
         turn.triggerLetterReveal(turn.turnCountdown);
       }
 
+      GameAPI.emitToSockets(
+        turn.getClientManager().getSockets(),
+        DrawItSocketEvents.GAME_COUNTDOWN,
+        turn.turnCountdown,
+      );
+
       setTimeout(() => timer(turn), 1000);
     })(this);
 
@@ -171,9 +177,9 @@ export class Turn {
       return;
     }
     if (compareTwoStrings(message, this.turnWord!) > 0.6) {
-      GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_SEND_MESSAGE, {
+      GameAPI.emit(guesser, DrawItSocketEvents.GAME_SEND_MESSAGE, {
         type: MessageType.ALERT,
-        message: `${this.clientManager.getPlayer(guesser)?.username}'s guess was close!`,
+        message: `Your guess was close!`,
       });
     }
 
@@ -244,6 +250,10 @@ export class Turn {
   // TODO Find a better way of determining whether the round has started
   hasTurnStarted(): boolean {
     return this.turnCountdown !== Turn.DEFAULT_TURN_LENGTH;
+  }
+
+  getClientManager(): ClientManager {
+    return this.clientManager;
   }
 
   static getSecretWord(word: string, revealed: number[]): string {
