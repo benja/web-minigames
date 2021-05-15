@@ -30,7 +30,7 @@ export class Round implements IRound {
   private startRound() {
     if (this.isFirstTurn()) {
       GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_ROUND_START, {
-        round: this.turns.length + 1,
+        currentRound: this.turns.length + 1,
       });
     }
 
