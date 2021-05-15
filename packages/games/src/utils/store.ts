@@ -7,7 +7,7 @@ export interface DefaultStore {
   game?: {
     drawer: string;
     word: string;
-    messages?: Message[];
+    messages: Message[];
     roundLength?: number | null;
     roundScores?: { id: number }[];
     totalScores?: { id: number }[];

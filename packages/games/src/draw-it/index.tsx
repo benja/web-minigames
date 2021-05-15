@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Game } from '@wmg/shared';
+import { Game, Message, MessageType } from '@wmg/shared';
 import { GameContainer } from '@wmg/common';
 import { DRAW_IT_CANVAS_ID, DRAW_IT_CONTAINER_ID, Tools } from './constants';
 import { mountGame, unMountGame } from './game-manager';
@@ -53,6 +53,8 @@ export function DrawIt(props: DrawItProps) {
   const [time, setTime] = useState(0);
 
   const isDrawer = state.game && state.gameSocket && state.game?.drawer === state.gameSocket?.socket?.id;
+  const hasGuessedCorrectly =
+    state.game && state.gameSocket && state.game.correctGuessors.find(p => p === state.gameSocket.socket.id);
 
   useEffect(() => {
     mountGame();
@@ -73,6 +75,8 @@ export function DrawIt(props: DrawItProps) {
       game: {
         ...o.game,
         modal: false,
+        correctGuessors: [],
+        messages: [],
       },
     }));
   }, [props]);
@@ -92,6 +96,10 @@ export function DrawIt(props: DrawItProps) {
         setTime(t => t - 1);
       }, 1000);
     }
+
+    return () => {
+      interval = null;
+    };
   }, [state.game?.roundLength]);
 
   return (
@@ -144,9 +152,19 @@ export function DrawIt(props: DrawItProps) {
           {state.game?.messages && (
             <MessagesContainer>
               {state.game?.messages?.map(m => (
-                <p>
-                  <strong>{m.username}</strong>: ${m.message}
-                </p>
+                <>
+                  {m.type === MessageType.MESSAGE ? (
+                    <p style={{ fontStyle: hasGuessedCorrectly && 'italic', color: hasGuessedCorrectly && '#dedede' }}>
+                      <strong>{m.username}</strong>: {m.message}
+                    </p>
+                  ) : m.type === MessageType.ALERT ? (
+                    <p>
+                      <strong style={{ color: 'green' }}>{m.message}</strong>
+                    </p>
+                  ) : (
+                    ''
+                  )}
+                </>
               ))}
             </MessagesContainer>
           )}

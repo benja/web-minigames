@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from 'react';
-import { DrawItSocketEvents, Message } from '@wmg/shared';
+import { DrawItSocketEvents, Message, MessageType } from '@wmg/shared';
 import { NextRouter } from 'next/router';
 import { DefaultStore } from './utils/store';
 import { Game } from '@wmg/shared';
@@ -100,7 +100,12 @@ export class GameSocket {
         ...o,
         game: {
           ...o.game,
-          messages: [...(o.game.messages || []), data],
+          messages: [
+            ...o.game.messages,
+            {
+              ...data,
+            },
+          ],
         },
       }));
     });
@@ -130,7 +135,13 @@ export class GameSocket {
         game: {
           ...o.game,
           correctGuessors: [...o.game.correctGuessors, socketId],
-          // message: [...o.game.messages],
+          messages: [
+            ...o.game.messages,
+            {
+              type: MessageType.ALERT,
+              message: `${o.gameSocket.game.players.find(p => p.id === socketId)?.username} guessed the word`,
+            },
+          ],
         },
       }));
     });
