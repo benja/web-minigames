@@ -71,6 +71,10 @@ export class RoundManager implements IRoundManager {
     return this.rounds.length === this.numRounds;
   }
 
+  getRoundCount(): number {
+    return this.rounds.length;
+  }
+
   getNumberOfRounds(): number {
     return this.numRounds;
   }
