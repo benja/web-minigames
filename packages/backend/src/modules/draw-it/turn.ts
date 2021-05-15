@@ -10,7 +10,7 @@ export class Turn {
   public static readonly DEFAULT_TURN_SCORE = 500;
 
   // 60 seconds per round
-  public static readonly DEFAULT_TURN_LENGTH = 20;
+  public static readonly DEFAULT_TURN_LENGTH = 80;
 
   // When to reveal the letters
   public static readonly TURN_LETTER_REVEAL_TIMES = [45, 30, 15];

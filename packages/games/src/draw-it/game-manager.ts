@@ -49,7 +49,6 @@ export class GameManager {
     window.removeEventListener('mousedown', e => this.setMousePosition(e));
     window.removeEventListener('mouseenter', e => this.setMousePosition(e));
     window.removeEventListener('mousemove', e => this.drawLine(e));
-    document.removeEventListener('resize', () => this.updateCanvasSize());
   }
 
   public updateCanvasSize() {
@@ -72,7 +71,8 @@ export class GameManager {
   }
 
   public setMousePosition(e: MouseEvent) {
-    this.mousePos = { x: e.clientX, y: e.clientY };
+    const rect = this.canvas.getBoundingClientRect();
+    this.mousePos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
   }
 
   public getCanvasSize() {

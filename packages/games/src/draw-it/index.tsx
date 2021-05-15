@@ -1,14 +1,14 @@
 import { useEffect } from 'react';
-import { Game, Message, MessageType } from '@wmg/shared';
+import { Game, MessageType } from '@wmg/shared';
 import { GameContainer } from '@wmg/common';
 import { DRAW_IT_CANVAS_ID, DRAW_IT_CONTAINER_ID, Tools } from './constants';
 import { mountGame, unMountGame } from './game-manager';
-import styled from 'styled-components';
 import { useState } from 'react';
 import { DEFAULT_BRUSH_RADIUS } from './constants';
 import { GameManager } from './game-manager';
 import { DefaultStore } from '../utils/store';
 import { GameSocket } from '../GameSocket';
+import styled from 'styled-components';
 
 interface DrawItProps {
   socket: SocketIOClient.Socket;
@@ -87,8 +87,8 @@ export function DrawIt(props: DrawItProps) {
   }, [state]);
 
   useEffect(() => {
-    let timer = null;
     if (!state.game) return;
+    let timer = null;
 
     if (state.game?.roundLength !== null) {
       setTime(state.game.roundLength);
@@ -127,13 +127,18 @@ export function DrawIt(props: DrawItProps) {
       {state.game && (
         <div>
           {!isDrawer && state.game.roundLength && <h3>Time left: {time}</h3>}
+          {state.game?.currentRound && (
+            <h3>
+              Round {state.game.currentRound} of {state.gameSocket?.game?.numRounds}
+            </h3>
+          )}
 
-          <h3>{state.game.word}</h3>
+          <CurrentWord style={{ letterSpacing: isDrawer && '0px' }}>{state.game.word}</CurrentWord>
         </div>
       )}
+
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         <GameContainer id={DRAW_IT_CONTAINER_ID}>
-          {!state.game?.drawer && !state.game?.words && <p>The drawer is currently picking a word</p>}
           <Modal visible={state.game?.modal || false}>
             {isDrawer &&
               state.game?.words?.map(word => (
@@ -157,7 +162,7 @@ export function DrawIt(props: DrawItProps) {
               </div>
             )}
           </Modal>
-          <canvas id={DRAW_IT_CANVAS_ID} />
+          <canvas style={{ border: '1px solid black' }} id={DRAW_IT_CANVAS_ID} />
         </GameContainer>
 
         {/* Chat */}
@@ -172,7 +177,17 @@ export function DrawIt(props: DrawItProps) {
                     </p>
                   ) : m.type === MessageType.ALERT ? (
                     <p>
-                      <strong style={{ color: 'green' }}>{m.message}</strong>
+                      <strong
+                        style={{
+                          color: m.message.includes('drawer')
+                            ? '#68BBE3'
+                            : m.message.includes('No')
+                            ? '#ff4c4c'
+                            : '#32CD30',
+                        }}
+                      >
+                        {m.message}
+                      </strong>
                     </p>
                   ) : (
                     ''
@@ -330,4 +345,12 @@ const ChatContainer = styled.div`
 
 const MessagesContainer = styled.div`
   overflow-y: scroll;
+`;
+
+const CurrentWord = styled.p`
+  user-select: none;
+  pointer-events: none;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 3px;
 `;

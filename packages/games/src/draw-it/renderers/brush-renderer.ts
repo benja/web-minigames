@@ -3,6 +3,7 @@ import { GameManager } from '../game-manager';
 
 export function BrushRenderer(ctx: CanvasRenderingContext2D, e: MouseEvent) {
   const GM = GameManager.getGameManager();
+  const rect = GM.getCanvas().getBoundingClientRect();
 
   ctx.beginPath(); // begin
 
@@ -21,13 +22,13 @@ export function BrushRenderer(ctx: CanvasRenderingContext2D, e: MouseEvent) {
         y: GM.mousePos.y,
       },
       to: {
-        x: e.clientX,
-        y: e.clientY,
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
       },
     },
   });
 
-  GM.mousePos = { x: e.clientX, y: e.clientY };
+  GM.mousePos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
   ctx.lineTo(GM.mousePos.x, GM.mousePos.y); // to
 
   ctx.stroke(); // draw it!

@@ -6,6 +6,7 @@ import { Game } from '@wmg/shared';
 import { GameManager } from './draw-it/game-manager';
 import { Tools } from './draw-it/constants';
 import { toast } from 'react-hot-toast';
+import { SocketEvents } from '@wmg/shared';
 
 type MousePosition = { x: number; y: number };
 
@@ -23,8 +24,14 @@ export class GameSocket {
   }
 
   private initialiseMethods() {
-    this.socket.on(DrawItSocketEvents.GAME_ROUND_START, (data: any) => {
-      console.log(DrawItSocketEvents.GAME_ROUND_START, data);
+    this.socket.on(DrawItSocketEvents.GAME_ROUND_START, (data: { currentRound: number }) => {
+      this.dispatch(o => ({
+        ...o,
+        game: {
+          ...o.game,
+          currentRound: data.currentRound,
+        },
+      }));
     });
 
     this.socket.on(
@@ -41,7 +48,6 @@ export class GameSocket {
             drawer: undefined,
             word: undefined,
             roundLength: null,
-            messages: [],
           },
         }));
       },
@@ -56,8 +62,8 @@ export class GameSocket {
             ...o.game,
             drawer: data.drawer,
             word: data.word,
+            correctGuessors: [],
             roundLength: data.roundLength,
-            messages: [],
             modal: false,
             words: undefined,
           },
@@ -77,10 +83,16 @@ export class GameSocket {
           modal: true,
           correctWord: data.correctWord,
           roundScores: data.roundScores,
+          messages: [
+            ...o.game.messages,
+            !o.game.correctGuessors.length && {
+              type: MessageType.ALERT,
+              message: 'No one guessed the word',
+            },
+          ],
           drawer: undefined,
           word: undefined,
           roundLength: null,
-          messages: [],
         },
       }));
     });
@@ -167,6 +179,13 @@ export class GameSocket {
         game: {
           ...o.game,
           drawer: socketId,
+          messages: [
+            ...o.game.messages,
+            {
+              type: MessageType.ALERT,
+              message: `${o.gameSocket.game.players.find(p => p.id === socketId)?.username} is the drawer`,
+            },
+          ],
         },
       }));
     });

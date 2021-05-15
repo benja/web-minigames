@@ -13,10 +13,11 @@ export interface User {
 export interface Game {
   gameId: string;
   gameType: string;
+  numRounds: number;
   leaderboard: {
-    [key: string]: number;
+    leaderboardId: string;
+    leaderbord: Record<string, number>;
   };
-  leaderboardId: string;
   players: {
     id: string;
     username: string;

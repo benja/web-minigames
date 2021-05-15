@@ -117,6 +117,15 @@ export class Sockets {
       }));
     });
 
+    this.socket.on(SocketEvents.GAME_END, () => {
+      setTimeout(() => {
+        this.dispatch(o => ({
+          ...o,
+          game: undefined,
+        }));
+      }, 2500);
+    });
+
     this.socket.on(SocketEvents.LOBBY_SET_PRIVATE, (status: boolean) => {
       this.dispatch(o => ({
         ...o,
