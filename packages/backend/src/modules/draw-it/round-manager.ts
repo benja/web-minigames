@@ -12,7 +12,6 @@ interface IRoundManager {
   onRoundFinish: () => void;
   hasRoundStarted: () => boolean;
   onGameEnd: () => void;
-  serializeWord: (word: string) => string;
   guessWord: (socket: Socket, word: string) => void;
 }
 export class RoundManager implements IRoundManager {
@@ -105,7 +104,7 @@ export class RoundManager implements IRoundManager {
         GameAPI.emitToSocket(socket, DrawItSocketEvents.GAME_TURN_START, {
           drawer: this.currentRound.getCurrentDrawer(),
           roundLength: Round.DEFAULT_ROUND_LENGTH,
-          word: this.serializeWord(word),
+          word: RoundManager.serializeWord(word),
         });
       }
     });
@@ -167,7 +166,7 @@ export class RoundManager implements IRoundManager {
     });
   }
 
-  serializeWord(word: string): string {
+  static serializeWord(word: string): string {
     let underscored = new Array(word.length).fill('_');
     for (let i = 0; i < word.length; i++) {
       if (word.charAt(i) === ' ') underscored[i] = ' ';
@@ -175,11 +174,23 @@ export class RoundManager implements IRoundManager {
     return underscored.join('');
   }
 
+  private calculateScore(): number {
+    console.log(Round.DEFAULT_ROUND_LENGTH, this.roundCountdown, Round.DEFAULT_ROUND_SCORE);
+
+    return (
+      (1 - (Round.DEFAULT_ROUND_LENGTH - this.roundCountdown) / Math.abs(Round.DEFAULT_ROUND_LENGTH)) *
+      Round.DEFAULT_ROUND_SCORE
+    );
+  }
+
   guessWord(socket: Socket, word: string): void {
-    const roundOver = this.currentRound.guessWord(socket, word);
-    if (roundOver) {
-      this.currentRound.resetRound();
-      return this.startRound();
+    const correctlyGuessed = this.currentRound.guessWord(socket, word);
+    if (correctlyGuessed) {
+      this.currentRound.getRoundLeaderboard().incrementScore(socket.id, this.calculateScore());
+      if (this.currentRound.getCorrectGuessers().length === this.clientManager.getPlayers().length) {
+        this.currentRound.resetRound();
+        return this.startRound();
+      }
     }
   }
 }

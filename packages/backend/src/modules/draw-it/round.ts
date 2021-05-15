@@ -87,20 +87,6 @@ export class Round implements IRound {
     return this.currentDrawer;
   }
 
-  /*
-  Calculate the score based on how long the game has gone on for
-   */
-
-  // TODO - The reason the score is 0 is because roundCountdown is not changed
-  private calculateScore(): number {
-    console.log(Round.DEFAULT_ROUND_LENGTH, this.roundCountdown, Round.DEFAULT_ROUND_SCORE);
-
-    return (
-      (1 - (Round.DEFAULT_ROUND_LENGTH - this.roundCountdown) / Math.abs(Round.DEFAULT_ROUND_LENGTH)) *
-      Round.DEFAULT_ROUND_SCORE
-    );
-  }
-
   /**
    * If the player has correctly guessed the word before, send it only to the
    * people that have correctly guessed so far.
@@ -130,7 +116,6 @@ export class Round implements IRound {
     if (message === this.currentWord) {
       GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_CORRECT_GUESS, socket.id);
       this.correctGuessors.push(socket.id);
-      this.roundLeaderboard.incrementScore(socket.id, this.calculateScore());
       return this.correctGuessors.length === this.clientManager.getPlayers().length;
     }
 
@@ -141,6 +126,10 @@ export class Round implements IRound {
       message,
     });
     return false;
+  }
+
+  getCorrectGuessers(): string[] {
+    return this.correctGuessors;
   }
 
   /**
