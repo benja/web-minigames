@@ -20,7 +20,7 @@ interface IRound {
 }
 export class Round implements IRound {
   // 60 seconds per round
-  public static readonly DEFAULT_ROUND_LENGTH = 60;
+  public static readonly DEFAULT_ROUND_LENGTH = 20;
 
   // When to reveal the letters
   public static readonly ROUND_LETTER_REVEAL_ROUNDS = [45, 30, 15];

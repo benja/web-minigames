@@ -11,6 +11,7 @@ export interface DefaultStore {
     roundLength?: number | null;
     roundScores?: { id: number }[];
     totalScores?: { id: number }[];
+    correctWord?: string;
     correctGuessors: string[];
     words?: string[];
     modal: boolean;

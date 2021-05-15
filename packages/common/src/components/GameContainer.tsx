@@ -5,6 +5,7 @@ interface GameContainerProps {
   children: React.ReactNode;
   id: string;
 }
+
 export function GameContainer(props: GameContainerProps) {
   return <Container id={props.id}>{props.children}</Container>;
 }
@@ -15,7 +16,7 @@ const Container = styled.div`
   position: relative;
   border: 1px solid black;
 
-  canvas {
+  /* canvas {
     cursor: url(http://www.rw-designer.com/cursor-view/138936.png), default;
-  }
+  } */
 `;
