@@ -31,7 +31,13 @@ export interface GameListing {
   image: string;
 }
 
+export enum MessageType {
+  ALERT = 'game_alert',
+  MESSAGE = 'game_message',
+}
+
 export interface Message {
+  type: MessageType;
   id: string;
   username: string;
   message: string;

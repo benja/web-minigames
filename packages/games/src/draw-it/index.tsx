@@ -50,6 +50,7 @@ export function DrawIt(props: DrawItProps) {
   });
 
   const [message, setMessage] = useState('');
+  const [time, setTime] = useState(0);
 
   const isDrawer = state.game && state.gameSocket && state.game?.drawer === state.gameSocket?.socket?.id;
 
@@ -69,33 +70,104 @@ export function DrawIt(props: DrawItProps) {
     dispatch(o => ({
       ...o,
       gameSocket: sockets,
+      game: {
+        ...o.game,
+        modal: false,
+      },
     }));
   }, [props]);
 
   useEffect(() => {
     GameManager.getGameManager().setState(state);
+    console.log(state);
   }, [state]);
+
+  useEffect(() => {
+    let interval = null;
+    if (!state.game) return;
+
+    if (state.game?.roundLength !== null) {
+      setTime(state.game.roundLength);
+      interval = setInterval(() => {
+        setTime(t => t - 1);
+      }, 1000);
+    }
+  }, [state.game?.roundLength]);
 
   return (
     <Container>
       {/* Users */}
+      <div style={{ display: 'flex' }}>
+        {state.gameSocket?.game?.players.map(p => (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              padding: 5,
+              backgroundColor: state.game?.drawer === p.id ? 'gold' : 'rgba(0,0,0,.3)',
+            }}
+          >
+            <img
+              src={`https://avatars.dicebear.com/api/human/${p.username}.svg`}
+              width="35"
+              height="35"
+              style={{ borderRadius: 999 }}
+            />
+            <p>{p.username}</p>
+          </div>
+        ))}
+      </div>
 
       {state.game && (
         <div>
+          {!isDrawer && state.game.roundLength && <h3>Time left: {time}</h3>}
+
           <h3>{state.game.word}</h3>
         </div>
       )}
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         <GameContainer id={DRAW_IT_CONTAINER_ID}>
+          {!state.game?.drawer && !state.game?.words && <p>The drawer is currently picking a word</p>}
+          <Modal visible={state.game?.modal || false}>
+            {isDrawer &&
+              state.game?.words?.map(word => (
+                <WordContainer onClick={() => state.gameSocket.pickWord(word)}>
+                  <p>{word}</p>
+                </WordContainer>
+              ))}
+          </Modal>
           <canvas id={DRAW_IT_CANVAS_ID} />
         </GameContainer>
 
         {/* Chat */}
-        <div style={{ width: '600px', height: 'fit-content' }}></div>
+        <ChatContainer>
+          {state.game?.messages && (
+            <MessagesContainer>
+              {state.game?.messages?.map(m => (
+                <p>
+                  <strong>{m.username}</strong>: ${m.message}
+                </p>
+              ))}
+            </MessagesContainer>
+          )}
+          {!isDrawer && (
+            <form
+              style={{ width: '600px', height: 'fit-content' }}
+              onSubmit={e => {
+                e.preventDefault();
+                state.gameSocket.guessWord(message);
+                setMessage('');
+              }}
+            >
+              <input type="text" value={message} onChange={e => setMessage(e.target.value)} />
+              <button>Send message</button>
+            </form>
+          )}
+        </ChatContainer>
       </div>
 
       {/* If you are current drawer */}
-      {isDrawer && (
+      {isDrawer && state.game?.roundLength && (
         <div style={{ padding: 20, background: '#ebce96' }}>
           <input
             type="range"
@@ -193,4 +265,37 @@ const Color = styled.div<{ color: string }>`
   &:hover {
     opacity: 0.8;
   }
+`;
+
+const Modal = styled.div<{ visible?: boolean }>`
+  display: ${props => (props.visible ? 'flex' : 'none')};
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.2);
+`;
+
+const WordContainer = styled.div`
+  display: flex;
+  padding: 20px;
+  margin-right: 10px;
+
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+  &:hover {
+    opacity: 0.8;
+  }
+`;
+
+const ChatContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 600px;
+  width: 400px;
+`;
+
+const MessagesContainer = styled.div`
+  overflow-y: scroll;
 `;

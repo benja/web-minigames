@@ -1,13 +1,19 @@
 import { createContext, Dispatch, SetStateAction } from 'react';
 import { Tools } from '../draw-it/constants';
 import { GameSocket } from '../GameSocket';
-
+import { Message } from '@wmg/shared';
 export interface DefaultStore {
   gameSocket?: GameSocket;
   game?: {
     drawer: string;
     word: string;
-    messages?: any[];
+    messages?: Message[];
+    roundLength?: number | null;
+    roundScores?: { id: number }[];
+    totalScores?: { id: number }[];
+    correctGuessors: string[];
+    words?: string[];
+    modal: boolean;
   };
   hand?: {
     activeTool: Tools;

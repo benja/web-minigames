@@ -12,6 +12,7 @@ export function GameContainer(props: GameContainerProps) {
 const Container = styled.div`
   width: 800px;
   height: 600px;
+  position: relative;
   border: 1px solid black;
 
   canvas {

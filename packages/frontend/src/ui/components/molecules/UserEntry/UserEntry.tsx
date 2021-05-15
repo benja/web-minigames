@@ -1,11 +1,11 @@
 import styled from 'styled-components';
 import { Icon, Text } from '../../atoms';
 import { User } from '@wmg/shared';
-import Avatar from 'react-avatar';
 import React, { useState, useContext, useEffect } from 'react';
 import { StoreContext } from '../../../../utils/store';
 import { faCheck, faEdit, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import ReactTooltip from 'react-tooltip';
+import { Avatar } from '../../atoms/Avatar/Avatar';
 
 interface userEntryProps extends User {
   /*
@@ -47,7 +47,7 @@ export function UserEntry(props: userEntryProps) {
 
   return (
     <Container>
-      <Avatar name={props.username.split(/(?=[A-Z])/).join(' ')} size="35" round="5px" />
+      <Avatar src={`https://avatars.dicebear.com/api/human/${props.username}.svg`} />
 
       {showInput ? (
         <input value={props.usernameOverride} onChange={e => props.onUsernameChange(e.target.value)} />

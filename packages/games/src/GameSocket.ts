@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from 'react';
-import { DrawItSocketEvents } from '@wmg/shared';
+import { DrawItSocketEvents, Message } from '@wmg/shared';
 import { NextRouter } from 'next/router';
 import { DefaultStore } from './utils/store';
 import { Game } from '@wmg/shared';
@@ -27,26 +27,62 @@ export class GameSocket {
       console.log(DrawItSocketEvents.GAME_ROUND_START, data);
     });
 
-    this.socket.on(DrawItSocketEvents.GAME_ROUND_END, (data: any) => {
-      console.log(DrawItSocketEvents.GAME_ROUND_END, data);
-    });
+    this.socket.on(
+      DrawItSocketEvents.GAME_ROUND_END,
+      (data: { correctWord: string; roundScores: { id: number }[]; totalScores: { id: number }[] }) => {
+        this.dispatch(o => ({
+          ...o,
+          game: {
+            ...o.game,
+            modal: true,
+            correctWord: data.correctWord,
+            roundScores: data.roundScores,
+            totalScores: data.totalScores,
+            drawer: undefined,
+            word: undefined,
+            roundLength: null,
+            messages: [],
+          },
+        }));
+      },
+    );
 
-    this.socket.on(DrawItSocketEvents.GAME_TURN_START, (data: { drawer: string; word: string }) => {
+    this.socket.on(
+      DrawItSocketEvents.GAME_TURN_START,
+      (data: { drawer: string; word: string; roundLength: number }) => {
+        this.dispatch(o => ({
+          ...o,
+          game: {
+            ...o.game,
+            drawer: data.drawer,
+            word: data.word,
+            roundLength: data.roundLength,
+            messages: [],
+            modal: false,
+            words: undefined,
+          },
+        }));
+      },
+    );
+
+    this.socket.on(DrawItSocketEvents.GAME_TURN_END, (data: { correctWord: string; roundScores: { id: number }[] }) => {
+      const ctx = GameManager.getGameManager().getCanvasContext();
+      const canvas = GameManager.getGameManager().getCanvas();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
       this.dispatch(o => ({
         ...o,
         game: {
           ...o.game,
-          drawer: data.drawer,
-          word: data.word,
+          modal: true,
+          correctWord: data.correctWord,
+          roundScores: data.roundScores,
+          drawer: undefined,
+          word: undefined,
+          roundLength: null,
           messages: [],
         },
       }));
-    });
-
-    this.socket.on(DrawItSocketEvents.GAME_TURN_END, (data: any) => {
-      const ctx = GameManager.getGameManager().getCanvasContext();
-      const canvas = GameManager.getGameManager().getCanvas();
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
     });
 
     this.socket.on(DrawItSocketEvents.GAME_LETTER_REVEAL, (message: string) => {
@@ -59,8 +95,7 @@ export class GameSocket {
       }));
     });
 
-    this.socket.on(DrawItSocketEvents.GAME_SEND_MESSAGE, (data: string) => {
-      console.log(data);
+    this.socket.on(DrawItSocketEvents.GAME_SEND_MESSAGE, (data: Message) => {
       this.dispatch(o => ({
         ...o,
         game: {
@@ -89,7 +124,15 @@ export class GameSocket {
       },
     );
 
-    this.socket.on(DrawItSocketEvents.GAME_CORRECT_GUESS, () => {
+    this.socket.on(DrawItSocketEvents.GAME_CORRECT_GUESS, (socketId: string) => {
+      this.dispatch(o => ({
+        ...o,
+        game: {
+          ...o.game,
+          correctGuessors: [...o.game.correctGuessors, socketId],
+        },
+      }));
+
       toast('Correct!', {
         icon: '☑️',
       });
@@ -98,6 +141,40 @@ export class GameSocket {
     this.socket.on(DrawItSocketEvents.GAME_PLAYER_LEAVE, (message: string) => {
       console.log(DrawItSocketEvents.GAME_PLAYER_LEAVE, message);
     });
+
+    this.socket.on(DrawItSocketEvents.GAME_PICK_WORD, (words: string[]) => {
+      this.dispatch(o => ({
+        ...o,
+        game: {
+          ...o.game,
+          modal: true,
+          words: words,
+        },
+      }));
+    });
+
+    this.socket.on(DrawItSocketEvents.GAME_DRAWER_SELECTED, (socketId: string) => {
+      this.dispatch(o => ({
+        ...o,
+        game: {
+          ...o.game,
+          drawer: socketId,
+        },
+      }));
+    });
+  }
+
+  public pickWord(message: string) {
+    this.socket.emit(`${this.game.gameType}-${DrawItSocketEvents.GAME_PICK_WORD}`, message);
+
+    this.dispatch(o => ({
+      ...o,
+      game: {
+        ...o.game,
+        modal: false,
+        words: undefined,
+      },
+    }));
   }
 
   public guessWord(message: string) {
