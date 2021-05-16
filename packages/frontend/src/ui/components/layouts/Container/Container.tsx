@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { BreakPoints } from '../../../theme';
 
 interface ContainerProps {
   children: React.ReactNode;
@@ -17,4 +18,8 @@ const StyledContainer = styled.div`
   margin: 0 auto;
 
   width: 70%;
+
+  @media (max-width: ${BreakPoints.XLG}) {
+    width: 98%;
+  }
 `;
