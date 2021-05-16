@@ -7,7 +7,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ['http://localhost:3000', 'https://web-minigames.vercel.app'],
+    origin: ['*'],
     optionsSuccessStatus: 200,
     credentials: true,
   }),
