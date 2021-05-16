@@ -38,7 +38,7 @@ export function Chat(props: {
                 return (
                   <Alert
                     key={`${MessageType.ALERT}-${m.message}-${i}`}
-                    type={m.message.includes('drawer') ? 'info' : m.message.includes('guessed') ? 'success' : 'error'}
+                    type={m.message.includes('drawer') ? 'info' : m.message.includes('guess') ? 'success' : 'error'}
                   >
                     {m.message}
                   </Alert>

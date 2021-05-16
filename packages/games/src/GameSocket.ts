@@ -189,6 +189,16 @@ export class GameSocket {
         },
       }));
     });
+
+    this.socket.on(DrawItSocketEvents.GAME_CLEAR_CANVAS, () => {
+      const ctx = GameManager.getGameManager().getCanvasContext();
+      const canvas = GameManager.getGameManager().getCanvas();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+  }
+
+  public clearCanvas() {
+    this.socket.emit(`${this.game.gameType}-${DrawItSocketEvents.GAME_CLEAR_CANVAS}`);
   }
 
   public pickWord(message: string) {

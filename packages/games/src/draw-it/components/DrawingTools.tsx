@@ -109,13 +109,7 @@ export function DrawingTools({ state, dispatch }: DrawingToolsProps) {
         </ColorsContainer>
       </Left>
 
-      <Button
-        onClick={() => {
-          const ctx = GameManager.getGameManager().getCanvasContext();
-          const canvas = GameManager.getGameManager().getCanvas();
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }}
-      >
+      <Button onClick={() => state.gameSocket?.clearCanvas()}>
         <TrashIcon size={25} color="#000000" />
       </Button>
     </Container>
