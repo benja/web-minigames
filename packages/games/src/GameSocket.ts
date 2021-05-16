@@ -240,7 +240,7 @@ export class GameSocket {
   }
 
   public guessWord(message: string) {
-    if (!message.length) return;
+    if (!message.length || !message.trim().length) return;
     this.socket.emit(`${this.game.gameType}-${DrawItSocketEvents.GAME_SEND_MESSAGE}`, message);
   }
 
