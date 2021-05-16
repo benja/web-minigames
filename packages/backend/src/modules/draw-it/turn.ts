@@ -197,7 +197,7 @@ export class Turn {
         DrawItSocketEvents.GAME_SEND_MESSAGE,
         {
           type: MessageType.ALERT,
-          message: `${this.clientManager.getPlayer(guesser)?.username}s guess was close!`,
+          message: `${this.clientManager.getPlayer(guesser)?.username}'s guess was close!`,
         },
       );
     } else {
