@@ -1,4 +1,4 @@
-import { Game } from '@wmg/shared';
+import { Game, GameTypes } from '@wmg/shared';
 import generateId from './generate-id';
 import { SocketEvents } from '@wmg/shared';
 import { getClientById } from '../client-manager';
@@ -9,7 +9,7 @@ export class Lobby {
   private players: string[];
 
   private currentGame: Game | null;
-  private inQueue: boolean = false;
+  private currentQueue: GameTypes | null = null;
   private private: boolean = false;
 
   constructor() {
@@ -70,8 +70,12 @@ export class Lobby {
     return this.currentGame;
   }
 
-  public setInQueue(status: boolean): void {
-    this.inQueue = status;
+  public setInQueue(gameType: GameTypes | null): void {
+    this.currentQueue = gameType;
+  }
+
+  public getQueueType(): GameTypes | null {
+    return this.currentQueue;
   }
 
   public isPrivate(): boolean {
@@ -83,7 +87,7 @@ export class Lobby {
   }
 
   public isInQueue(): boolean {
-    return this.inQueue;
+    return !!this.currentQueue;
   }
 
   public setGame(game: Game): void {

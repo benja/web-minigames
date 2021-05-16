@@ -6,8 +6,11 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn src/index.ts",
-    "build": "tsc --build --force tsconfig.json",
+    "build:secondaries": "tsc --build --force tsconfig.json",
     "start": "node ./dist/index.js"
+  },
+  "engines": {
+    "node": "14.16.0"
   },
   "dependencies": {
     "cors": "^2.8.5",

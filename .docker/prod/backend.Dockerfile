@@ -9,6 +9,8 @@ ADD packages/backend/package.json packages/backend/package.json
 
 RUN yarn
 
+RUN yarn build
+
 ADD . .
 
-CMD ["yarn", "start:be"]
+CMD ["yarn", "workspace", "@wmg/backend", "start"]
