@@ -88,11 +88,11 @@ export default function Index() {
             ) : (
               <>
                 <IconInput
-                  text={`http://localhost:3000/?lobbyId=${state.lobby.id}`}
+                  text={`https://web-minigames.vercel.app/?lobbyId=${state.lobby.id}`}
                   icon={!copied ? faClipboard : faCheck}
                   iconTooltip={'Copy lobby link'}
                   onClick={() => {
-                    navigator.clipboard.writeText(`http://localhost:3000/?lobbyId=${state.lobby.id}`);
+                    navigator.clipboard.writeText(`https://web-minigames.vercel.app/?lobbyId=${state.lobby.id}`);
                     toast('Copied lobby link', {
                       icon: '🎉',
                     });
