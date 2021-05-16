@@ -22,7 +22,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build:watch": "tsc --watch --preserveWatchOutput",
-    "build": "tsc"
+    "build:primaries": "tsc"
   },
   "eslintConfig": {
     "extends": [
