@@ -1,1 +1,0 @@
-export { ImageCard } from './ImageCard';
