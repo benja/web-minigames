@@ -7,13 +7,13 @@ const app = express();
 
 app.use(
   cors({
-    origin: ['http://localhost:3000'],
+    origin: ['http://localhost:3000', 'https://web-minigames.vercel.app'],
     optionsSuccessStatus: 200,
     credentials: true,
   }),
 );
 
-const server = app.listen(8080, () => {
+const server = app.listen(process.env.PORT || 8080, () => {
   console.log('Server is now running on http://localhost:8080');
 });
 
