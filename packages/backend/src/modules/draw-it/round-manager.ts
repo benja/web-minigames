@@ -9,7 +9,7 @@ interface IRoundManager {
 }
 export class RoundManager implements IRoundManager {
   // 5 round per game
-  public static readonly DEFAULT_NUMBER_OF_ROUNDS = 2;
+  public static readonly DEFAULT_NUMBER_OF_ROUNDS = 3;
 
   // Game identifier
   private readonly gameId: string;
