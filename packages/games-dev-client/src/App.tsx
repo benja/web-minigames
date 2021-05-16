@@ -4,16 +4,24 @@ import { Game, GameTypes } from '@wmg/shared';
 import io from 'socket.io-client';
 
 const game: Game = {
-  name: 'Something',
-  description: 'A description',
-  image: '',
-  limit: 8,
-  type: GameTypes.DRAWING,
+  gameId: 'gameidasdsa',
+  gameType: GameTypes.DRAWING,
+  numRounds: 3,
+  leaderboard: {
+    leaderboardId: 'string',
+    leaderboard: {
+      21312321: 0,
+      12312312: 0,
+    },
+  },
   players: [
     {
-      id: 'Matt',
+      id: '21312321',
       username: 'Matt',
-      admin: true,
+    },
+    {
+      id: '12312312',
+      username: 'Benja',
     },
   ],
 };

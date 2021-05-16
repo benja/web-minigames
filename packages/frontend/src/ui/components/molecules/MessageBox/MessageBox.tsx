@@ -18,15 +18,16 @@ export function MessageBox(props: MessageBoxProps) {
 
   return (
     <Container ref={ref}>
-      {props.messages.map((m, index) => (
-        <MessageContainer key={`message-${m}-${index}`}>
-          <Avatar name={m.username.split(/(?=[A-Z])/).join(' ')} size="25" round="5px" />
-          <Text header style={{ marginLeft: 5 }}>
-            {m.username}:
-          </Text>
-          <Text style={{ marginLeft: 5 }}>{m.message}</Text>
-        </MessageContainer>
-      ))}
+      {props.messages &&
+        props.messages.map((m, index) => (
+          <MessageContainer key={`message-${m}-${index}`}>
+            <Avatar name={m.username.split(/(?=[A-Z])/).join(' ')} size="25" round="5px" />
+            <Text header style={{ marginLeft: 5 }}>
+              {m.username}:
+            </Text>
+            <Text style={{ marginLeft: 5 }}>{m.message}</Text>
+          </MessageContainer>
+        ))}
     </Container>
   );
 }

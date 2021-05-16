@@ -16,7 +16,7 @@ export interface Game {
   numRounds: number;
   leaderboard: {
     leaderboardId: string;
-    leaderbord: Record<string, number>;
+    leaderboard: Record<string, number>;
   };
   players: {
     id: string;

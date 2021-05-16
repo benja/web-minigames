@@ -1,1 +1,1 @@
-export { DrawIt } from './draw-it';
+export { DrawIt } from './draw-it/index';

@@ -204,6 +204,22 @@ export class GameSocket {
     }));
   }
 
+  public addMessage(type: MessageType.ALERT, message: string) {
+    this.dispatch(o => ({
+      ...o,
+      game: {
+        ...o.game,
+        messages: [
+          ...o.game.messages,
+          {
+            type,
+            message: message,
+          },
+        ],
+      },
+    }));
+  }
+
   public guessWord(message: string) {
     this.socket.emit(`${this.game.gameType}-${DrawItSocketEvents.GAME_SEND_MESSAGE}`, message);
   }
