@@ -17,3 +17,5 @@ export const BreakPoints = {
   XLG: '1280px',
   XXLG: '1540px',
 };
+
+export type Theme = typeof LightTheme;
