@@ -12,7 +12,7 @@ export class Sockets {
 
   constructor(dispatch: Dispatch<SetStateAction<DefaultStore>>, router?: NextRouter) {
     this.dispatch = dispatch;
-    this.socket = io('http://localhost:8080');
+    this.socket = io(process.env.NEXT_PUBLIC_BACKEND_URL);
     this.router = router;
     this.initialiseMethods();
   }

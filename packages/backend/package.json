@@ -9,9 +9,6 @@
     "build:secondaries": "tsc --build --force tsconfig.json",
     "start": "node ./dist/index.js"
   },
-  "engines": {
-    "node": "14.16.1"
-  },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1",

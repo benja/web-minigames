@@ -3,7 +3,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: .docker/dev/backend.Dockerfile
+      dockerfile: .docker/prod/backend.Dockerfile
     volumes:
       - ./packages/backend/src:/app/packages/backend/src
     ports: ['8080:8080']
