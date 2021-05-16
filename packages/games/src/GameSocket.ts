@@ -221,6 +221,7 @@ export class GameSocket {
   }
 
   public guessWord(message: string) {
+    if (!message.length) return;
     this.socket.emit(`${this.game.gameType}-${DrawItSocketEvents.GAME_SEND_MESSAGE}`, message);
   }
 

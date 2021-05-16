@@ -24,21 +24,21 @@ export function Canvas({ state, dispatch }: CanvasProps) {
   const [time, setTime] = useState(0);
   const [hasReported, setHasReported] = useState(false);
 
-  useEffect(() => {
-    if (!state.game) return;
-    let timer = null;
+  // useEffect(() => {
+  //   if (!state.game) return;
+  //   let timer = null;
 
-    if (state.game?.roundLength !== null) {
-      setTime(state.game.roundLength);
-      timer = setInterval(() => {
-        setTime(t => t - 1);
-      }, 1000);
-    }
+  //   if (state.game?.roundLength !== null) {
+  //     setTime(state.game.roundLength);
+  //     timer = setInterval(() => {
+  //       setTime(t => t - 1);
+  //     }, 1000);
+  //   }
 
-    setHasReported(false);
+  //   setHasReported(false);
 
-    return () => clearInterval(timer);
-  }, [state.game?.roundLength]);
+  //   return () => clearInterval(timer);
+  // }, [state.game?.roundLength]);
 
   return (
     <Container>
@@ -76,7 +76,7 @@ export function Canvas({ state, dispatch }: CanvasProps) {
           <DrawingBoard id={DRAW_IT_CANVAS_ID} />
         </GameContainer>
 
-        <Footer>
+        {/* <Footer>
           <Left>
             <ClockIcon size={24} color="#FFBD3E" />
             <TimeLeft>{time}s</TimeLeft>
@@ -84,7 +84,7 @@ export function Canvas({ state, dispatch }: CanvasProps) {
           <Slider>
             <Fill roundTime={state.game?.roundLength} width={time} />
           </Slider>
-        </Footer>
+        </Footer> */}
       </TopContainer>
       {isDrawer && state.game?.roundLength && <DrawingTools state={state} dispatch={dispatch} />}
     </Container>
