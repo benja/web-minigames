@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { Text, Image } from '../../atoms';
-import { Card } from '../../layouts';
 import { GameListing } from '@wmg/shared';
+import { Card } from '../../layouts';
 
 interface GameEntryProps extends GameListing {
   onClick: () => void;
