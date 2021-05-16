@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import Avatar from 'react-avatar';
 import { Message } from '@wmg/shared';
 import { Text } from '../../atoms';
 
@@ -21,7 +20,7 @@ export function MessageBox(props: MessageBoxProps) {
       {props.messages &&
         props.messages.map((m, index) => (
           <MessageContainer key={`message-${m}-${index}`}>
-            <Avatar name={m.username.split(/(?=[A-Z])/).join(' ')} size="25" round="5px" />
+            <Avatar src={`https://avatars.dicebear.com/api/human/${m.username}.svg`} />
             <Text header style={{ marginLeft: 5 }}>
               {m.username}:
             </Text>
@@ -46,4 +45,16 @@ const MessageContainer = styled.div`
   display: flex;
   flex-direction: row;
   margin-bottom: 10px;
+`;
+
+const Avatar = styled.div<{ src: string }>`
+  width: 25px;
+  height: 25px;
+  border-radius: 5px;
+
+  position: relative;
+  background-image: url(${props => props.src});
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 `;
