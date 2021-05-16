@@ -5,18 +5,10 @@ import cors from 'cors';
 
 const app = express();
 
-app.use(
-  cors({
-    origin: ['*'],
-    optionsSuccessStatus: 200,
-    // credentials: true,
-  }),
-);
+app.use('/api/v1', v1);
 
 const server = app.listen(process.env.PORT || 8080, () => {
   console.log('Server is now running on http://localhost:8080');
 });
-
-app.use('/api/v1', v1);
 
 new SocketServer(server);
