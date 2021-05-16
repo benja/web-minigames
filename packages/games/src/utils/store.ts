@@ -16,6 +16,10 @@ export interface DefaultStore {
     correctGuessors: string[];
     words?: string[];
     modal: boolean;
+    players: {
+      id: string;
+      username: string;
+    }[];
   };
   hand?: {
     activeTool: Tools;

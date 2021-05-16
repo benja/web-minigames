@@ -100,7 +100,7 @@ const Container = styled.div<{ drawer?: boolean; correct?: boolean }>`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  padding: 5px;
+  padding: 5px 0;
   border-radius: 5px;
   margin-bottom: 5px;
 

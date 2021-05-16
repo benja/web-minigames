@@ -24,7 +24,7 @@ export function Leaderboard({ state }: LeaderboardProps) {
           </Round>
         )}
       </SpacedContainer>
-      {state.gameSocket?.game?.players.map(p => (
+      {state.game?.players.map(p => (
         <User
           key={`${p.id}-${p.username}`}
           user={p}

@@ -158,8 +158,17 @@ export class GameSocket {
       }));
     });
 
-    this.socket.on(DrawItSocketEvents.GAME_PLAYER_LEAVE, (message: string) => {
-      console.log(DrawItSocketEvents.GAME_PLAYER_LEAVE, message);
+    this.socket.on(DrawItSocketEvents.GAME_PLAYER_LEAVE, (socketId: string) => {
+      const player = GameManager.getGameManager().state.gameSocket?.game?.players.find(p => p.id === socketId);
+      this.addMessage(MessageType.ALERT, `${player.username} left the game`);
+
+      this.dispatch(o => ({
+        ...o,
+        game: {
+          ...o.game,
+          players: o.game.players.filter(p => p.id !== socketId),
+        },
+      }));
     });
 
     this.socket.on(DrawItSocketEvents.GAME_PICK_WORD, (words: string[]) => {

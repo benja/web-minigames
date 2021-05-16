@@ -54,6 +54,7 @@ export function DrawIt(props: DrawItProps) {
         modal: false,
         correctGuessors: [],
         messages: [],
+        players: sockets.game.players,
       },
     }));
   }, [props]);
