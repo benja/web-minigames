@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 import { Lobby } from './utils/lobby';
-import { Game } from '@wmg/shared';
+import { Game, GameTypes } from '@wmg/shared';
 
 const lobbies: Map<string, Lobby> = new Map();
 
@@ -39,12 +39,12 @@ export function leaveLobby(socket: Socket, lobbyId: string) {
   }
 }
 
-export function setLobbyQueueStatus(lobbyId: string, inQueue: boolean) {
+export function setLobbyQueueStatus(lobbyId: string, gameType: GameTypes) {
   const lobby = lobbies.get(lobbyId);
   if (!lobby) {
     throw new Error('No lobby exists with this id.');
   }
-  lobby.setInQueue(inQueue);
+  lobby.setInQueue(gameType);
   return lobby;
 }
 

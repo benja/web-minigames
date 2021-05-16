@@ -17,6 +17,7 @@ export function addToQueue(lobby: Lobby, gameType: GameTypes) {
     throw new Error('Your lobby is already in a queue.');
   }
   queues[gameType].push(lobby);
+  lobby.setInQueue(gameType);
 }
 
 export function removeFromQueue(lobby: Lobby, gameType: GameTypes) {
@@ -26,6 +27,7 @@ export function removeFromQueue(lobby: Lobby, gameType: GameTypes) {
 export function removeCollectionFromQueue(lobbies: Lobby[], gameType: GameTypes) {
   const ids = lobbies.map(l => l.getId());
   queues[gameType] = queues[gameType]!.filter(l => !ids.includes(l.getId()));
+  lobbies.forEach(lobby => lobby.setInQueue(null));
 }
 
 function findCombinactories(gameType: GameTypes) {

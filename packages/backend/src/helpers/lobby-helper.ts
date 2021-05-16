@@ -1,15 +1,21 @@
 import { SocketEvents } from '@wmg/shared';
 import { getClientById, setClientUsername, SocketUser } from '../client-manager';
 import { getLobbyById, deleteLobby, createLobby, setLobbyPrivate } from '../lobby-manager';
+import { removeFromQueue } from '../game-queues';
 
 export default class LobbyHelper {
   public static leave(user: SocketUser) {
     if (user.currentLobby) {
-      const oldLobby = getLobbyById(user.currentLobby);
+      const lobby = user.currentLobby;
+      const oldLobby = getLobbyById(lobby);
 
       if (oldLobby.kickPlayer(user.socket.id)) {
+        if (oldLobby.isInQueue()) {
+          removeFromQueue(oldLobby, oldLobby.getQueueType()!);
+          console.log(`Removed lobby ${lobby} from queue.`);
+        }
         deleteLobby(oldLobby.getId());
-        console.log(`Deleted lobby ${user.currentLobby} for user ${user.socket.id}`);
+        console.log(`Deleted lobby ${lobby} for user ${user.socket.id}`);
       } else {
         oldLobby.getPlayers().forEach(p => {
           getClientById(p).socket.emit(SocketEvents.LOBBY_LEAVE, user.socket.id);
