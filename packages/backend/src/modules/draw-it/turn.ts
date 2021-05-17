@@ -5,6 +5,7 @@ import GameAPI from '../game-api';
 import { DrawItSocketEvents, MessageType } from '@wmg/shared';
 import { Round } from './round';
 import { compareTwoStrings } from 'string-similarity';
+import { GameLeaderboard } from '../game-leaderboard';
 
 export class Turn {
   // Max score potential
@@ -14,7 +15,7 @@ export class Turn {
   public static readonly DEFAULT_TURN_LENGTH = 80;
 
   // When to reveal the letters
-  public static readonly TURN_LETTER_REVEAL_TIMES = [45, 30, 15];
+  public static readonly TURN_LETTER_REVEAL_TIMES = [60, 40, 20];
 
   // Time to pick word
   public static readonly WORD_PICK_TIME = 10;
@@ -25,6 +26,8 @@ export class Turn {
   private readonly turnDrawer: string;
   private readonly wordSelection: string[];
 
+  private readonly turnScores: GameLeaderboard;
+
   private revealedLetters: number[] = [];
   private turnWord: string | null = null;
   private correctGuessers: string[] = [];
@@ -34,7 +37,8 @@ export class Turn {
     this.turnDrawer = turnDrawer;
     this.clientManager = clientManager;
     this.round = round;
-    this.wordSelection = WordUtil.pickCollection(words);
+    this.turnScores = new GameLeaderboard(clientManager.getSocketIds());
+    this.wordSelection = WordUtil.pickUnusedSubSet(words, 3, round.getAllWords());
 
     this.startTurn();
   }
@@ -98,18 +102,16 @@ export class Turn {
 
   private triggerTurnEnd() {
     // Average out scores for drawer
-    const scores = this.round.getRoundLeaderboard().getLeaderboardScores();
-    this.round
-      .getRoundLeaderboard()
-      .incrementScore(
-        this.turnDrawer,
-        Object.values(scores).reduce((acc, val) => acc + val, 0) / Object.values(scores).length,
-      );
+    const scores = this.turnScores.getLeaderboardScores();
+    this.turnScores.incrementScore(
+      this.turnDrawer,
+      Object.values(scores).reduce((acc, val) => acc + val, 0) / Object.values(scores).length,
+    );
 
     // Tell players the round has ended
     GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_TURN_END, {
       correctWord: this.turnWord,
-      roundScores: this.round.getRoundLeaderboard().getLeaderboardScores(),
+      turnScores: this.turnScores.getLeaderboardScores(),
     });
 
     // Trigger the parent round end
@@ -126,6 +128,10 @@ export class Turn {
 
   getTurnWord(): string | null {
     return this.turnWord;
+  }
+
+  getTurnScores(): GameLeaderboard {
+    return this.turnScores;
   }
 
   getRevealedLetters(): string[] {
@@ -167,16 +173,16 @@ export class Turn {
         message,
       });
     }
-    if (message === this.turnWord) {
+    if (message.toLowerCase() === this.turnWord!.toLowerCase()) {
       GameAPI.emitToSockets(this.clientManager.getSockets(), DrawItSocketEvents.GAME_CORRECT_GUESS, guesser);
       this.correctGuessers.push(guesser);
-      this.round.getRoundLeaderboard().incrementScore(guesser, this.calculateScore());
+      this.turnScores.incrementScore(guesser, this.calculateScore());
       if (this.isFinished()) {
         this.triggerTurnEnd();
       }
       return;
     }
-    if (compareTwoStrings(message, this.turnWord!) > 0.6) {
+    if (compareTwoStrings(message.toLowerCase(), this.turnWord!.toLowerCase()) > 0.6) {
       // Emit to the user that the guess was close
       GameAPI.emit(guesser, DrawItSocketEvents.GAME_SEND_MESSAGE, {
         type: MessageType.ALERT,
@@ -273,6 +279,10 @@ export class Turn {
 
   getClientManager(): ClientManager {
     return this.clientManager;
+  }
+
+  getWordSelection(): string[] {
+    return this.wordSelection;
   }
 
   static getSecretWord(word: string, revealed: number[]): string {

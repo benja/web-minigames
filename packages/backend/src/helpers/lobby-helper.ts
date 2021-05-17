@@ -102,6 +102,10 @@ export default class LobbyHelper {
   }
 
   public static updateUsername(user: SocketUser, username: string) {
+    if (username.length > 30) {
+      throw new Error('Username is too long!');
+    }
+
     setClientUsername(user.socket, username);
 
     if (!user.currentLobby) return;

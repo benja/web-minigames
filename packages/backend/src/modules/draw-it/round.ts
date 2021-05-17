@@ -66,6 +66,11 @@ export class Round implements IRound {
   }
 
   onTurnEnd(): void {
+    const currentTurn = this.getCurrentTurn();
+    if (currentTurn) {
+      this.roundLeaderboard.add(currentTurn.getTurnScores());
+    }
+
     if (this.isFinished()) {
       return this.endRound();
     }
@@ -93,6 +98,19 @@ export class Round implements IRound {
       break;
     }
     return nextDrawer;
+  }
+
+  getAllWords(): string[] {
+    return this.turns.map(turn => turn.getWordSelection()).flat();
+  }
+
+  hasWordBeenUsed(word: string): boolean {
+    this.turns.forEach(turn => {
+      if (turn.getWordSelection().includes(word)) {
+        return true;
+      }
+    });
+    return false;
   }
 
   getRoundLeaderboard(): GameLeaderboard {
