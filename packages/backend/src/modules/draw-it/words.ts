@@ -378,7 +378,7 @@ const words: string[] = [
   'sponge',
   'pop can',
   'key chain',
-  'earser',
+  'eraser',
   'bottle cap',
   'candle',
   'face wash',

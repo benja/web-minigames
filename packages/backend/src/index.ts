@@ -1,9 +1,11 @@
 import express from 'express';
 import { SocketServer } from './socket-server';
-import { api as v1 } from './routes/v1';
 import cors from 'cors';
+import { api as v1 } from './routes/v1';
 
 const app = express();
+
+app.use(cors());
 
 app.use('/api/v1', v1);
 
